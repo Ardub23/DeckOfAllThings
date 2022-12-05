@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Deck of All Things</title>
+        <style>
+            body {
+                font-family: Arial, Helvetica, sans-serif;
+                background: rgb(31, 31, 31);
+                color: rgb(247, 247, 247);
+            }
+            .numInput {
+                width: 2.5em;
+            }
+            .cardNameInput {
+                width: 95%;
+                font-weight: bold;
+                font-size: 14pt;
+                text-align: center;
+                background: rgba(0, 0, 0, 0);
+                color: white;
+            }
+            .cardDescInput {
+                height: 60%;
+                width: 95%;
+                resize: none;
+                font-family: Arial, Helvetica, sans-serif;
+                font-size: 12pt;
+                background: rgba(0, 0, 0, 0);
+                color: white;
+            }
+            .customCard {
+                width: 250px;
+                height: 250px;
+                background: rgb(70, 70, 70);
+                margin: 5px;
+                padding: 5px;
+                border-style: solid;
+                border-radius: 10px;
+                float: left;
+            }
+            .disclaimer {
+                font-size: smaller;
+                padding-top: 24px;
+            }
+            button {
+                margin-right: 5px;
+            }
+        </style>
+    </head>
+    <body>
+        <h2>A deck of wondrous power is presented to you&hellip;</h2>
+
+        <div id="initialConfig">
+            <p>
+                <label id="declaredDrawsInputLabel" for="declaredDrawsInput">Draw </label>
+                <input class="numInput" id="declaredDrawsInput" type="number" value=1 min=1 onchange="setDeclaredDraws()" />
+
+                <label id="deckTypeSelectorLabel" for="deckTypeSelector"> card from </label>
+                <select id="deckTypeSelector" name="deckTypeSelector" onchange="setDeckType()">
+                    <option value="random">a mysterious deck (13 or 22 cards)</option>
+                    <option value="partial">a partial deck (13 cards)</option>
+                    <option value="full">a full deck (22 cards)</option>
+                    <option value="all" id="allDeckOption">an expanded homebrew deck</option>
+                    <option value="custom">a customized deck&hellip;</option>
+                    <option value="fullCustom">a deck of fully customized cards&hellip;</option>
+                </select>
+            </p>
+            <button id="drawButton" type="button" onclick="readyDeck()">Begin</button>
+            
+            <p class="disclaimer">The Deck of All Things includes unofficial Fan Content permitted under the Fan Content Policy. Not approved/endorsed by Wizards. Portions of the materials used are from the <i>Dungeons & Dragons</i> 5th Edition Systems Reference Document, property of Wizards of the Coast. ©Wizards of the Coast LLC.</p>
+        </div>
+        
+        <script>
+            function init() {
+                setDeckType();
+                setDeclaredDraws();
+
+                // partialDeck's declaration relies on the specific order of cards in fullDeck
+                fullDeck = [
+                    {
+                        name: "Vizier",
+                        desc: "At any time you choose within one year of drawing this card, you can ask a question in meditation and mentally receive a truthful answer to that question. Besides information, the answer helps you solve a puzzling problem or other dilemma. In other words, the knowledge comes with wisdom on how to apply it.",
+                        wildness: 0.4,
+                        worth: 0.8
+                    },
+                    {
+                        name: "Sun",
+                        desc: "You gain 50,000 XP, and a wondrous item (which the DM determines randomly) appears in your hands.",
+                        noXPDesc: "You gain two levels, and a woundrous item (which the DM determines randomly) appears in your hands.",
+                        noLevelDesc: "You gain a feat of your choice, and a woundrous item (which the DM determines randomly) appears in your hands.",
+                        wildness: 0.7,
+                        worth: 1.0
+                    },
+                    {
+                        name: "Moon",
+                        desc: "You are granted the ability to cast the <i>wish</i> spell 1d3 times.",
+                        wildness: 1.0,
+                        worth: 1.0
+                    },
+                    {
+                        name: "Star",
+                        desc: "Increase one of your ability scores by 2. The score can exceed 20 but can't exceed 24.",
+                        wildness: 0.0,
+                        worth: 0.9
+                    },
+                    {
+                        name: "Comet",
+                        desc: "If you single-handedly defeat the next hostile monster or group of monsters you encounter, you gain experience points enough to gain one level. Otherwise, this card has no effect.",
+                        noXPDesc: "If you single-handedly defeat the next hostile monster or group of monsters you encounter, you gain one level. Otherwise, this card has no effect.",
+                        noLevelDesc: "If you single-handedly defeat the next hostile monster or group of monsters you encounter, you have advantage on all ability checks made using one skill of your choice. Otherwise, this card has no effect.",
+                        wildness: 0.4,
+                        worth: 0.6
+                    },
+                    {
+                        name: "The Fates",
+                        desc: "Reality's fabric unravels and spins anew, allowing you to avoid or erase one event as if it never happened. You can use the card's magic as soon as you draw the card or at any other time before you die.",
+                        wildness: 1.0,
+                        worth: 1.0
+                    },
+                    {
+                        name: "Throne",
+                        desc: "You gain proficiency in the Persuasion skill, and you double your proficiency bonus on checks made with that skill. In addition, you gain rightful ownership of a small keep somewhere in the world. However, the keep is currently in the hands of monsters, which you must clear out before you can claim the keep as yours.",
+                        wildness: 0.3,
+                        worth: 0.7
+                    },
+                    {
+                        name: "Key",
+                        desc: "A rare or rarer magic weapon with which you are proficient appears in your hands. The DM chooses the weapon.",
+                        wildness: 0.2,
+                        worth: 0.8
+                    },
+                    {
+                        name: "Knight",
+                        desc: "You gain the service of a 4th-level fighter who appears in a space you choose within 30 feet of you. The fighter is of the same race as you and serves you loyally until death, believing the fates have drawn him or her to you. You control this character.",
+                        wildness: 0.5,
+                        worth: 0.8
+                    },
+                    {
+                        name: "Gem",
+                        desc: "Twenty-five pieces of jewelry worth 2,000 gp each or fifty gems worth 1,000 gp each appear at your feet.",
+                        wildness: 0.0,
+                        worth: 0.7
+                    },
+                    {
+                        name: "Talons",
+                        desc: "Every magic item you wear or carry disintegrates. Artifacts in your possession aren't destroyed but do vanish.",
+                        wildness: 0.6,
+                        worth: 0.1
+                    },
+                    {
+                        name: "The Void",
+                        desc: "This black card spells disaster. Your soul is drawn from your body and contained in an object in a place of the DM's choice. One or more powerful beings guard the place. While your soul is trapped in this way, your body is incapacitated. A <i>wish</i> spell can't restore your soul, but the spell reveals the location of the object that holds it. You draw no more cards.",
+                        drawsEffect: "nomore",
+                        wildness: 1.0,
+                        worth: 0.0
+                    },
+                    {
+                        name: "Flames",
+                        desc: "A powerful devil becomes your enemy. The devil seeks your ruin and plagues your life, savoring your suffering before attempting to slay you. This enmity lasts until either you or the devil dies.",
+                        wildness: 0.3,
+                        worth: 0.3
+                    },
+                    {
+                        name: "Skull",
+                        desc: "You summon an avatar of death&mdash;a ghostly humanoid skeleton clad in a tattered black robe and carrying a spectral scythe. It appears in a space of the DM's choice within 10 feet of you and attacks you, warning all others that you must win the battle alone. The avatar fights until you die or it drops to 0 hit points, whereupon it disappears. If anyone tries to help you, the helper summons its own avatar of death. A creature slain by an avatar of death can't be restored to life.",
+                        wildness: 0.2,
+                        worth: 0.4
+                    },
+                    {
+                        name: "Idiot",
+                        desc: "Permanently reduce your Intelligence by 1d4 + 1 (to a minimum score of 1). You can draw one additional card beyond your declared draws.",
+                        drawsEffect: "optional",
+                        draws: 1,
+                        wildness: 0.2,
+                        worth: 0.2
+                    },
+                    {
+                        name: "Donjon",
+                        desc: "You disappear and become entombed in a state of suspended animation in an extradimensional sphere. Everything you were wearing and carrying stays behind in the space you occupied when you disappeared. You remain imprisoned until you are found and removed from the sphere. You can't be located by any divination magic, but a <i>wish</i> spell can reveal the location of your prison. You draw no more cards.",
+                        drawsEffect: "nomore",
+                        wildness: 0.9,
+                        worth: 0.0
+                    },
+                    {
+                        name: "Ruin",
+                        desc: "All forms of wealth that you carry or own, other than magic items, are lost to you. Portable property vanishes. Businesses, buildings, and land you own are lost in a way that alters reality the least. Any documentation that proves you should own something lost to this card also disappears.",
+                        wildness: 0.5,
+                        worth: 0.2
+                    },
+                    {
+                        name: "Euryale",
+                        desc: "The card's medusa-like visage curses you. You take a &minus;2 penalty on saving throws while cursed in this way. Only a god or the magic of The Fates card can end this curse.",
+                        wildness: 0.3,
+                        worth: 0.1
+                    },
+                    {
+                        name: "Rogue",
+                        desc: "A nonplayer character of the DM's choice becomes hostile toward you. The identity of your new enemy isn't known until the NPC or someone else reveals it. Nothing less than a <i>wish</i> spell or divine intervention can end the NPC's hostility toward you.",
+                        wildness: 0.1,
+                        worth: 0.4
+                    },
+                    {
+                        name: "Balance",
+                        desc: "Your mind suffers a wrenching alteration, causing your alignment to change. Lawful becomes chaotic, good becomes evil, and vice versa. If you are true neutral or unaligned, this card has no effect on you.",
+                        wildness: 0.5,
+                        worth: 0.4
+                    },
+                    {
+                        name: "Fool",
+                        desc: "You lose 10,000 XP, discard this card, and draw from the deck again, counting both draws as one of your declared draws. If losing that much XP would cause you to lose a level, you instead lose an amount that leaves you with just enough XP to keep your level.",
+                        noXPDesc: "You have disadvantage on all ability checks made using one skill of the DM's choice. Discard this card and draw from the deck again, counting both draws as one of your declared draws.",
+                        drawsEffect: "forced",
+                        draws: 1,
+                        reappears: false,
+                        wildness: 0.2,
+                        worth: 0.3
+                    },
+                    {
+                        name: "Jester",
+                        desc: "You gain 10,000 XP, or you can draw two additional cards beyond your declared draws.",
+                        noXPDesc: "You gain one level, or you can draw two additional cards beyond your declared draws.",
+                        noLevelDesc: "You gain proficiency in two skills of your choice, or you can draw two additional cards beyond your declared draws.",
+                        drawsEffect: "optional",
+                        draws: 2,
+                        reappears: false,
+                        wildness: 0.2,
+                        worth: 0.7
+                    }
+                ];
+
+                partialDeck = [
+                    fullDeck[1],
+                    fullDeck[2],
+                    fullDeck[3],
+                    fullDeck[6],
+                    fullDeck[7],
+                    fullDeck[8],
+                    fullDeck[11],
+                    fullDeck[12],
+                    fullDeck[13],
+                    fullDeck[16],
+                    fullDeck[17],
+                    fullDeck[18],
+                    fullDeck[21]
+                ];
+                
+                homebrewDeck = [
+                    {
+                        name: "Changeling",
+                        desc: "Your body crumbles to dust, which immediately reconstitutes itself into a new body for you. Roll on the Reincarnate Races table from the <i>reincarnate</i> spell to determine your new race. Your racial traits change accordingly.",
+                        wildness: 0.4,
+                        worth: 0.4
+                    },
+                    {
+                        name: "Initiate",
+                        desc: "You learn two cantrips of your choice from any spell list. Your spellcasting ability for these spells is Intelligence, Wisdom, or Charisma (choose when you draw this card).",
+                        wildness: 0.2,
+                        worth: 0.8
+                    },
+                    {
+                        name: "Torchbearer",
+                        desc: "All items you are wearing or carrying begin glowing as if affected by a <i>light</i> cantrip that lasts until dispelled.",
+                        wildness: 0.0,
+                        worth: 0.5
+                    },
+                    {
+                        name: "Focus",
+                        desc: "Increase your highest ability score by 2, to a maximum of 30. If multiple ability scores tie for your highest, choose one to increase. Reduce all your other ability scores by 1, to a minimum of 1. The reduced scores can only be restored by magic, and if they are, the increased score is also restored to its previous value.",
+                        wildness: 0.3,
+                        worth: 0.4
+                    },
+                    {
+                        name: "Thief",
+                        desc: "One of your valuable possessions (chosen by the DM) vanishes and reappears in the possession of one of your enemies.",
+                        wildness: 0.2,
+                        worth: 0.3
+                    },
+                    {
+                        name: "Nightmare",
+                        desc: "You are stricken with a recurring nightmare. When you finish a long rest, the hit points you regain can't exceed half your hit point maximum, and you regain only one-fourth of your spent Hit Dice (minimum of one die). If you don't need to sleep, this card has no effect.",
+                        wildness: 0.3,
+                        worth: 0.3
+                    },
+                    {
+                        name: "Ferryman",
+                        desc: "Your connection to mortality weakens. Whenever you drop to 0 hit points, you immediately fail one death saving throw.",
+                        wildness: 0.1,
+                        worth: 0.2
+                    },
+                    {
+                        name: "Wailing",
+                        desc: "When you draw this card, you drop to 0 hit points.",
+                        wildness: 0.1,
+                        worth: 0.2
+                    },
+                    {
+                        name: "Fairy",
+                        desc: "You gain the benefits of a long rest, your exhaustion level is reduced to 0, and you end all effects that reduce your hit point maximum or ability scores. All curses affecting you are lifted, including your attunement to cursed magic items.",
+                        wildness: 0.4,
+                        worth: 0.8
+                    },
+                    {
+                        name: "Lottery",
+                        desc: "A common magic item (chosen by the DM) appears in your hands, or you can draw five additional cards beyond your declared draws. If you choose to draw the additional cards, you can negate one card's effect when you draw it.",
+                        drawsEffect: "optional",
+                        draws: 5,
+                        reappears: false,
+                        wildness: 0.5,
+                        worth: 0.6
+                    },
+                    {
+                        name: "Lycanthrope",
+                        desc: "At the next dusk after you draw this card, you transform as if affected by the <i>Polymorph</i> spell. The DM chooses the beast you turn into and controls you while you're transformed, as you're driven to kill every creature you encounter. At the end of each hour until the following dawn, you regain 1 hit point, then transform again.",
+                        wildness: 0.5,
+                        worth: 0.3
+                    },
+                    {
+                        name: "Leylines",
+                        desc: "Choose any spell, and choose Intelligence, Wisdom, or Charisma as your spellcasting ability for it. You can cast the spell once without spending a spell slot. When you cast it, roll a d20. If the spell level is less than the result, you regain the ability to cast it when you next finish a long rest.",
+                        wildness: 1.0,
+                        worth: 1.0
+                    },
+                    {
+                        name: "Vessel",
+                        desc: "The magic of this card suffuses you. You gain experience points enough to gain a level, and the level must be gained in the sorcerer class (even if you don't meet the ability score requirements for multiclassing).",
+                        noXPDesc: "The magic of this card suffuses you. You gain a level in the sorcerer class (even if you don't meet the ability score requirements for multiclassing).",
+                        noLevelDesc: "The magic of this card suffuses you. You learn four cantrips and two 1st-level spells from the sorcerer spell list. You can cast each 1st-level spell once without spending a spell slot, and you regain the ability to do so when you finish a long rest. You can also cast them with any spell slots you have. Charisma is your spellcasting ability for these spells.",
+                        wildness: 0.9,
+                        worth: 0.9
+                    },
+                    {
+                        name: "Medic",
+                        desc: "You gain the ability to cast the <i>power word heal</i> spell 3 times. You can't target yourself with it.",
+                        wildness: 0.8,
+                        worth: 1.0
+                    },
+                    {
+                        name: "Nova",
+                        desc: "Choose a 1st- or 2nd-level spell from any spell list, and choose Intelligence, Wisdom, or Charisma as your spellcasting ability for it. You can cast the spell once as a 13th-level spell.",
+                        wildness: 0.7,
+                        worth: 1.0
+                    },
+                    {
+                        name: "Doldrums",
+                        desc: "You gain a level of exhaustion. Rest can't reduce your exhaustion level below 1. If your exhaustion level is reduced to 0 another way, you regain a level of exhaustion after 24 hours.",
+                        wildness: 0.4,
+                        worth: 0.2
+                    },
+                    {
+                        name: "Inquisitor",
+                        desc: "When you ask a yes-or-no question, you can force a creature that hears and understands it to give you a truthful answer, to the best of its knowledge. You can use this ability only once.",
+                        wildness: 0.2,
+                        worth: 0.9
+                    },
+                    {
+                        name: "Oaf",
+                        desc: "Choose two skills with which you are proficient. You have a &minus;5 penalty to all checks you make with those skills. The penalty can be removed only by a <i>wish</i> spell or divine intervention.",
+                        wildness: 0.5,
+                        worth: 0.1
+                    },
+                    {
+                        name: "Forget-Me-Not",
+                        desc: "At some point within the next 7 days, an NPC who is friendly to you dies by sickness, old age, or an accident. You can draw one additional card beyond your declared draws.",
+                        drawsEffect: "optional",
+                        draws: 1,
+                        wildness: 0.5,
+                        worth: 0.4
+                    },
+                    {
+                        name: "Ventriloquist",
+                        desc: "You can speak without moving your lips, and you can cause your voice to seemingly originate from any point within 30 feet of you that isn't behind total cover.",
+                        wildness: 0.0,
+                        worth: 0.8
+                    },
+                    {
+                        name: "Sphinx",
+                        desc: "You learn an important secret, but the knowledge comes in the form of a cryptic message or riddle. The information is accurate but is steeped in metaphor or otherwise difficult to understand.",
+                        wildness: 0.3,
+                        worth: 0.7
+                    }
+                ];
+                
+                // Reflect how many cards are in the homebrew deck
+                l("allDeckOption").innerHTML = "an expanded homebrew deck (" + (fullDeck.length + homebrewDeck.length) + " cards)";
+
+                lastCard = {};
+            }
+
+            function l(id) {
+                return document.getElementById(id);
+            }
+
+            function createElement(tagName, id, innerHTML) {
+                let el = document.createElement(tagName);
+                if (id) {
+                    el.id = id;
+                }
+                if (innerHTML) {
+                    el.innerHTML = innerHTML;
+                }
+                return el;
+            }
+
+            function createButton(id, onclick, innerHTML) {
+                let btn = document.createElement("button");
+                btn.type = "button";
+                btn.id = id;
+                btn.onclick = onclick;
+                btn.innerHTML = innerHTML;
+                return btn;
+            }
+
+            function createOption(value, innerHTML) {
+                let opt = document.createElement("option");
+                opt.value = value;
+                opt.innerHTML = innerHTML;
+                return opt;
+            }
+
+            function createRadio(group, value, label, valueHolder, selected) {
+                let el = document.createElement("input");
+                el.type = "radio";
+                el.name = group;
+                el.value = value;
+                el.id = group + "_" + value;
+                el.onclick = function() { valueHolder.value = el.value; };
+                if (selected) {
+                    el.checked = true;
+                    el.onclick();
+                }
+
+                let lbl = document.createElement("label");
+                lbl.htmlFor = el.id;
+                lbl.innerHTML = label;
+                
+                let div = document.createElement("div");
+                div.appendChild(el);
+                div.appendChild(lbl);
+
+                return div;
+            }
+
+            function createCustomCardNode(card, i) {
+                let cardNode = createElement("div", "customCard" + i);
+                cardNode.className = "customCard";
+
+                // Card name
+                let nameInput = createElement("input", "customCardName" + i);
+                nameInput.className = "cardNameInput";
+                nameInput.value = card.name;
+                nameInput.onchange = function(){card.name = nameInput.value};
+                cardNode.appendChild(nameInput);
+
+                // Card description
+                let descInput = createElement("textarea", "customCardDesc" + i);
+                descInput.className = "cardDescInput";
+                descInput.value = card.desc;
+                descInput.onchange = function(){card.desc = descInput.value};
+                cardNode.appendChild(descInput);
+
+                // Card draws effect
+                let drawsEffectNode = createElement("div");
+                let drawsEffectSelector = createElement("select", "drawsEffectSelector" + i);
+                drawsEffectSelector.appendChild(createOption("noeffect", "Doesn't affect draws"));
+                drawsEffectSelector.appendChild(createOption("nomore", "Prevents further draws"));
+                drawsEffectSelector.appendChild(createOption("forced", "Forces additional draw(s): "));
+                drawsEffectSelector.appendChild(createOption("optional", "Allows additional draw(s): "));
+                drawsEffectSelector.value = (card.drawsEffect)? card.drawsEffect : "noeffect";
+                drawsEffectNode.appendChild(drawsEffectSelector);
+                // Card draws number
+                let drawsInput = createElement("input", "drawsInput" + i);
+                drawsInput.className = "numInput";
+                drawsInput.type = "number";
+                drawsInput.value = (card.draws !== undefined)? card.draws : 1;
+                drawsInput.min = 1;
+                drawsInput.onchange = function() {
+                    if (!(drawsInput.valueAsNumber >= 1))
+                        drawsInput.value = 1;
+                    drawsInput.value = Math.floor(drawsInput.valueAsNumber);
+                    card.draws = drawsInput.valueAsNumber;
+                };
+                drawsInput.onchange();
+                drawsEffectNode.appendChild(drawsInput);
+                cardNode.appendChild(drawsEffectNode);
+
+                drawsEffectSelector.onchange = function(){
+                    let f = drawsEffectSelector.value;
+                    card.drawsEffect = f;
+                    drawsInput.hidden = (f != "optional" && f != "forced");
+                };
+                drawsEffectSelector.onchange();
+
+                let reappearsCheckbox = document.createElement("input");
+                reappearsCheckbox.name = reappearsCheckbox.id = "reappearsCheckbox" + i;
+                reappearsCheckbox.type = "checkbox";
+                reappearsCheckbox.checked = (card.reappears !== false);
+                reappearsCheckbox.onchange = function() {card.reappears = reappearsCheckbox.checked;};
+                let reappearsLabel = document.createElement("label");
+                reappearsLabel.htmlFor = "reappearsCheckbox" + i;
+                reappearsLabel.innerHTML = "Reappears in deck";
+                cardNode.appendChild(reappearsCheckbox);
+                cardNode.appendChild(reappearsLabel);
+
+                // Remove card button
+                let removeBtnHolder = createElement("div");
+                removeBtnHolder.appendChild(createButton("removeCardBtn" + i, function() {
+                    deck[i] = null; // nulls are filtered out before drawing
+                    l("fullCustomCardsNode").removeChild(cardNode);
+                }, "Remove card"));
+                cardNode.appendChild(removeBtnHolder);
+
+                return cardNode;
+            }
+
+            function cardOrCards(num) {
+                return (num == 1)? "card" : "cards";
+            }
+
+            function setDeckType() {
+                deckType = l("deckTypeSelector").value;
+            }
+
+            function setDeclaredDraws() {
+                declaredDraws = l("declaredDrawsInput").valueAsNumber;
+                // Don't let the maniacs type in negative numbers or erase the input
+                if (!(declaredDraws >= 1)) {
+                    declaredDraws = l("declaredDrawsInput").value = 1;
+                }
+                
+                l("deckTypeSelectorLabel").innerHTML = " " + cardOrCards(declaredDraws) + " from ";
+            }
+
+            function readyDeck() {
+                setDeclaredDraws();
+                setDeckType();
+                
+                // Hide initial config input
+                l("initialConfig").hidden = true;
+                
+                if (deckType == "custom") {
+                    customize();
+                } else if (deckType == "fullCustom") {
+                    deck = [...fullDeck];
+                    fullCustomize();
+                } else if (deckType == "all") {
+                    deck = fullDeck.concat(homebrewDeck);
+                    draw();
+                } else if (deckType == "full" || (deckType == "random" && Math.random() < 0.25)) {
+                    deck = [...fullDeck];
+                    draw();
+                } else {
+                    deck = [...partialDeck];
+                    draw();
+                }
+            }
+
+            function createCustCardSrcNode() {
+                let custCardSrcNode = document.createElement("div");
+                custCardSrcNode.id = "custCardSrc";
+
+                // Header
+                let custCardSrcHeader = document.createElement("h3");
+                custCardSrcHeader.innerHTML = "Card sources";
+                custCardSrcNode.appendChild(custCardSrcHeader);
+
+                // Selector label
+                let custCardSrcLbl = document.createElement("label");
+                custCardSrcLbl.id = "custCardSrcLbl";
+                custCardSrcLbl.htmlFor = "custCardSrcSelector";
+                custCardSrcLbl.innerHTML = "Use cards from: "
+                // Selector
+                let custCardSrcSelector = document.createElement("select");
+                custCardSrcSelector.id = "custCardSrcSelector";
+                custCardSrcSelector.appendChild(createOption("partial", "the partial deck of 13 cards"));
+                custCardSrcSelector.appendChild(createOption("full", "the full deck of 22 cards"));
+                custCardSrcSelector.appendChild(createOption("all", "the full deck plus homebrew cards"));
+                custCardSrcSelector.appendChild(createOption("homebrew", "homebrew cards only"));
+                custCardSrcSelector.value = "all";
+                custCardSrcSelector.onchange = function() {custCardSrc = custCardSrcSelector.value};
+                custCardSrcSelector.onchange();
+                
+                custCardSrcNode.appendChild(custCardSrcLbl);
+                custCardSrcNode.appendChild(custCardSrcSelector);
+                
+                return custCardSrcNode;
+            }
+
+            function createCustWildNode() {
+                let custWildNode = document.createElement("div");
+                custWildNode.id = "custWildNode";
+
+                // Header
+                let custWildHeader = document.createElement("h3");
+                custWildHeader.id = "custWildHeader";
+                custWildHeader.innerHTML = "Wildness";
+                custWildNode.appendChild(custWildHeader);
+
+                // Note
+                let custWildNote = document.createElement("p");
+                custWildNote.innerHTML = "You can filter cards based on how wild they are. Each card is assigned a \"wildness value\", from the tame cards with simple and straightforward effects, to the earth-shattering and often very disruptive cards. Using this option removes cards from the deck; each card in the deck is still equally likely to be drawn.";
+                custWildNode.appendChild(custWildNote);
+
+                // Wildness bias strength selector
+                let custWildStrSelector = document.createElement("select");
+                custWildStrSelector.id = custWildStrSelector.name = "custWildStrSelector";
+                custWildStrSelector.appendChild(createOption("off", "Don't bias cards by wildness"));
+                custWildStrSelector.appendChild(createOption("weak", "Weakly bias toward&hellip;"));
+                custWildStrSelector.appendChild(createOption("strong", "Strongly bias toward&hellip;"))
+                custWildNode.appendChild(custWildStrSelector);
+
+                // Wildness value selector
+                let custWildValSelector = document.createElement("select");
+                custWildValSelector.id = custWildValSelector.name = "custWildValSelector";
+                custWildValSelector.appendChild(createOption("0", "very tame cards"));
+                custWildValSelector.appendChild(createOption("0.25", "tame cards"));
+                custWildValSelector.appendChild(createOption("0.5", "middling cards"));
+                custWildValSelector.appendChild(createOption("0.75", "wild cards"));
+                custWildValSelector.appendChild(createOption("1.0", "very wild cards"));
+                custWildValSelector.value = 0.5;
+                custWildNode.appendChild(custWildValSelector);
+
+                custWildValSelector.onchange = function() {custWildVal = parseFloat(custWildValSelector.value);};
+                custWildValSelector.onchange();
+                custWildStrSelector.onchange = function() {
+                    custWildBias = custWildStrSelector.value;
+                    custWildValSelector.hidden = (custWildBias == "off");
+                };
+                custWildStrSelector.onchange();
+
+                return custWildNode;
+            }
+
+            function createCustWorthNode() {
+                let custWorthNode = document.createElement("div");
+                custWorthNode.id = "custWildNode";
+
+                // Header
+                custWorthNode.appendChild(createElement("h3", "custWorthHeader", "Worth"));
+
+                // Note
+                let custWorthNote = document.createElement("p");
+                custWorthNote.innerHTML = "You can filter cards based on how good they are for the one who draws them. Each card is assigned a \"worth value\", from the disastrous to the miraculous. Using this option removes cards from the deck; each card in the deck is still equally likely to be drawn.";
+                custWorthNode.appendChild(custWorthNote);
+
+                // Wildness bias strength selector
+                let custWorthStrSelector = document.createElement("select");
+                custWorthStrSelector.id = custWorthStrSelector.name = "custWorthStrSelector";
+                custWorthStrSelector.appendChild(createOption("off", "Don't bias cards by worth"));
+                custWorthStrSelector.appendChild(createOption("weak", "Weakly bias toward&hellip;"));
+                custWorthStrSelector.appendChild(createOption("strong", "Strongly bias toward&hellip;"))
+                custWorthNode.appendChild(custWorthStrSelector);
+
+                // Wildness value selector
+                let custWorthValSelector = document.createElement("select");
+                custWorthValSelector.id = custWorthValSelector.name = "custWorthValSelector";
+                custWorthValSelector.appendChild(createOption("0", "very bad cards"));
+                custWorthValSelector.appendChild(createOption("0.25", "bad cards"));
+                custWorthValSelector.appendChild(createOption("0.5", "middling cards"));
+                custWorthValSelector.appendChild(createOption("0.75", "good cards"));
+                custWorthValSelector.appendChild(createOption("1.0", "very good cards"));
+                custWorthValSelector.value = 0.5;
+                custWorthNode.appendChild(custWorthValSelector);
+
+                custWorthValSelector.onchange = function() {custWorthVal = parseFloat(custWorthValSelector.value);};
+                custWorthValSelector.onchange();
+                custWorthStrSelector.onchange = function() {
+                    custWorthBias = custWorthStrSelector.value;
+                    custWorthValSelector.hidden = (custWorthBias == "off");
+                };
+                custWorthStrSelector.onchange();
+
+                return custWorthNode;
+            }
+
+            function createCustXPNode() {
+                let custXPNode = document.createElement("div");
+                custXPNode.id = "custXPNode";
+
+                // Header
+                custXPNode.appendChild(createElement("h3", "custXPHeader", "Experience and level-based effects"));
+
+                custXP = {};
+                custXPNode.appendChild(createRadio("custXP", "default", "Use effects that involve experience points (default)", custXP, true));
+                custXPNode.appendChild(createRadio("custXP", "noxp", "Replace XP-based effects with ones that don't use XP, but might affect character levels", custXP));
+                custXPNode.appendChild(createRadio("custXP", "nolevel", "Replace XP-based effects with ones that can't affect character levels", custXP));
+
+                return custXPNode;
+            }
+            
+            function customize() {
+                let customMenu = document.createElement("div");
+                customMenu.id = "customMenu";
+
+                customMenu.appendChild(createCustCardSrcNode());
+
+                customMenu.appendChild(createCustWildNode());
+
+                customMenu.appendChild(createCustWorthNode());
+
+                customMenu.appendChild(createCustXPNode());
+
+                customMenu.appendChild(createElement("p"));
+
+                customMenu.appendChild(createButton("customFullCustomBtn", function() {
+                    finishCustomization();
+                    fullCustomize();
+                }, "Customize individual cards"))
+
+                customMenu.appendChild(createButton("customDrawBtn", function() {
+                    finishCustomization();
+                    draw();
+                }, "Draw!"));
+
+                document.body.appendChild(customMenu);
+            }
+
+            function finishCustomization() {
+                // Generates the deck according to the customization parameters
+                l("customMenu").hidden = true;
+
+                switch (custCardSrc) {
+                    case "partial":
+                        deck = [...partialDeck];
+                        break;
+                    case "full":
+                        deck = [...fullDeck];
+                        break;
+                    case "all":
+                        deck = fullDeck.concat(homebrewDeck);
+                        break;
+                    case "homebrew":
+                        deck = [...homebrewDeck];
+                        break;
+                }
+
+                if (custWildBias == "weak") {
+                    deck = deck.filter(x => fits(x.wildness, custWildVal, 1.5));
+                } else if (custWildBias == "strong") {
+                    deck = deck.filter(x => fits(x.wildness, custWildVal, 3));
+                }
+
+                if (custWorthBias == "weak") {
+                    deck = deck.filter(x => fits(x.worth, custWorthVal, 1.5));
+                } else if (custWorthBias == "strong") {
+                    deck = deck.filter(x => fits(x.worth, custWorthVal, 3));
+                }
+
+                if (custXP.value == "noxp") {
+                    deck.forEach(x => {
+                        if (x.noXPDesc)
+                            x.desc = x.noXPDesc;
+                        else if (x.noLevelDesc)
+                            x.desc = x.noLevelDesc;
+                    });
+                } else if (custXP.value == "nolevel") {
+                    deck.forEach(x => {
+                        if (x.noLevelDesc)
+                            x.desc = x.noLevelDesc;
+                    })
+                }
+            }
+
+            function fits(val, target, strictness) {
+                // The closer val is to target, the more likely it is that true will be returned.
+                // When val == target, the probability is 1.
+                // High strictness makes the probability drop off quickly as val and target differ.
+                let prob = Math.pow(Math.E, -(Math.pow(strictness * (target - val), 2)));
+                return (Math.random() < prob);
+            }
+
+            function fullCustomize() {
+                let fullCustomMenu = createElement("div", "fullCustomMenu");
+                fullCustomMenu.appendChild(createElement("h3", "fullCustomMenuHeader", "Here you can customize each card in the deck."));
+
+                let fullCustomCardsNode = createElement("div", "fullCustomCardsNode");
+                for (let i in deck) {
+                    fullCustomCardsNode.appendChild(createCustomCardNode(deck[i], i));
+                }
+                fullCustomMenu.appendChild(fullCustomCardsNode);
+
+                let fullCustomMenuFooter = createElement("div", "fullCustomMenuFooter");
+                fullCustomMenuFooter.style = "clear: left;";
+                fullCustomMenu.appendChild(fullCustomMenuFooter);
+
+                // "Add card" button
+                fullCustomMenuFooter.appendChild(createButton("addCustomCardBtn", function() {
+                    let newCard = {name: "New Card", desc: ""};
+                    deck.push(newCard);
+                    fullCustomCardsNode.appendChild(createCustomCardNode(newCard, deck.length - 1));
+                }, "Add another card"));
+
+                // "Finish customization and draw" button
+                fullCustomMenuFooter.appendChild(createButton("fullCustomDrawBtn", function(){
+                    fullCustomMenu.hidden = true;
+                    // Get rid of nulls (removed cards) before drawing
+                    deck = deck.filter(a => a !== null);
+                    draw();
+                }, "Confirm"));
+
+                document.body.appendChild(fullCustomMenu);
+            }
+
+            function draw() {
+                if (l("drawingNode")) {
+                    var drawingNode = l("drawingNode");
+                    drawingNode.hidden = false;
+                } else {
+                    var drawingNode = createElement("div", "drawingNode");
+                    drawingNode.appendChild(createElement("div", "drawnCards"));
+                    drawingNode.appendChild(createElement("div", "drawingFooter"));
+                    
+                    document.body.appendChild(drawingNode);
+                }
+
+                // declaredDraws can be 0 if user declined an optional draw-more from their last card.
+                // In that case, skip to end-of-draw stuff.
+                if (declaredDraws > 0 && deck.length > 0) {
+                    let cardIndex = Math.floor(Math.random() * deck.length);
+                    let card = deck[cardIndex];
+                    lastCard = card;
+                    if (card.reappears === false) {
+                        // Only certain cards vanish when drawn; the rest reappear in the deck and can be drawn again
+                        deck.splice(cardIndex, 1);
+                    }
+
+                    l("drawnCards").appendChild(createElement("h3", undefined, card.name));
+                    l("drawnCards").appendChild(createElement("p", undefined, card.desc));
+
+                    declaredDraws -= 1;
+
+                    if (card.drawsEffect == "nomore") {
+                        declaredDraws = 0;
+                    } else if (card.drawsEffect == "forced") {
+                        declaredDraws += card.draws;
+                    }
+
+                    if ((declaredDraws > 0 && deck.length > 0) || card.draws) {
+                        // Create the proccedNode, if it doesn't exist already
+                        if (l("proceedNode")) {
+                            l("proceedNode").hidden = false;
+                        } else {
+                            let proceedNode = createElement("div", "proceedNode");
+
+                            let proceedLabel = createElement("div", "proceedLabel");
+                            // innerHTML is set or updated later to reflect # of cards
+                            proceedNode.appendChild(proceedLabel);
+
+                            let buttonHolder = createElement("p");
+                            buttonHolder.appendChild(createButton("drawMoreButton", function(){declaredDraws += card.draws; draw();}, "Yes"));
+                            buttonHolder.appendChild(createButton("proceedButton", draw, "Proceed"));
+                            proceedNode.appendChild(buttonHolder);
+
+                            l("drawingFooter").appendChild(proceedNode);
+                        }
+
+                        if (card.drawsEffect == "optional") {
+                            // "Proceed" button becomes "no" option (don't draw extra cards, just move on)
+                            l("proceedLabel").innerHTML = "Will you draw " + card.draws + " additional " + cardOrCards(card.draws) + "?";
+                            l("drawMoreButton").hidden = false;
+                            l("proceedButton").innerHTML = "No";
+                        } else {
+                            l("proceedLabel").innerHTML = "You have " + declaredDraws + " " + cardOrCards(declaredDraws) + " left to draw.";
+                            l("drawMoreButton").hidden = true;
+                            l("proceedButton").innerHTML = "Proceed";
+                        }
+
+                        // l("drawnCards").appendChild(l("proceedNode"));
+                    }
+                }
+                
+                if (deck.length == 0 && declaredDraws > 0) {
+                    // Tell them why they can't draw more cards: there are none
+                    let noCardsMsg = document.createElement("p");
+                    noCardsMsg.innerHTML = "There are no cards left in the deck.";
+                    l("drawnCards").appendChild(noCardsMsg);
+                }
+
+                if (deck.length == 0 || declaredDraws <= 0) {
+                    if (lastCard.drawsEffect == "optional") {
+                        // Just drew a card that allows extra draws.
+                        // Let them choose whether to draw more, but if they choose no, don't still treat them like they just drew the last card.
+                        lastCard = {};
+                    } else if (l("proceedNode")) {
+                        // No more draws (and no option to draw more); all done
+                        l("proceedNode").hidden = true;
+                    }
+                }
+            }
+
+            init();
+        </script>
+    </body>
+</html>
