@@ -46,6 +46,17 @@
             button {
                 margin-right: 5px;
             }
+            .drawnCard {
+                background: rgb(70, 70, 70);
+                margin: 15px;
+                padding: 0px 25px 0px 25px;
+                border-style: solid;
+                border-radius: 10px;
+                max-width: 300px;
+            }
+            .drawnCardName {
+                text-align: center;
+            }
         </style>
     </head>
     <body>
@@ -77,138 +88,118 @@
                 setDeclaredDraws();
                 vetoes = 0;
 
+                // I took out the linebreaks after the opening brackets so the name will still display when the block is collapsed in my IDE :P
                 // partialDeck's declaration relies on the specific order of cards in fullDeck
                 fullDeck = [
-                    {
-                        name: "Vizier",
+                    {   name: "Vizier",
                         desc: "At any time you choose within one year of drawing this card, you can ask a question in meditation and mentally receive a truthful answer to that question. Besides information, the answer helps you solve a puzzling problem or other dilemma. In other words, the knowledge comes with wisdom on how to apply it.",
                         wildness: 0.4,
                         worth: 0.8
                     },
-                    {
-                        name: "Sun",
+                    {   name: "Sun",
                         desc: "You gain 50,000 XP, and a wondrous item (which the DM determines randomly) appears in your hands.",
                         noXPDesc: "You gain two levels, and a woundrous item (which the DM determines randomly) appears in your hands.",
                         noLevelDesc: "You gain a feat of your choice, and a woundrous item (which the DM determines randomly) appears in your hands.",
                         wildness: 0.7,
                         worth: 1.0
                     },
-                    {
-                        name: "Moon",
+                    {   name: "Moon",
                         desc: "You are granted the ability to cast the <i>wish</i> spell 1d3 times.",
                         wildness: 1.0,
                         worth: 1.0
                     },
-                    {
-                        name: "Star",
+                    {   name: "Star",
                         desc: "Increase one of your ability scores by 2. The score can exceed 20 but can't exceed 24.",
                         wildness: 0.0,
                         worth: 0.9
                     },
-                    {
-                        name: "Comet",
+                    {   name: "Comet",
                         desc: "If you single-handedly defeat the next hostile monster or group of monsters you encounter, you gain experience points enough to gain one level. Otherwise, this card has no effect.",
                         noXPDesc: "If you single-handedly defeat the next hostile monster or group of monsters you encounter, you gain one level. Otherwise, this card has no effect.",
                         noLevelDesc: "If you single-handedly defeat the next hostile monster or group of monsters you encounter, you have advantage on all ability checks made using one skill of your choice. Otherwise, this card has no effect.",
                         wildness: 0.4,
                         worth: 0.6
                     },
-                    {
-                        name: "The Fates",
+                    {   name: "The Fates",
                         desc: "Reality's fabric unravels and spins anew, allowing you to avoid or erase one event as if it never happened. You can use the card's magic as soon as you draw the card or at any other time before you die.",
                         wildness: 1.0,
                         worth: 1.0
                     },
-                    {
-                        name: "Throne",
+                    {   name: "Throne",
                         desc: "You gain proficiency in the Persuasion skill, and you double your proficiency bonus on checks made with that skill. In addition, you gain rightful ownership of a small keep somewhere in the world. However, the keep is currently in the hands of monsters, which you must clear out before you can claim the keep as yours.",
                         wildness: 0.3,
                         worth: 0.7
                     },
-                    {
-                        name: "Key",
+                    {   name: "Key",
                         desc: "A rare or rarer magic weapon with which you are proficient appears in your hands. The DM chooses the weapon.",
                         wildness: 0.2,
                         worth: 0.8
                     },
-                    {
-                        name: "Knight",
+                    {   name: "Knight",
                         desc: "You gain the service of a 4th-level fighter who appears in a space you choose within 30 feet of you. The fighter is of the same race as you and serves you loyally until death, believing the fates have drawn him or her to you. You control this character.",
                         wildness: 0.5,
                         worth: 0.8
                     },
-                    {
-                        name: "Gem",
+                    {   name: "Gem",
                         desc: "Twenty-five pieces of jewelry worth 2,000 gp each or fifty gems worth 1,000 gp each appear at your feet.",
                         wildness: 0.0,
                         worth: 0.7
                     },
-                    {
-                        name: "Talons",
+                    {   name: "Talons",
                         desc: "Every magic item you wear or carry disintegrates. Artifacts in your possession aren't destroyed but do vanish.",
                         wildness: 0.6,
                         worth: 0.1
                     },
-                    {
-                        name: "The Void",
+                    {   name: "The Void",
                         desc: "This black card spells disaster. Your soul is drawn from your body and contained in an object in a place of the DM's choice. One or more powerful beings guard the place. While your soul is trapped in this way, your body is incapacitated. A <i>wish</i> spell can't restore your soul, but the spell reveals the location of the object that holds it. You draw no more cards.",
                         drawsEffect: "nomore",
                         wildness: 1.0,
                         worth: 0.0
                     },
-                    {
-                        name: "Flames",
+                    {   name: "Flames",
                         desc: "A powerful devil becomes your enemy. The devil seeks your ruin and plagues your life, savoring your suffering before attempting to slay you. This enmity lasts until either you or the devil dies.",
                         wildness: 0.3,
                         worth: 0.3
                     },
-                    {
-                        name: "Skull",
+                    {   name: "Skull",
                         desc: "You summon an avatar of death&mdash;a ghostly humanoid skeleton clad in a tattered black robe and carrying a spectral scythe. It appears in a space of the DM's choice within 10 feet of you and attacks you, warning all others that you must win the battle alone. The avatar fights until you die or it drops to 0 hit points, whereupon it disappears. If anyone tries to help you, the helper summons its own avatar of death. A creature slain by an avatar of death can't be restored to life.",
                         wildness: 0.2,
                         worth: 0.4
                     },
-                    {
-                        name: "Idiot",
+                    {   name: "Idiot",
                         desc: "Permanently reduce your Intelligence by 1d4 + 1 (to a minimum score of 1). You can draw one additional card beyond your declared draws.",
                         drawsEffect: "optional",
                         draws: 1,
                         wildness: 0.2,
                         worth: 0.2
                     },
-                    {
-                        name: "Donjon",
+                    {   name: "Donjon",
                         desc: "You disappear and become entombed in a state of suspended animation in an extradimensional sphere. Everything you were wearing and carrying stays behind in the space you occupied when you disappeared. You remain imprisoned until you are found and removed from the sphere. You can't be located by any divination magic, but a <i>wish</i> spell can reveal the location of your prison. You draw no more cards.",
                         drawsEffect: "nomore",
                         wildness: 0.9,
                         worth: 0.0
                     },
-                    {
-                        name: "Ruin",
+                    {   name: "Ruin",
                         desc: "All forms of wealth that you carry or own, other than magic items, are lost to you. Portable property vanishes. Businesses, buildings, and land you own are lost in a way that alters reality the least. Any documentation that proves you should own something lost to this card also disappears.",
                         wildness: 0.5,
                         worth: 0.2
                     },
-                    {
-                        name: "Euryale",
+                    {   name: "Euryale",
                         desc: "The card's medusa-like visage curses you. You take a &minus;2 penalty on saving throws while cursed in this way. Only a god or the magic of The Fates card can end this curse.",
                         wildness: 0.3,
                         worth: 0.1
                     },
-                    {
-                        name: "Rogue",
+                    {   name: "Rogue",
                         desc: "A nonplayer character of the DM's choice becomes hostile toward you. The identity of your new enemy isn't known until the NPC or someone else reveals it. Nothing less than a <i>wish</i> spell or divine intervention can end the NPC's hostility toward you.",
                         wildness: 0.1,
                         worth: 0.4
                     },
-                    {
-                        name: "Balance",
+                    {   name: "Balance",
                         desc: "Your mind suffers a wrenching alteration, causing your alignment to change. Lawful becomes chaotic, good becomes evil, and vice versa. If you are true neutral or unaligned, this card has no effect on you.",
                         wildness: 0.5,
                         worth: 0.4
                     },
-                    {
-                        name: "Fool",
+                    {   name: "Fool",
                         desc: "You lose 10,000 XP, discard this card, and draw from the deck again, counting both draws as one of your declared draws. If losing that much XP would cause you to lose a level, you instead lose an amount that leaves you with just enough XP to keep your level.",
                         noXPDesc: "You have disadvantage on all ability checks made using one skill of the DM's choice. Discard this card and draw from the deck again, counting both draws as one of your declared draws.",
                         drawsEffect: "forced",
@@ -217,8 +208,7 @@
                         wildness: 0.2,
                         worth: 0.3
                     },
-                    {
-                        name: "Jester",
+                    {   name: "Jester",
                         desc: "You gain 10,000 XP, or you can draw two additional cards beyond your declared draws.",
                         noXPDesc: "You gain one level, or you can draw two additional cards beyond your declared draws.",
                         noLevelDesc: "You gain proficiency in two skills of your choice, or you can draw two additional cards beyond your declared draws.",
@@ -247,62 +237,52 @@
                 ];
                 
                 homebrewDeck = [
-                    {
-                        name: "Changeling",
+                    {   name: "Changeling",
                         desc: "Your body crumbles to dust, which immediately reconstitutes itself into a new body for you. Roll on the Reincarnate Races table from the <i>reincarnate</i> spell to determine your new race. Your racial traits change accordingly.",
                         wildness: 0.4,
                         worth: 0.4
                     },
-                    {
-                        name: "Initiate",
+                    {   name: "Initiate",
                         desc: "You learn two cantrips of your choice from any spell list. Your spellcasting ability for these spells is Intelligence, Wisdom, or Charisma (choose when you draw this card).",
                         wildness: 0.2,
                         worth: 0.8
                     },
-                    {
-                        name: "Torchbearer",
+                    {   name: "Torchbearer",
                         desc: "All items you are wearing or carrying begin glowing as if affected by a <i>light</i> cantrip that lasts until dispelled.",
                         wildness: 0.0,
                         worth: 0.5
                     },
-                    {
-                        name: "Superbia",
+                    {   name: "Superbia",
                         desc: "Permanently increase your highest ability score by 3, to a maximum of 30. If multiple ability scores tie for your highest, choose one to increase. Permanently reduce all your other ability scores by 1, to a minimum of 1.",
                         wildness: 0.3,
                         worth: 0.4
                     },
-                    {
-                        name: "Thief",
+                    {   name: "Thief",
                         desc: "One of your valuable possessions (chosen by the DM) vanishes and reappears in the possession of one of your enemies.",
                         wildness: 0.2,
                         worth: 0.3
                     },
-                    {
-                        name: "Nightmare",
+                    {   name: "Nightmare",
                         desc: "You are stricken with a recurring nightmare. When you finish a long rest, the hit points you regain can't exceed half your hit point maximum, and you regain only one-fourth of your spent Hit Dice (minimum of one die). If you don't need to sleep, this card has no effect.",
                         wildness: 0.3,
                         worth: 0.3
                     },
-                    {
-                        name: "Ferryman",
+                    {   name: "Ferryman",
                         desc: "Your connection to mortality weakens. Whenever you drop to 0 hit points, you immediately fail one death saving throw.",
                         wildness: 0.1,
                         worth: 0.2
                     },
-                    {
-                        name: "Wailing",
+                    {   name: "Wailing",
                         desc: "When you draw this card, you drop to 0 hit points.",
                         wildness: 0.1,
                         worth: 0.2
                     },
-                    {
-                        name: "Fairy",
+                    {   name: "Fairy",
                         desc: "You gain the benefits of a long rest, your exhaustion level is reduced to 0, and you end all effects that reduce your hit point maximum or ability scores. All curses affecting you are lifted, including your attunement to cursed magic items.",
                         wildness: 0.4,
                         worth: 0.8
                     },
-                    {
-                        name: "Lottery",
+                    {   name: "Lottery",
                         desc: "A common magic item (chosen by the DM) appears in your hands, or you can draw five additional cards beyond your declared draws. If you choose to draw the additional cards, you can negate one card's effect when you draw it.",
                         drawsEffect: "optional",
                         draws: 5,
@@ -311,193 +291,173 @@
                         wildness: 0.5,
                         worth: 0.6
                     },
-                    {
-                        name: "Lycanthrope",
-                        desc: "At the next dusk after you draw this card, you transform as if affected by the <i>Polymorph</i> spell. The DM chooses the beast you turn into and controls you while you're transformed, as you're driven to kill every creature you encounter. At the end of each hour until the following dawn, you regain 1 hit point, then transform again.",
+                    {   name: "Lycanthrope",
+                        desc: "At the next dusk after you draw this card, you transform as if affected by the <i>polymorph</i> spell. The DM chooses the beast you turn into and controls you while you're transformed, as you're driven to kill every creature you encounter. At the end of each hour until the following dawn, you regain 1 hit point, then transform again.",
                         wildness: 0.5,
                         worth: 0.3
                     },
-                    {
-                        name: "Leylines",
+                    {   name: "Leylines",
                         desc: "Choose any spell, and choose Intelligence, Wisdom, or Charisma as your spellcasting ability for it. You can cast the spell once without spending a spell slot. When you cast it, roll a d20. If the spell level is less than the result, you regain the ability to cast it when you next finish a long rest.",
                         wildness: 1.0,
                         worth: 1.0
                     },
-                    {
-                        name: "Vessel",
+                    {   name: "Vessel",
                         desc: "The magic of this card suffuses you. You gain experience points enough to gain a level, and the level must be gained in the sorcerer class (even if you don't meet the ability score requirements for multiclassing).",
                         noXPDesc: "The magic of this card suffuses you. You gain a level in the sorcerer class (even if you don't meet the ability score requirements for multiclassing).",
                         noLevelDesc: "The magic of this card suffuses you. You learn four cantrips and two 1st-level spells from the sorcerer spell list. You can cast each 1st-level spell once without spending a spell slot, and you regain the ability to do so when you finish a long rest. You can also cast them with any spell slots you have. Charisma is your spellcasting ability for these spells.",
                         wildness: 0.8,
                         worth: 0.9
                     },
-                    {
-                        name: "Medic",
+                    {   name: "Medic",
                         desc: "You gain the ability to cast the <i>power word heal</i> spell 3 times. You can't target yourself with it.",
                         wildness: 0.8,
                         worth: 1.0
                     },
-                    {
-                        name: "Nova",
+                    {   name: "Nova",
                         desc: "Choose a 1st- or 2nd-level spell from any spell list, and choose Intelligence, Wisdom, or Charisma as your spellcasting ability for it. You can cast the spell once as a 13th-level spell.",
                         wildness: 0.7,
                         worth: 1.0
                     },
-                    {
-                        name: "Doldrums",
+                    {   name: "Doldrums",
                         desc: "You gain a level of exhaustion. Rest can't reduce your exhaustion level below 1. If your exhaustion level is reduced to 0 another way, you regain a level of exhaustion after 24 hours.",
                         wildness: 0.4,
                         worth: 0.2
                     },
-                    {
-                        name: "Inquisitor",
+                    {   name: "Inquisitor",
                         desc: "When you ask a yes-or-no question, you can force a creature that hears and understands it to give you a truthful answer, to the best of its knowledge. You can use this ability only once.",
                         wildness: 0.2,
                         worth: 0.9
                     },
-                    {
-                        name: "Oaf",
+                    {   name: "Oaf",
                         desc: "Choose two skills with which you are proficient. You have a &minus;5 penalty to all checks you make with those skills. The penalty can be removed only by a <i>wish</i> spell or divine intervention.",
                         wildness: 0.5,
                         worth: 0.1
                     },
-                    {
-                        name: "Forget-Me-Not",
+                    {   name: "Forget-Me-Not",
                         desc: "At some point within the next 7 days, an NPC who is friendly to you dies by sickness, old age, or an accident. You can draw one additional card beyond your declared draws.",
                         drawsEffect: "optional",
                         draws: 1,
                         wildness: 0.5,
                         worth: 0.4
                     },
-                    {
-                        name: "Ventriloquist",
+                    {   name: "Ventriloquist",
                         desc: "You learn the <i>minor illusion</i> cantrip. When you create a sound with it, you can cast it without any components.",
                         wildness: 0.0,
                         worth: 0.8
                     },
-                    {
-                        name: "Sphinx",
+                    {   name: "Sphinx",
                         desc: "You learn an important secret, but the knowledge comes in the form of a cryptic message or riddle. The information is accurate but is steeped in metaphor or otherwise difficult to understand.",
                         wildness: 0.3,
                         worth: 0.7
                     },
-                    {
-                        name: "Daisy",
+                    {   name: "Daisy",
                         desc: "Five creatures appear in the nearest unoccupied spaces to you. Each is a fey with a challenge rating no higher than 2. The DM determines how each creature acts: it may attack, flee, help you, or do something else.",
                         wildness: 0.2,
                         worth: 0.5
                     },
-                    {
-                        name: "Miner",
+                    {   name: "Miner",
                         desc: "A single block of gold worth 30,000 gp appears in the nearest unoccupied space. The gold weighs 700 pounds.",
                         wildness: 0.1,
                         worth: 0.7
                     },
-                    {
-                        name: "Gunpowder",
+                    {   name: "Gunpowder",
                         desc: "This card explodes when you draw it. You must make a DC 18 Dexterity saving throw. You take 10d8 fire damage on a failed save, or half as much damage on a successful one.",
                         reappears: false,
                         wildness: 0.2,
                         worth: 0.1
                     },
-                    {
-                        name: "Harbinger",
+                    {   name: "Harbinger",
                         desc: "Three tarrasques appear in unoccupied spaces within 1 mile of you. The tarrasques always know where you are. They disappear after 3d4 days if they are not killed before then.",
                         wildness: 1.0,
                         worth: 0.0
                     },
-                    {
-                        name: "The Deep",
+                    {   name: "The Deep",
                         desc: "Your body becomes adapted to life underwater. You gain a swimming speed of 60 feet and can breathe air and water. You can't benefit from a long rest unless you spend at least 1 hour of it fully submersed in water.",
                         wildness: 0.3,
                         worth: 0.5
                     },
-                    {
-                        name: "Lecture",
+                    {   name: "Lecture",
                         desc: "Your Intelligence score increases by 10 (to a maximum of 30), and your Strength score is reduced by 10 (to a minimum of 1). This effect lasts 2d4 days.",
                         wildness: 0.3,
                         worth: 0.4
                     },
-                    {
-                        name: "The Bitter Cold",
+                    {   name: "The Bitter Cold",
                         desc: "This card curses to feel as though you're exposed to extreme cold. While cursed in this way, you are vulnerable to cold damage, and you must make a DC 10 Constitution saving throw at the end of each hour, gaining a level of exhaustion on a failed save.",
                         wildness: 0.4,
                         worth: 0.1
                     },
-                    {
-                        name: "Summons",
+                    {   name: "Summons",
                         desc: "When you draw this card, you can name or describe one creature which is not within 1 mile of you. The creature appears in the nearest unoccupied space to you, even if it was on another plane of existence. If you don't summon a creature, you must draw one additional card beyond your declared draws.",
                         drawsEffect: "optional",
                         draws: 1,
                         wildness: 0.4,
                         worth: 0.6
                     },
-                    {
-                        name: "Connection",
+                    {   name: "Connection",
                         desc: "You can cast the <i>detect thoughts</i> spell once without expending a spell slot, and you regain the ability to do so when you finish a long rest. When you cast it in this way, creatures you focus on automatically know you are probing into their minds, and they can read your mind in the same way for as long as you focus on them.",
                         wildness: 0.4,
                         worth: 0.6
                     },
-                    {
-                        name: "The Lost",
+                    {   name: "The Lost",
                         desc: "You vanish from your current plane of existence, leaving the deck behind, and appear in the Ethereal Plane. While there, you can't cast spells that would bring you to another plane. You can see and hear the plane you originated from, which is cast in shades of gray, out to a range of 60 feet. You can only affect and be affected by other creatures on the Ethereal Plane. Creatures that aren't there can't perceive you or interact with you, unless they have the ability to do so. You draw no more cards.",
                         drawsEffect: "nomore",
                         wildness: 0.8,
                         worth: 0.1
                     },
-                    {
-                        name: "Martyr",
+                    {   name: "Martyr",
                         desc: "You can cast the <i>wish</i> spell once without using a spell slot, and you regain the ability to do so when you finish a long rest. When you cast <i>wish</i> in this way, you drop to 0 hit points and immediately roll all of your death saving throws until you die or become stable. If you die as a result, you can't be brought back to life.",
                         wildness: 0.9,
                         worth: 0.9
                     },
-                    {
-                        name: "Golem",
+                    {   name: "Golem",
                         desc: "You lose your ability to feel pain. The DM tracks your hit points for you; you must use an action to make a DC 13 Wisdom (Medicine) check to learn your current number of hit points. Additionally, being at 0 hit points doesn't render you unconscious while you are in combat, and the DM rolls your death saving throws in secret.",
                         wildness: 0.6,
                         worth: 0.4
                     },
-                    {
-                        name: "The Unsung",
+                    {   name: "The Unsung",
                         desc: "Your identity is lost from the world. Every creature who has ever known or met you forgets that they have, and all evidence of your existence before you drew this card is erased. Only a god or the magic of The Fates card can restore the memories and evidence of your existence.",
                         wildness: 0.9,
                         worth: 0.1
                     },
-                    {
-                        name: "Altar",
+                    {   name: "Altar",
                         desc: "This card demands sacrifice. Choose one or more things to forfeit; they can be possessions, memories, abilities, or anything else that is yours to give up. Whatever you choose is lost to you. If the DM deems the sacrifice insufficient, you must keep making sacrifices until you have lost enough. The DM determines how much is enough; a sacrifice equivalent to two or three of the character's most valuable possessions is typically enough.",
                         wildness: 0.8,
                         worth: 0.1
                     },
-                    {
-                        name: "Aegis",
+                    {   name: "Aegis",
                         desc: "You gain proficiency with shields, and an <i>animated shield</i> appears at your feet. When you activate it, and as a bonus action while it is animated, you can choose a creature within 60 feet of you and cause the shield to move to and protect that creature.",
                         wildness: 0.3,
                         worth: 0.9
                     },
-                    {
-                        name: "Feast",
+                    {   name: "Feast",
                         desc: "You are cured of all diseases and poison, become immune to poison and being frightened, and make all Wisdom saving throws with advantage. Your hit point maximum increases by 2d10, and you gain the same number of hit points.",
                         wildness: 0.8,
                         worth: 1.0
                     },
-                    {
-                        name: "Famine",
+                    {   name: "Famine",
                         desc: "You lose any immunity or resistance you have to poison and disease. You are vulnerable to poison damage and have disadvantage on saving throws against poison, disease, and the frightened condition. Your hit point maximum decreases by 2d10, to a minimum of 1.",
                         wildness: 0.7,
                         worth: 0.0
                     },
-                    {
-                        name: "Liar",
+                    {   name: "Liar",
                         desc: "You automatically fail any ability check you make to discern an illusion and any saving throw you make against an illusion spell.",
                         wildness: 0.4,
                         worth: 0.1
                     },
-                    {
-                        name: "Obol",
+                    {   name: "Obol",
                         desc: "You gain proficiency in death saving throws. You can't become undead after you die. Unless you are willing, you can't be sent to another plane of existence, and your soul can't be removed from your body by any means except death. With a touch, you can transfer all of this card's effects to another creature that isn't a construct or undead; you no longer have the effects if you do this.",
                         wildness: 0.2,
                         worth: 0.7
+                    },
+                    {   name: "Hummingbird",
+                        desc: "You gain an extra reaction you can take each round. This extra reaction can't be used on the same turn that you use your normal reaction, and you can't use it to take an action you prepared with the Ready action.",
+                        wildness: 0.3,
+                        worth: 0.8
+                    },
+                    {   name: "Blood",
+                        desc: "Whenever you take damage, you can reduce the damage by any amount. When you do, your hit point maximum is permanently reduced by one-fourth of that amount (rounded up). You die if your hit point maximum is reduced to zero",
+                        wildness: 0.5,
+                        worth: 0.6
                     }
                 ];
                 
@@ -982,7 +942,9 @@
 
                     let cardDiv = createElement("div");
                     cardDiv.className = "drawnCard";
-                    cardDiv.appendChild(createElement("h3", undefined, card.name));
+                    let cardName = createElement("h3", undefined, card.name);
+                    cardName.className = "drawnCardName";
+                    cardDiv.appendChild(cardName);
                     cardDiv.appendChild(createElement("p", undefined, card.desc));
                     l("drawnCards").appendChild(cardDiv);
 
