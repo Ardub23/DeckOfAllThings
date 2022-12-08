@@ -75,6 +75,7 @@
             function init() {
                 setDeckType();
                 setDeclaredDraws();
+                vetoes = 0;
 
                 // partialDeck's declaration relies on the specific order of cards in fullDeck
                 fullDeck = [
@@ -265,8 +266,8 @@
                         worth: 0.5
                     },
                     {
-                        name: "Focus",
-                        desc: "Increase your highest ability score by 2, to a maximum of 30. If multiple ability scores tie for your highest, choose one to increase. Reduce all your other ability scores by 1, to a minimum of 1. The reduced scores can only be restored by magic, and if they are, the increased score is also restored to its previous value.",
+                        name: "Superbia",
+                        desc: "Permanently increase your highest ability score by 3, to a maximum of 30. If multiple ability scores tie for your highest, choose one to increase. Permanently reduce all your other ability scores by 1, to a minimum of 1.",
                         wildness: 0.3,
                         worth: 0.4
                     },
@@ -305,6 +306,7 @@
                         desc: "A common magic item (chosen by the DM) appears in your hands, or you can draw five additional cards beyond your declared draws. If you choose to draw the additional cards, you can negate one card's effect when you draw it.",
                         drawsEffect: "optional",
                         draws: 5,
+                        onDrawMore: function() {vetoes += 1;},
                         reappears: false,
                         wildness: 0.5,
                         worth: 0.6
@@ -326,7 +328,7 @@
                         desc: "The magic of this card suffuses you. You gain experience points enough to gain a level, and the level must be gained in the sorcerer class (even if you don't meet the ability score requirements for multiclassing).",
                         noXPDesc: "The magic of this card suffuses you. You gain a level in the sorcerer class (even if you don't meet the ability score requirements for multiclassing).",
                         noLevelDesc: "The magic of this card suffuses you. You learn four cantrips and two 1st-level spells from the sorcerer spell list. You can cast each 1st-level spell once without spending a spell slot, and you regain the ability to do so when you finish a long rest. You can also cast them with any spell slots you have. Charisma is your spellcasting ability for these spells.",
-                        wildness: 0.9,
+                        wildness: 0.8,
                         worth: 0.9
                     },
                     {
@@ -369,7 +371,7 @@
                     },
                     {
                         name: "Ventriloquist",
-                        desc: "You can speak without moving your lips, and you can cause your voice to seemingly originate from any point within 30 feet of you that isn't behind total cover.",
+                        desc: "You learn the <i>minor illusion</i> cantrip. When you create a sound with it, you can cast it without any components.",
                         wildness: 0.0,
                         worth: 0.8
                     },
@@ -378,6 +380,124 @@
                         desc: "You learn an important secret, but the knowledge comes in the form of a cryptic message or riddle. The information is accurate but is steeped in metaphor or otherwise difficult to understand.",
                         wildness: 0.3,
                         worth: 0.7
+                    },
+                    {
+                        name: "Daisy",
+                        desc: "Five creatures appear in the nearest unoccupied spaces to you. Each is a fey with a challenge rating no higher than 2. The DM determines how each creature acts: it may attack, flee, help you, or do something else.",
+                        wildness: 0.2,
+                        worth: 0.5
+                    },
+                    {
+                        name: "Miner",
+                        desc: "A single block of gold worth 30,000 gp appears in the nearest unoccupied space. The gold weighs 700 pounds.",
+                        wildness: 0.1,
+                        worth: 0.7
+                    },
+                    {
+                        name: "Gunpowder",
+                        desc: "This card explodes when you draw it. You must make a DC 18 Dexterity saving throw. You take 10d8 fire damage on a failed save, or half as much damage on a successful one.",
+                        reappears: false,
+                        wildness: 0.2,
+                        worth: 0.1
+                    },
+                    {
+                        name: "Harbinger",
+                        desc: "Three tarrasques appear in unoccupied spaces within 1 mile of you. The tarrasques always know where you are. They disappear after 3d4 days if they are not killed before then.",
+                        wildness: 1.0,
+                        worth: 0.0
+                    },
+                    {
+                        name: "The Deep",
+                        desc: "Your body becomes adapted to life underwater. You gain a swimming speed of 60 feet and can breathe air and water. You can't benefit from a long rest unless you spend at least 1 hour of it fully submersed in water.",
+                        wildness: 0.3,
+                        worth: 0.5
+                    },
+                    {
+                        name: "Lecture",
+                        desc: "Your Intelligence score increases by 10 (to a maximum of 30), and your Strength score is reduced by 10 (to a minimum of 1). This effect lasts 2d4 days.",
+                        wildness: 0.3,
+                        worth: 0.4
+                    },
+                    {
+                        name: "The Bitter Cold",
+                        desc: "This card curses to feel as though you're exposed to extreme cold. While cursed in this way, you are vulnerable to cold damage, and you must make a DC 10 Constitution saving throw at the end of each hour, gaining a level of exhaustion on a failed save.",
+                        wildness: 0.4,
+                        worth: 0.1
+                    },
+                    {
+                        name: "Summons",
+                        desc: "When you draw this card, you can name or describe one creature which is not within 1 mile of you. The creature appears in the nearest unoccupied space to you, even if it was on another plane of existence. If you don't summon a creature, you must draw one additional card beyond your declared draws.",
+                        drawsEffect: "optional",
+                        draws: 1,
+                        wildness: 0.4,
+                        worth: 0.6
+                    },
+                    {
+                        name: "Connection",
+                        desc: "You can cast the <i>detect thoughts</i> spell once without expending a spell slot, and you regain the ability to do so when you finish a long rest. When you cast it in this way, creatures you focus on automatically know you are probing into their minds, and they can read your mind in the same way for as long as you focus on them.",
+                        wildness: 0.4,
+                        worth: 0.6
+                    },
+                    {
+                        name: "The Lost",
+                        desc: "You vanish from your current plane of existence, leaving the deck behind, and appear in the Ethereal Plane. While there, you can't cast spells that would bring you to another plane. You can see and hear the plane you originated from, which is cast in shades of gray, out to a range of 60 feet. You can only affect and be affected by other creatures on the Ethereal Plane. Creatures that aren't there can't perceive you or interact with you, unless they have the ability to do so. You draw no more cards.",
+                        drawsEffect: "nomore",
+                        wildness: 0.8,
+                        worth: 0.1
+                    },
+                    {
+                        name: "Martyr",
+                        desc: "You can cast the <i>wish</i> spell once without using a spell slot, and you regain the ability to do so when you finish a long rest. When you cast <i>wish</i> in this way, you drop to 0 hit points and immediately roll all of your death saving throws until you die or become stable. If you die as a result, you can't be brought back to life.",
+                        wildness: 0.9,
+                        worth: 0.9
+                    },
+                    {
+                        name: "Golem",
+                        desc: "You lose your ability to feel pain. The DM tracks your hit points for you; you must use an action to make a DC 13 Wisdom (Medicine) check to learn your current number of hit points. Additionally, being at 0 hit points doesn't render you unconscious while you are in combat, and the DM rolls your death saving throws in secret.",
+                        wildness: 0.6,
+                        worth: 0.4
+                    },
+                    {
+                        name: "The Unsung",
+                        desc: "Your identity is lost from the world. Every creature who has ever known or met you forgets that they have, and all evidence of your existence before you drew this card is erased. Only a god or the magic of The Fates card can restore the memories and evidence of your existence.",
+                        wildness: 0.9,
+                        worth: 0.1
+                    },
+                    {
+                        name: "Altar",
+                        desc: "This card demands sacrifice. Choose one or more things to forfeit; they can be possessions, memories, abilities, or anything else that is yours to give up. Whatever you choose is lost to you. If the DM deems the sacrifice insufficient, you must keep making sacrifices until you have lost enough. The DM determines how much is enough; a sacrifice equivalent to two or three of the character's most valuable possessions is typically enough.",
+                        wildness: 0.8,
+                        worth: 0.1
+                    },
+                    {
+                        name: "Aegis",
+                        desc: "You gain proficiency with shields, and an <i>animated shield</i> appears at your feet. When you activate it, and as a bonus action while it is animated, you can choose a creature within 60 feet of you and cause the shield to move to and protect that creature.",
+                        wildness: 0.3,
+                        worth: 0.9
+                    },
+                    {
+                        name: "Feast",
+                        desc: "You are cured of all diseases and poison, become immune to poison and being frightened, and make all Wisdom saving throws with advantage. Your hit point maximum increases by 2d10, and you gain the same number of hit points.",
+                        wildness: 0.8,
+                        worth: 1.0
+                    },
+                    {
+                        name: "Famine",
+                        desc: "You lose any immunity or resistance you have to poison and disease. You are vulnerable to poison damage and have disadvantage on saving throws against poison, disease, and the frightened condition. Your hit point maximum decreases by 2d10, to a minimum of 1.",
+                        wildness: 0.7,
+                        worth: 0.0
+                    },
+                    {
+                        name: "Liar",
+                        desc: "You automatically fail any ability check you make to discern an illusion and any saving throw you make against an illusion spell.",
+                        wildness: 0.4,
+                        worth: 0.1
+                    },
+                    {
+                        name: "Obol",
+                        desc: "You gain proficiency in death saving throws. You can't become undead after you die. Unless you are willing, you can't be sent to another plane of existence, and your soul can't be removed from your body by any means except death. With a touch, you can transfer all of this card's effects to another creature that isn't a construct or undead; you no longer have the effects if you do this.",
+                        wildness: 0.2,
+                        worth: 0.7
                     }
                 ];
                 
@@ -385,6 +505,18 @@
                 l("allDeckOption").innerHTML = "an expanded homebrew deck (" + (fullDeck.length + homebrewDeck.length) + " cards)";
 
                 lastCard = {};
+            }
+
+            function analyzeDeck(arr) {
+                let wildSum = 0, worthSum = 0;
+                for (i in arr) {
+                    if (arr[i]) {
+                        if (arr[i].wildness !== undefined) wildSum += arr[i].wildness;
+                        if (arr[i].worth !== undefined) worthSum += arr[i].worth;
+                    }
+                }
+                console.log("Wildness: " + (wildSum / arr.length));
+                console.log("Worth: " + (worthSum / arr.length));
             }
 
             function l(id) {
@@ -719,6 +851,7 @@
                 // Generates the deck according to the customization parameters
                 l("customMenu").hidden = true;
 
+                // Start with (a copy of) the deck to use
                 switch (custCardSrc) {
                     case "partial":
                         deck = [...partialDeck];
@@ -734,12 +867,13 @@
                         break;
                 }
 
+                // Filter by wildness
                 if (custWildBias == "weak") {
                     deck = deck.filter(x => fits(x.wildness, custWildVal, 1.5));
                 } else if (custWildBias == "strong") {
                     deck = deck.filter(x => fits(x.wildness, custWildVal, 3));
                 }
-
+                // Filter by worth
                 if (custWorthBias == "weak") {
                     deck = deck.filter(x => fits(x.worth, custWorthVal, 1.5));
                 } else if (custWorthBias == "strong") {
@@ -762,6 +896,9 @@
             }
 
             function fits(val, target, strictness) {
+                // Don't reject a undefined val as unfitting
+                if (val === undefined) return true;
+
                 // The closer val is to target, the more likely it is that true will be returned.
                 // When val == target, the probability is 1.
                 // High strictness makes the probability drop off quickly as val and target differ.
@@ -808,8 +945,27 @@
                 } else {
                     var drawingNode = createElement("div", "drawingNode");
                     drawingNode.appendChild(createElement("div", "drawnCards"));
-                    drawingNode.appendChild(createElement("div", "drawingFooter"));
-                    
+
+                    let drawingFooter = createElement("div", "drawingFooter");
+
+                    let proceedNode = createElement("div", "proceedNode");
+
+                    let proceedLabel = createElement("div", "proceedLabel");
+                    // innerHTML is set or updated later to reflect # of cards
+                    proceedNode.appendChild(proceedLabel);
+
+                    let buttonHolder = createElement("p", "proceedButtonHolder");
+                    buttonHolder.appendChild(createButton("drawMoreButton", function(){
+                        declaredDraws += lastCard.draws;
+                        if (lastCard.onDrawMore) lastCard.onDrawMore();
+                        draw();
+                    }, "Yes"));
+                    buttonHolder.appendChild(createButton("proceedButton", function() {lastCard = {}; draw();}, "Proceed"));
+                    buttonHolder.appendChild(createButton("noMoreButton", function() {declaredDraws = 0;}, "No"));
+                    proceedNode.appendChild(buttonHolder);
+
+                    drawingFooter.appendChild(proceedNode);
+                    drawingNode.appendChild(drawingFooter);
                     document.body.appendChild(drawingNode);
                 }
 
@@ -824,66 +980,53 @@
                         deck.splice(cardIndex, 1);
                     }
 
-                    l("drawnCards").appendChild(createElement("h3", undefined, card.name));
-                    l("drawnCards").appendChild(createElement("p", undefined, card.desc));
+                    let cardDiv = createElement("div");
+                    cardDiv.className = "drawnCard";
+                    cardDiv.appendChild(createElement("h3", undefined, card.name));
+                    cardDiv.appendChild(createElement("p", undefined, card.desc));
+                    l("drawnCards").appendChild(cardDiv);
 
                     declaredDraws -= 1;
-
-                    if (card.drawsEffect == "nomore") {
-                        declaredDraws = 0;
-                    } else if (card.drawsEffect == "forced") {
+                    if (card.drawsEffect == "forced") {
                         declaredDraws += card.draws;
                     }
+                }
 
-                    if ((declaredDraws > 0 && deck.length > 0) || card.draws) {
-                        // Create the proccedNode, if it doesn't exist already
-                        if (l("proceedNode")) {
-                            l("proceedNode").hidden = false;
-                        } else {
-                            let proceedNode = createElement("div", "proceedNode");
-
-                            let proceedLabel = createElement("div", "proceedLabel");
-                            // innerHTML is set or updated later to reflect # of cards
-                            proceedNode.appendChild(proceedLabel);
-
-                            let buttonHolder = createElement("p");
-                            buttonHolder.appendChild(createButton("drawMoreButton", function(){declaredDraws += card.draws; draw();}, "Yes"));
-                            buttonHolder.appendChild(createButton("proceedButton", draw, "Proceed"));
-                            proceedNode.appendChild(buttonHolder);
-
-                            l("drawingFooter").appendChild(proceedNode);
-                        }
-
-                        if (card.drawsEffect == "optional") {
-                            // "Proceed" button becomes "no" option (don't draw extra cards, just move on)
-                            l("proceedLabel").innerHTML = "Will you draw " + card.draws + " additional " + cardOrCards(card.draws) + "?";
-                            l("drawMoreButton").hidden = false;
-                            l("proceedButton").innerHTML = "No";
-                        } else {
-                            l("proceedLabel").innerHTML = "You have " + declaredDraws + " " + cardOrCards(declaredDraws) + " left to draw.";
+                if (deck.length > 0) {
+                    let cardsLeftStr = "You have " + declaredDraws + " " + cardOrCards(declaredDraws) + " left to draw";
+                    if (lastCard.drawsEffect == "nomore") {
+                        if (vetoes > 0) {
+                            vetoes -= 1;
+                            l("proceedLabel").innerHTML = "Negate this card and continue drawing anyway? (" + cardsLeftStr + " if you do.)";
+                            l("proceedButton").innerHTML = "Yes"; // Continue drawing as normal
                             l("drawMoreButton").hidden = true;
-                            l("proceedButton").innerHTML = "Proceed";
+                            l("noMoreButton").hidden = false;
+                        } else {
+                            declaredDraws = 0;
                         }
-
-                        // l("drawnCards").appendChild(l("proceedNode"));
+                    } else {
+                        l("noMoreButton").hidden = true; // can't stop won't stop
                     }
-                }
-                
-                if (deck.length == 0 && declaredDraws > 0) {
-                    // Tell them why they can't draw more cards: there are none
-                    let noCardsMsg = document.createElement("p");
-                    noCardsMsg.innerHTML = "There are no cards left in the deck.";
-                    l("drawnCards").appendChild(noCardsMsg);
-                }
 
-                if (deck.length == 0 || declaredDraws <= 0) {
                     if (lastCard.drawsEffect == "optional") {
-                        // Just drew a card that allows extra draws.
-                        // Let them choose whether to draw more, but if they choose no, don't still treat them like they just drew the last card.
-                        lastCard = {};
-                    } else if (l("proceedNode")) {
-                        // No more draws (and no option to draw more); all done
+                        // "Proceed" button becomes "no" option (don't draw extra cards, just move on)
+                        l("proceedLabel").innerHTML = cardsLeftStr + ". Will you draw " + lastCard.draws + " additional " + cardOrCards(lastCard.draws) + "?";
+                        l("drawMoreButton").hidden = false;
+                        l("proceedButton").innerHTML = "No";
+                    } else if (declaredDraws > 0) {
+                        l("proceedLabel").innerHTML = "You have " + declaredDraws + " " + cardOrCards(declaredDraws) + " left to draw.";
+                        l("drawMoreButton").hidden = true;
+                        l("proceedButton").innerHTML = "Proceed";
+                    } else {
                         l("proceedNode").hidden = true;
+                    }
+                } else {
+                    // Deck is empty
+                    l("proceedButtonHolder").hidden = true; // go away buttons
+
+                    if (declaredDraws > 0 || lastCard.drawsEffect == "optional") {
+                        // Tell them why they can't draw more cards: there are none
+                        l("drawingFooter").innerHTML = "There are no cards left in the deck.";
                     }
                 }
             }
