@@ -64,10 +64,7 @@
 
         <div id="initialConfig">
             <p>
-                <label id="declaredDrawsInputLabel" for="declaredDrawsInput">Draw </label>
-                <input class="numInput" id="declaredDrawsInput" type="number" value=1 min=1 onchange="setDeclaredDraws()" />
-
-                <label id="deckTypeSelectorLabel" for="deckTypeSelector"> card from </label>
+                <label id="deckTypeSelectorLabel" for="deckTypeSelector">Before you sits&hellip;</label>
                 <select id="deckTypeSelector" name="deckTypeSelector" onchange="setDeckType()">
                     <option value="random">a mysterious deck (13 or 22 cards)</option>
                     <option value="partial">a partial deck (13 cards)</option>
@@ -75,7 +72,12 @@
                     <option value="all" id="allDeckOption">an expanded homebrew deck</option>
                     <option value="custom">a customized deck&hellip;</option>
                     <option value="fullCustom">a deck of fully customized cards&hellip;</option>
+                    <option value="imported">a deck you've previously exported&hellip;</option>
                 </select>
+            </p>
+            <p id="declaredDrawsNode">
+                <label id="declaredDrawsInputLabel" for="declaredDrawsInput">How many cards will you draw?</label>
+                <input class="numInput" id="declaredDrawsInput" type="number" value=1 min=1 onchange="setDeclaredDraws()" />
             </p>
             <button id="drawButton" type="button" onclick="readyDeck()">Begin</button>
             
@@ -87,6 +89,8 @@
                 setDeckType();
                 setDeclaredDraws();
                 vetoes = 0;
+                deck = [];
+                lastCard = {};
 
                 // I took out the linebreaks after the opening brackets so the name will still display when the block is collapsed in my IDE :P
                 // partialDeck's declaration relies on the specific order of cards in fullDeck
@@ -387,10 +391,8 @@
                         worth: 0.1
                     },
                     {   name: "Summons",
-                        desc: "When you draw this card, you can name or describe one creature which is not within 1 mile of you. The creature appears in the nearest unoccupied space to you, even if it was on another plane of existence. If you don't summon a creature, you must draw one additional card beyond your declared draws.",
-                        drawsEffect: "optional",
-                        draws: 1,
-                        wildness: 0.4,
+                        desc: "Once within the next 30 days, you can name or describe one creature. The creature appears in the nearest unoccupied space to you, even if it was on another plane of existence. If you use a broad description that matches more than one creature (such as \"a human blacksmith\"), the nearest one is summoned.",
+                        wildness: 0.5,
                         worth: 0.6
                     },
                     {   name: "Connection",
@@ -445,7 +447,7 @@
                         worth: 0.1
                     },
                     {   name: "Obol",
-                        desc: "You gain proficiency in death saving throws. You can't become undead after you die. Unless you are willing, you can't be sent to another plane of existence, and your soul can't be removed from your body by any means except death. With a touch, you can transfer all of this card's effects to another creature that isn't a construct or undead; you no longer have the effects if you do this.",
+                        desc: "You gain proficiency in death saving throws. You can't become undead after you die. Unless you are willing, you can't be sent to another plane of existence, and your soul can't be removed from your body by any means except death. With a touch, you can transfer all of this card's effects to another creature; you no longer have the effects if you do this. If you are a construct or undead, you don't gain this card's benefits, but you can still transfer them to another creature.",
                         wildness: 0.2,
                         worth: 0.7
                     },
@@ -463,8 +465,6 @@
                 
                 // Reflect how many cards are in the homebrew deck
                 l("allDeckOption").innerHTML = "an expanded homebrew deck (" + (fullDeck.length + homebrewDeck.length) + " cards)";
-
-                lastCard = {};
             }
 
             function analyzeDeck(arr) {
@@ -540,15 +540,17 @@
                 // Card name
                 let nameInput = createElement("input", "customCardName" + i);
                 nameInput.className = "cardNameInput";
-                nameInput.value = card.name;
+                nameInput.value = (card.name !== undefined)? card.name : "";
                 nameInput.onchange = function(){card.name = nameInput.value};
+                nameInput.onchange();
                 cardNode.appendChild(nameInput);
 
                 // Card description
                 let descInput = createElement("textarea", "customCardDesc" + i);
                 descInput.className = "cardDescInput";
-                descInput.value = card.desc;
+                descInput.value = (card.desc !== undefined)? card.desc : "";
                 descInput.onchange = function(){card.desc = descInput.value};
+                descInput.onchange();
                 cardNode.appendChild(descInput);
 
                 // Card draws effect
@@ -611,16 +613,31 @@
 
             function setDeckType() {
                 deckType = l("deckTypeSelector").value;
+                switch (deckType) {
+                    case "random":
+                    case "partial":
+                    case "full":
+                    case "all":
+                        l("declaredDrawsNode").hidden = false;
+                        break;
+                    case "custom":
+                    case "fullCustom":
+                    case "imported":
+                        l("declaredDrawsNode").hidden = true;
+                        break;
+                    default:
+                        console.log("Unknown deck type!");
+                }
             }
 
             function setDeclaredDraws() {
-                declaredDraws = l("declaredDrawsInput").valueAsNumber;
+                declaredDraws = Math.floor(l("declaredDrawsInput").valueAsNumber);
                 // Don't let the maniacs type in negative numbers or erase the input
                 if (!(declaredDraws >= 1)) {
-                    declaredDraws = l("declaredDrawsInput").value = 1;
+                    declaredDraws = 1;
                 }
-                
-                l("deckTypeSelectorLabel").innerHTML = " " + cardOrCards(declaredDraws) + " from ";
+                // Clean up any weirdness in the input field
+                l("declaredDrawsInput").value = declaredDraws;
             }
 
             function readyDeck() {
@@ -629,21 +646,34 @@
                 
                 // Hide initial config input
                 l("initialConfig").hidden = true;
-                
-                if (deckType == "custom") {
-                    customize();
-                } else if (deckType == "fullCustom") {
-                    deck = [...fullDeck];
-                    fullCustomize();
-                } else if (deckType == "all") {
-                    deck = fullDeck.concat(homebrewDeck);
-                    draw();
-                } else if (deckType == "full" || (deckType == "random" && Math.random() < 0.25)) {
-                    deck = [...fullDeck];
-                    draw();
-                } else {
-                    deck = [...partialDeck];
-                    draw();
+
+                switch (deckType) {
+                    case "custom":
+                        customize();
+                        break;
+                    case "fullCustom":
+                        deck = [...fullDeck];
+                        fullCustomize();
+                        break;
+                    case "imported":
+                        importDeck();
+                        break;
+                    case "partial":
+                        deck = [...partialDeck];
+                        draw();
+                        break;
+                    case "full":
+                        deck = [...fullDeck];
+                        draw();
+                        break;
+                    case "random":
+                        deck = (Math.random() < 0.25)? [...fullDeck] : [...partialDeck];
+                        draw();
+                        break;
+                    case "all":
+                        deck = fullDeck.concat(homebrewDeck);
+                        draw();
+                        break;
                 }
             }
 
@@ -792,13 +822,17 @@
 
                 customMenu.appendChild(createCustXPNode());
 
-                customMenu.appendChild(createElement("p"));
+                customMenu.appendChild(createElement("h3", undefined, "Finish"));
+                customMenu.appendChild(createElement("p", undefined, "The buttons below will create a deck based on your parameters. You can further customize each card in the generated deck, or you can go in blind and start drawing!"));
 
                 customMenu.appendChild(createButton("customFullCustomBtn", function() {
                     finishCustomization();
                     fullCustomize();
-                }, "Customize individual cards"))
+                }, "Customize individual cards"));
 
+                l("declaredDrawsNode").hidden = false;
+                customMenu.appendChild(l("declaredDrawsNode"));
+                
                 customMenu.appendChild(createButton("customDrawBtn", function() {
                     finishCustomization();
                     draw();
@@ -851,6 +885,8 @@
                     deck.forEach(x => {
                         if (x.noLevelDesc)
                             x.desc = x.noLevelDesc;
+                        else if (x.noXPDesc)
+                            x.desc = x.noXPDesc;
                     })
                 }
             }
@@ -887,13 +923,15 @@
                     fullCustomCardsNode.appendChild(createCustomCardNode(newCard, deck.length - 1));
                 }, "Add another card"));
 
+                l("declaredDrawsNode").hidden = false;
+                fullCustomMenuFooter.appendChild(l("declaredDrawsNode"));
                 // "Finish customization and draw" button
                 fullCustomMenuFooter.appendChild(createButton("fullCustomDrawBtn", function(){
                     fullCustomMenu.hidden = true;
                     // Get rid of nulls (removed cards) before drawing
                     deck = deck.filter(a => a !== null);
                     draw();
-                }, "Confirm"));
+                }, "Draw!"));
 
                 document.body.appendChild(fullCustomMenu);
             }
@@ -903,35 +941,50 @@
                     var drawingNode = l("drawingNode");
                     drawingNode.hidden = false;
                 } else {
+                    // Create the node for card drawing
                     var drawingNode = createElement("div", "drawingNode");
+                    // Newly drawn cards are put at the end of the drawnCards node
                     drawingNode.appendChild(createElement("div", "drawnCards"));
-
+                    // The footer is always at the bottom
                     let drawingFooter = createElement("div", "drawingFooter");
 
+                    // proceedNode holds the non-card message and the button container
                     let proceedNode = createElement("div", "proceedNode");
-
                     let proceedLabel = createElement("div", "proceedLabel");
-                    // innerHTML is set or updated later to reflect # of cards
+                    // proceedLabel.innerHTML is set or updated later to reflect # of cards
                     proceedNode.appendChild(proceedLabel);
 
                     let buttonHolder = createElement("p", "proceedButtonHolder");
+                    // drawMoreButton is the "Yes" option when a card allows additional draws
                     buttonHolder.appendChild(createButton("drawMoreButton", function(){
                         declaredDraws += lastCard.draws;
                         if (lastCard.onDrawMore) lastCard.onDrawMore();
                         draw();
                     }, "Yes"));
+                    // proceedButton draws again without changing number of draws
+                    // ("No" when given the option to draw more, otherwise "Proceed")
                     buttonHolder.appendChild(createButton("proceedButton", function() {lastCard = {}; draw();}, "Proceed"));
+                    // noMoreButton stops drawing ("No" option when asked to negate a "nomore" card)
                     buttonHolder.appendChild(createButton("noMoreButton", function() {declaredDraws = 0;}, "No"));
                     proceedNode.appendChild(buttonHolder);
 
                     drawingFooter.appendChild(proceedNode);
+
+                    // "Export deck" button
+                    drawingFooter.appendChild(createElement("p"));
+                    drawingFooter.appendChild(createButton("exportButton", exportDeck, "Export deck (copy to clipboard)"));
+                    let exportedText = createElement("textarea", "exportedText");
+                    exportedText.hidden = true;
+                    drawingFooter.appendChild(exportedText);
+
                     drawingNode.appendChild(drawingFooter);
                     document.body.appendChild(drawingNode);
                 }
 
                 // declaredDraws can be 0 if user declined an optional draw-more from their last card.
                 // In that case, skip to end-of-draw stuff.
-                if (declaredDraws > 0 && deck.length > 0) {
+                if (declaredDraws > 0 && deck.length > 0) { // we're really gonna draw a card
+                    // Pick a card, any card
                     let cardIndex = Math.floor(Math.random() * deck.length);
                     let card = deck[cardIndex];
                     lastCard = card;
@@ -940,6 +993,7 @@
                         deck.splice(cardIndex, 1);
                     }
 
+                    // Make the card node and put it in the drawnCards node
                     let cardDiv = createElement("div");
                     cardDiv.className = "drawnCard";
                     let cardName = createElement("h3", undefined, card.name);
@@ -948,43 +1002,48 @@
                     cardDiv.appendChild(createElement("p", undefined, card.desc));
                     l("drawnCards").appendChild(cardDiv);
 
+                    // Conditional changes to declaredDraws (including "nomore", which can be vetoed) are handled by the buttons
                     declaredDraws -= 1;
                     if (card.drawsEffect == "forced") {
                         declaredDraws += card.draws;
                     }
                 }
 
+                // If there are more cards, we might draw again, even if declaredDraws is now 0 (user may have the option to draw more)
                 if (deck.length > 0) {
                     let cardsLeftStr = "You have " + declaredDraws + " " + cardOrCards(declaredDraws) + " left to draw";
                     if (lastCard.drawsEffect == "nomore") {
                         if (vetoes > 0) {
                             vetoes -= 1;
                             l("proceedLabel").innerHTML = "Negate this card and continue drawing anyway? (" + cardsLeftStr + " if you do.)";
-                            l("proceedButton").innerHTML = "Yes"; // Continue drawing as normal
+                            l("proceedButton").innerHTML = "Yes"; // Continue drawing as if nothing happened
                             l("drawMoreButton").hidden = true;
-                            l("noMoreButton").hidden = false;
+                            l("noMoreButton").hidden = false; // Stop drawing
                         } else {
+                            // No vetoes! You draw no more cards.
                             declaredDraws = 0;
                         }
                     } else {
-                        l("noMoreButton").hidden = true; // can't stop won't stop
+                        l("noMoreButton").hidden = true; // can't just decide to stop drawing
                     }
 
                     if (lastCard.drawsEffect == "optional") {
-                        // "Proceed" button becomes "no" option (don't draw extra cards, just move on)
+                        // "Proceed" button becomes "no" option (i.e. don't draw extra cards, just move on)
                         l("proceedLabel").innerHTML = cardsLeftStr + ". Will you draw " + lastCard.draws + " additional " + cardOrCards(lastCard.draws) + "?";
                         l("drawMoreButton").hidden = false;
                         l("proceedButton").innerHTML = "No";
                     } else if (declaredDraws > 0) {
+                        // You have more cards to draw. Go on...
                         l("proceedLabel").innerHTML = "You have " + declaredDraws + " " + cardOrCards(declaredDraws) + " left to draw.";
                         l("drawMoreButton").hidden = true;
                         l("proceedButton").innerHTML = "Proceed";
                     } else {
+                        // You've drawn your last
                         l("proceedNode").hidden = true;
                     }
                 } else {
                     // Deck is empty
-                    l("proceedButtonHolder").hidden = true; // go away buttons
+                    l("proceedButtonHolder").hidden = true; // go away buttons!!
 
                     if (declaredDraws > 0 || lastCard.drawsEffect == "optional") {
                         // Tell them why they can't draw more cards: there are none
@@ -993,6 +1052,62 @@
                 }
             }
 
+            function exportDeck() {
+                let copyTextarea = l("exportedText");
+                copyTextarea.hidden = false;
+                copyTextarea.value = JSON.stringify(deck);
+                copyTextarea.focus();
+                copyTextarea.select();
+                try {
+                    let successful = document.execCommand('copy');
+                    if (successful) {
+                        alert("Deck has been copied to clipboard. You can import it by choosing that option when selecting the type of deck to use.");
+                    } else {
+                        alert("Failed to copy deck to clipboard");
+                    }
+                } catch (err) {
+                    alert('Unable to copy');
+                }
+                copyTextarea.hidden = true;
+            }
+
+            function importDeck() {
+                let importNode = createElement("div", "importNode");
+
+                let importLabel = createElement("label", undefined, "Paste your exported deck below.");
+                importLabel.htmlFor = "importTextarea";
+                importNode.appendChild(importLabel);
+                importNode.appendChild(createElement("div")); // line break
+
+                let importTextarea = createElement("textarea", "importTextarea");
+                importNode.appendChild(importTextarea);
+                importNode.appendChild(createElement("p")); // paragraph break
+
+                importNode.appendChild(createButton("importFullCustBtn", function() {
+                    try {
+                        deck = JSON.parse(importTextarea.value);
+                        l("importNode").hidden = true;
+                        fullCustomize();
+                    } catch (err) {
+                        alert("Import failed! " + err);
+                    }
+                }, "Import and customize individual cards"));
+
+                l("declaredDrawsNode").hidden = false;
+                importNode.appendChild(l("declaredDrawsNode"));
+                importNode.appendChild(createButton("importDrawBtn", function() {
+                    try {
+                        deck = JSON.parse(importTextarea.value);
+                        l("importNode").hidden = true;
+                        draw();
+                    } catch (err) {
+                        alert("Import failed! " + err);
+                    }
+                }, "Import and draw"))
+
+                document.body.appendChild(importNode);
+            }
+            
             init();
         </script>
     </body>
