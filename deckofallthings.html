@@ -4,6 +4,9 @@
         <meta charset="utf-8">
         <title>Deck of All Things</title>
         <style>
+            * {
+                box-sizing: border-box;
+            }
             body {
                 font-family: Arial, Helvetica, sans-serif;
                 background: rgb(31, 31, 31);
@@ -28,16 +31,42 @@
                 color: white;
             }
             .customCard {
-                width: 256px;
-                height: 256px;
                 background: rgb(70, 70, 70);
-                margin: 5px;
                 padding: 5px;
                 border-style: solid;
                 border-radius: 10px;
+                display: flex;
+                flex-direction: column;
+                flex: 1;
+            }
+            .customCardContainer {
+                width: 20%;
+                max-width: 360px;
+                height: 288px;
+                padding: 5px;
                 float: left;
                 display: flex;
                 flex-direction: column;
+            }
+            @media screen and (max-width: 1440px) {
+                .customCardContainer {
+                    width: 25%;
+                }
+            }
+            @media screen and (max-width: 1080px) {
+                .customCardContainer {
+                    width: 33%;
+                }
+            }
+            @media screen and (max-width: 720px) {
+                .customCardContainer {
+                    width: 50%;
+                }
+            }
+            @media screen and (max-width: 360px) {
+                .customCardContainer {
+                    width: 100%;
+                }
             }
             .disclaimer {
                 font-size: smaller;
@@ -80,9 +109,9 @@
                 <input class="numInput" id="declaredDrawsInput" type="number" value=1 min=1 onchange="setDeclaredDraws()" />
             </p>
             <button id="drawButton" type="button" onclick="readyDeck()">Begin</button>
-            
-            <p class="disclaimer">The Deck of All Things includes unofficial Fan Content permitted under the Fan Content Policy. Not approved/endorsed by Wizards. Portions of the materials used are from the <i>Dungeons & Dragons</i> 5th Edition Systems Reference Document, property of Wizards of the Coast. ©Wizards of the Coast LLC.</p>
         </div>
+
+        <p class="disclaimer">The Deck of All Things includes unofficial Fan Content permitted under the Fan Content Policy. Not approved/endorsed by Wizards. Portions of the materials used are from the <i>Dungeons & Dragons</i> 5th Edition Systems Reference Document, property of Wizards of the Coast. ©Wizards of the Coast LLC.</p>
         
         <script>
             function init() {
@@ -472,6 +501,26 @@
                         desc: "You can't teleport or travel to other planes of existence, regardless of whether you are willing. This effect lasts until you die.",
                         wildness: 0.1,
                         worth: 0.5
+                    },
+                    {   name: "Dragon",
+                        desc: "You gain the ability to transform into an adult dragon of your choice, as if by the <i>shapechange</i> spell (no concentration required). You can use this ability once.",
+                        wildness: 0.5,
+                        worth: 1.0
+                    },
+                    {   name: "The Devil",
+                        desc: "You are telepathically contacted by a powerful fiend and offered a deal, with the specifics determined by the DM. The fiend typically offers a great power or valuable item and typically asks for a specific task or quest to be completed. If you decline the deal, the fiend will offer it to one of your enemies instead.",
+                        wildness: 0.6,
+                        worth: 0.6
+                    },
+                    {   name: "Memory",
+                        desc: "You may ask the DM one question about the past, and you see a vision of a moment in the past which relates to the answer. The vision lasts no longer than 1 minute. For example, if you ask about the origin of a mysterious item, you might see it being created or it being left at the place where you found it.",
+                        wildness: 0.5,
+                        worth: 0.9
+                    },
+                    {   name: "Phoenix",
+                        desc: "After you die, burning your remains to ash indefinitely extends the time limit on spells that raise you from the dead. Any spell which would revive you acts as <i>true resurrection</i>, provided your remains were burned within the spell's original time limit. When you drop to 0 hit points, you can choose to be engulfed in flame, dying and turning to ashes immediately.",
+                        wildness: 0.8,
+                        worth: 1.0
                     }
                 ];
                 
@@ -546,8 +595,12 @@
             }
 
             function createCustomCardNode(card, i) {
+                let cardContainer = createElement("div", "customCardContainer" + i);
+                cardContainer.className = "customCardContainer";
+
                 let cardNode = createElement("div", "customCard" + i);
                 cardNode.className = "customCard";
+                cardContainer.appendChild(cardNode);
 
                 // Card name
                 let nameInput = createElement("input", "customCardName" + i);
@@ -613,11 +666,11 @@
                 let removeBtnHolder = createElement("div");
                 removeBtnHolder.appendChild(createButton("removeCardBtn" + i, function() {
                     deck[i] = null; // nulls are filtered out before drawing
-                    l("fullCustomCardsNode").removeChild(cardNode);
+                    l("fullCustomCardsNode").removeChild(cardContainer);
                 }, "Remove card"));
                 cardNode.appendChild(removeBtnHolder);
 
-                return cardNode;
+                return cardContainer;
             }
 
             function cardOrCards(num) {
