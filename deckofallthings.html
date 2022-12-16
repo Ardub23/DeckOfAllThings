@@ -13,7 +13,6 @@
                 width: 2.5em;
             }
             .cardNameInput {
-                width: 95%;
                 font-weight: bold;
                 font-size: 14pt;
                 text-align: center;
@@ -21,8 +20,7 @@
                 color: white;
             }
             .cardDescInput {
-                height: 60%;
-                width: 95%;
+                flex: 1;
                 resize: none;
                 font-family: Arial, Helvetica, sans-serif;
                 font-size: 12pt;
@@ -30,14 +28,16 @@
                 color: white;
             }
             .customCard {
-                width: 250px;
-                height: 250px;
+                width: 256px;
+                height: 256px;
                 background: rgb(70, 70, 70);
                 margin: 5px;
                 padding: 5px;
                 border-style: solid;
                 border-radius: 10px;
                 float: left;
+                display: flex;
+                flex-direction: column;
             }
             .disclaimer {
                 font-size: smaller;
@@ -246,12 +246,7 @@
                         wildness: 0.4,
                         worth: 0.4
                     },
-                    {   name: "Initiate",
-                        desc: "You learn two cantrips of your choice from any spell list. Your spellcasting ability for these spells is Intelligence, Wisdom, or Charisma (choose when you draw this card).",
-                        wildness: 0.2,
-                        worth: 0.8
-                    },
-                    {   name: "Torchbearer",
+                    {   name: "Torch",
                         desc: "All items you are wearing or carrying begin glowing as if affected by a <i>light</i> cantrip that lasts until dispelled.",
                         wildness: 0.0,
                         worth: 0.5
@@ -272,12 +267,14 @@
                         worth: 0.3
                     },
                     {   name: "Ferryman",
-                        desc: "Your connection to mortality weakens. Whenever you drop to 0 hit points, you immediately fail one death saving throw.",
+                        desc: "Your connection to mortality weakens. You die when you have two failed death saving throws, rather than three.",
                         wildness: 0.1,
                         worth: 0.2
                     },
                     {   name: "Wailing",
-                        desc: "When you draw this card, you drop to 0 hit points.",
+                        desc: "When you draw this card, you drop to 0 hit points. You can draw one additional card beyond your declared draws.",
+                        drawsEffect: "optional",
+                        draws: 1,
                         wildness: 0.1,
                         worth: 0.2
                     },
@@ -301,7 +298,7 @@
                         worth: 0.3
                     },
                     {   name: "Leylines",
-                        desc: "Choose any spell, and choose Intelligence, Wisdom, or Charisma as your spellcasting ability for it. You can cast the spell once without spending a spell slot. When you cast it, roll a d20. If the spell level is less than the result, you regain the ability to cast it when you next finish a long rest.",
+                        desc: "Choose any spell, and choose Intelligence, Wisdom, or Charisma as your spellcasting ability for it. You can cast the spell once without spending a spell slot. When you do, roll a d12. If the spell level is less than the result, you regain the ability to cast it when you next finish a long rest.",
                         wildness: 1.0,
                         worth: 1.0
                     },
@@ -309,6 +306,7 @@
                         desc: "The magic of this card suffuses you. You gain experience points enough to gain a level, and the level must be gained in the sorcerer class (even if you don't meet the ability score requirements for multiclassing).",
                         noXPDesc: "The magic of this card suffuses you. You gain a level in the sorcerer class (even if you don't meet the ability score requirements for multiclassing).",
                         noLevelDesc: "The magic of this card suffuses you. You learn four cantrips and two 1st-level spells from the sorcerer spell list. You can cast each 1st-level spell once without spending a spell slot, and you regain the ability to do so when you finish a long rest. You can also cast them with any spell slots you have. Charisma is your spellcasting ability for these spells.",
+                        reappears: false,
                         wildness: 0.8,
                         worth: 0.9
                     },
@@ -317,8 +315,8 @@
                         wildness: 0.8,
                         worth: 1.0
                     },
-                    {   name: "Nova",
-                        desc: "Choose a 1st- or 2nd-level spell from any spell list, and choose Intelligence, Wisdom, or Charisma as your spellcasting ability for it. You can cast the spell once as a 13th-level spell.",
+                    {   name: "Meteor",
+                        desc: "Choose one 1st- or 2nd-level spell from any spell list, and choose Intelligence, Wisdom, or Charisma as your spellcasting ability for it. You can cast the spell once as a 13th-level spell.",
                         wildness: 0.7,
                         worth: 1.0
                     },
@@ -355,38 +353,32 @@
                         worth: 0.7
                     },
                     {   name: "Daisy",
-                        desc: "Five creatures appear in the nearest unoccupied spaces to you. Each is a fey with a challenge rating no higher than 2. The DM determines how each creature acts: it may attack, flee, help you, or do something else.",
+                        desc: "Fey creatures are not hostile to you and will not attack you, unless you do something to provoke them. You can't be charmed, frightened, or possessed by fey.",
                         wildness: 0.2,
-                        worth: 0.5
+                        worth: 0.7
                     },
                     {   name: "Miner",
                         desc: "A single block of gold worth 30,000 gp appears in the nearest unoccupied space. The gold weighs 700 pounds.",
                         wildness: 0.1,
                         worth: 0.7
                     },
-                    {   name: "Gunpowder",
-                        desc: "This card explodes when you draw it. You must make a DC 18 Dexterity saving throw. You take 10d8 fire damage on a failed save, or half as much damage on a successful one.",
-                        reappears: false,
-                        wildness: 0.2,
-                        worth: 0.1
-                    },
                     {   name: "Harbinger",
-                        desc: "Three tarrasques appear in unoccupied spaces within 1 mile of you. The tarrasques always know where you are. They disappear after 3d4 days if they are not killed before then.",
+                        desc: "Three tarrasques appear in unoccupied spaces within 1 mile of you. The tarrasques always know where you are, but they are hostile to all creatures. They disappear after 3d4 days if they are not killed before then.", 
                         wildness: 1.0,
                         worth: 0.0
                     },
                     {   name: "The Deep",
-                        desc: "Your body becomes adapted to life underwater. You gain a swimming speed of 60 feet and can breathe air and water. You can't benefit from a long rest unless you spend at least 1 hour of it fully submersed in water.",
+                        desc: "Your body becomes adapted to life underwater. You gain a swimming speed of 60 feet and can breathe air and water. You can't benefit from a long rest unless you spend at least 1 hour of it fully submerged in water.",
                         wildness: 0.3,
                         worth: 0.5
                     },
-                    {   name: "Lecture",
-                        desc: "Your Intelligence score increases by 10 (to a maximum of 30), and your Strength score is reduced by 10 (to a minimum of 1). This effect lasts 2d4 days.",
+                    {   name: "Academia",
+                        desc: "Your Intelligence score increases by 10 (to a maximum of 30), and your Strength score is reduced by 10 (to a minimum of 1). Each day at dawn, your Intelligence score is reduced by 1 and your Strength score is increased by one; this continues for 1d4 + 4 days, after which the remaining changes become permanent.",
                         wildness: 0.3,
                         worth: 0.4
                     },
-                    {   name: "The Bitter Cold",
-                        desc: "This card curses to feel as though you're exposed to extreme cold. While cursed in this way, you are vulnerable to cold damage, and you must make a DC 10 Constitution saving throw at the end of each hour, gaining a level of exhaustion on a failed save.",
+                    {   name: "Bitter Cold",
+                        desc: "This card curses to feel as though you're exposed to extreme cold. While cursed in this way, you are vulnerable to cold damage, and you must make a DC 10 Constitution saving throw at the end of each hour, gaining a level of exhaustion on a failed save. You succeed on the save automatically if you are wearing clothing suited for cold weather.",
                         wildness: 0.4,
                         worth: 0.1
                     },
@@ -400,7 +392,7 @@
                         wildness: 0.4,
                         worth: 0.6
                     },
-                    {   name: "The Lost",
+                    {   name: "Waif",
                         desc: "You vanish from your current plane of existence, leaving the deck behind, and appear in the Ethereal Plane. While there, you can't cast spells that would bring you to another plane. You can see and hear the plane you originated from, which is cast in shades of gray, out to a range of 60 feet. You can only affect and be affected by other creatures on the Ethereal Plane. Creatures that aren't there can't perceive you or interact with you, unless they have the ability to do so. You draw no more cards.",
                         drawsEffect: "nomore",
                         wildness: 0.8,
@@ -427,7 +419,7 @@
                         worth: 0.1
                     },
                     {   name: "Aegis",
-                        desc: "You gain proficiency with shields, and an <i>animated shield</i> appears at your feet. When you activate it, and as a bonus action while it is animated, you can choose a creature within 60 feet of you and cause the shield to move to and protect that creature.",
+                        desc: "You gain proficiency with shields, and you gain the services of a fey spirit which takes the form of an <i>animated shield</i> that appears at your feet. When you activate it, and as a bonus action while it is animated, you can choose a creature within 60 feet of you and cause the shield to move to and protect that creature.",
                         wildness: 0.3,
                         worth: 0.9
                     },
@@ -442,7 +434,7 @@
                         worth: 0.0
                     },
                     {   name: "Liar",
-                        desc: "You automatically fail any ability check you make to discern an illusion and any saving throw you make against an illusion spell.",
+                        desc: "You automatically fail any ability check you make to discern an illusion and any saving throw you make against an illusion spell. You can't benefit from truesight.",
                         wildness: 0.4,
                         worth: 0.1
                     },
@@ -457,9 +449,29 @@
                         worth: 0.8
                     },
                     {   name: "Blood",
-                        desc: "Whenever you take damage, you can reduce the damage by any amount. When you do, your hit point maximum is permanently reduced by one-fourth of that amount (rounded up). You die if your hit point maximum is reduced to zero",
+                        desc: "Whenever you take damage, you can reduce the damage by any amount. When you do, your hit point maximum is permanently reduced by one-fourth of that amount (rounded up). You die if your hit point maximum is reduced to zero.",
                         wildness: 0.5,
                         worth: 0.6
+                    },
+                    {   name: "Diagram",
+                        desc: "Whenever you finish a long rest, roll 2d12 and add your Intelligence modifier. Your Intelligence score becomes the total (minimum of 1) until you finish your next long rest. Use your original Intelligence score when rolling for this card's effect, not the altered score.",
+                        wildness: 0.7, // shoutouts to The Stormlight Archive
+                        worth: 0.6
+                    },
+                    {   name: "Prophet",
+                        desc: "Four ivory strips worth 50 gp each, and incense worth 1000 gp, appear at your feet. You can cast the <i>legend lore</i> spell once without using a spell slot, and you regain the ability to do so when you finish a long rest.",
+                        wildness: 0.5,
+                        worth: 0.8
+                    },
+                    {   name: "Pariah",
+                        desc: "Permanently reduce your Charisma score by 1, to a minimum of 4. You have disadvantage on Charisma checks you make to interact socially with humanoids.",
+                        wildness: 0.5,
+                        worth: 0.0
+                    },
+                    {   name: "Barrier",
+                        desc: "You can't teleport or travel to other planes of existence, regardless of whether you are willing. This effect lasts until you die.",
+                        wildness: 0.1,
+                        worth: 0.5
                     }
                 ];
                 
@@ -585,16 +597,17 @@
                 };
                 drawsEffectSelector.onchange();
 
-                let reappearsCheckbox = document.createElement("input");
-                reappearsCheckbox.name = reappearsCheckbox.id = "reappearsCheckbox" + i;
+                let reappearsNode = createElement("div");
+                let reappearsCheckbox = createElement("input", "reappearsCheckbox" + i);
                 reappearsCheckbox.type = "checkbox";
                 reappearsCheckbox.checked = (card.reappears !== false);
                 reappearsCheckbox.onchange = function() {card.reappears = reappearsCheckbox.checked;};
                 let reappearsLabel = document.createElement("label");
                 reappearsLabel.htmlFor = "reappearsCheckbox" + i;
                 reappearsLabel.innerHTML = "Reappears in deck";
-                cardNode.appendChild(reappearsCheckbox);
-                cardNode.appendChild(reappearsLabel);
+                reappearsNode.appendChild(reappearsCheckbox);
+                reappearsNode.appendChild(reappearsLabel);
+                cardNode.appendChild(reappearsNode);
 
                 // Remove card button
                 let removeBtnHolder = createElement("div");
@@ -972,7 +985,8 @@
 
                     // "Export deck" button
                     drawingFooter.appendChild(createElement("p"));
-                    drawingFooter.appendChild(createButton("exportButton", exportDeck, "Export deck (copy to clipboard)"));
+                    drawingFooter.appendChild(createElement("div", undefined, "Click this button to export the current deck to your clipboard. (Note: If any cards have been drawn which don't reappear in the deck, they'll be gone from the exported deck too.)"));
+                    drawingFooter.appendChild(createButton("exportButton", exportDeck, "Export deck"));
                     let exportedText = createElement("textarea", "exportedText");
                     exportedText.hidden = true;
                     drawingFooter.appendChild(exportedText);
