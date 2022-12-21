@@ -8,14 +8,22 @@
                 box-sizing: border-box;
             }
             body {
+                min-height: 100vh;
+                margin: 0;
+                padding: 10px;
                 font-family: Arial, Helvetica, sans-serif;
                 background: rgb(31, 31, 31);
                 color: rgb(247, 247, 247);
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+                row-gap: 40px;
             }
             .numInput {
                 width: 2.5em;
             }
             .cardNameInput {
+                font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
                 font-weight: bold;
                 font-size: 14pt;
                 text-align: center;
@@ -68,9 +76,14 @@
                     width: 100%;
                 }
             }
-            .disclaimer {
+            #disclaimer {
                 font-size: smaller;
-                padding-top: 24px;
+                background-color: rgb(100, 100, 100);
+                padding: 10px;
+                order: 99;
+            }
+            #proceedNode {
+                padding-bottom: 40px;
             }
             button {
                 margin-right: 5px;
@@ -84,43 +97,39 @@
                 max-width: 300px;
             }
             .drawnCardName {
+                font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
                 text-align: center;
             }
         </style>
     </head>
     <body>
-        <h2>A deck of wondrous power is presented to you&hellip;</h2>
+        <div id="main">
+            <h2>A deck of wondrous power is presented to you&hellip;</h2>
 
-        <div id="initialConfig">
-            <p>
-                <label id="deckTypeSelectorLabel" for="deckTypeSelector">Before you sits&hellip;</label>
-                <select id="deckTypeSelector" name="deckTypeSelector" onchange="setDeckType()">
-                    <option value="random">a mysterious deck (13 or 22 cards)</option>
-                    <option value="partial">a partial deck (13 cards)</option>
-                    <option value="full">a full deck (22 cards)</option>
-                    <option value="all" id="allDeckOption">an expanded homebrew deck</option>
-                    <option value="custom">a customized deck&hellip;</option>
-                    <option value="fullCustom">a deck of fully customized cards&hellip;</option>
-                    <option value="imported">a deck you've previously exported&hellip;</option>
-                </select>
-            </p>
-            <p id="declaredDrawsNode">
-                <label id="declaredDrawsInputLabel" for="declaredDrawsInput">How many cards will you draw?</label>
-                <input class="numInput" id="declaredDrawsInput" type="number" value=1 min=1 onchange="setDeclaredDraws()" />
-            </p>
-            <button id="drawButton" type="button" onclick="readyDeck()">Begin</button>
+            <div id="initialConfig">
+                <p>
+                    <label id="deckTypeSelectorLabel" for="deckTypeSelector">Before you sits&hellip;</label>
+                    <select id="deckTypeSelector" name="deckTypeSelector" onchange="setDeckType()">
+                        <option value="random">a mysterious deck (13 or 22 cards)</option>
+                        <option value="partial">a partial deck (13 cards)</option>
+                        <option value="full">a full deck (22 cards)</option>
+                        <option value="all" id="allDeckOption">an expanded homebrew deck</option>
+                        <option value="custom">a customized deck&hellip;</option>
+                        <option value="fullCustom">a deck of fully customized cards&hellip;</option>
+                        <option value="imported">a deck you've previously exported&hellip;</option>
+                    </select>
+                </p>
+                <p id="declaredDrawsNode">
+                    <label id="declaredDrawsInputLabel" for="declaredDrawsInput">How many cards will you draw?</label>
+                    <input class="numInput" id="declaredDrawsInput" type="number" value=1 min=1 onchange="setDeclaredDraws()" />
+                </p>
+                <button id="drawButton" type="button" onclick="readyDeck()">Begin</button>
+            </div>
         </div>
-
-        <p class="disclaimer">The Deck of All Things includes unofficial Fan Content permitted under the Fan Content Policy. Not approved/endorsed by Wizards. Portions of the materials used are from the <i>Dungeons & Dragons</i> 5th Edition Systems Reference Document, property of Wizards of the Coast. ©Wizards of the Coast LLC.</p>
+        <div id="disclaimer">The Deck of All Things includes unofficial Fan Content permitted under the Fan Content Policy. Not approved/endorsed by Wizards. Portions of the materials used are from the <i>Dungeons & Dragons</i> 5th Edition Systems Reference Document, property of Wizards of the Coast. ©Wizards of the Coast LLC.</div>
         
         <script>
             function init() {
-                setDeckType();
-                setDeclaredDraws();
-                vetoes = 0;
-                deck = [];
-                lastCard = {};
-
                 // I took out the linebreaks after the opening brackets so the name will still display when the block is collapsed in my IDE :P
                 // partialDeck's declaration relies on the specific order of cards in fullDeck
                 fullDeck = [
@@ -350,12 +359,12 @@
                         worth: 1.0
                     },
                     {   name: "Doldrums",
-                        desc: "You gain a level of exhaustion. Rest can't reduce your exhaustion level below 1. If your exhaustion level is reduced to 0 another way, you regain a level of exhaustion after 24 hours.",
+                        desc: "You gain a level of exhaustion. Rest can't reduce your exhaustion level below 1. If your exhaustion level is reduced to 0 another way, you regain a level of exhaustion after 24 hours. Only a <i>wish</i> spell or divine intervention can end this effect.",
                         wildness: 0.4,
                         worth: 0.2
                     },
                     {   name: "Inquisitor",
-                        desc: "When you ask a yes-or-no question, you can force a creature that hears and understands it to give you a truthful answer, to the best of its knowledge. You can use this ability only once.",
+                        desc: "When you ask a yes-or-no question, you can force a creature that hears and understands it to give you a truthful answer, to the best of its knowledge. You can't use this ability more than once on the same creature.",
                         wildness: 0.2,
                         worth: 0.9
                     },
@@ -372,7 +381,7 @@
                         worth: 0.4
                     },
                     {   name: "Ventriloquist",
-                        desc: "You learn the <i>minor illusion</i> cantrip. When you create a sound with it, you can cast it without any components.",
+                        desc: "You learn the <i>minor illusion</i> cantrip. When you create a sound with it, you can cast it without any components. If you already know <i>minor illusion</i>, you learn another cantrip of your choice. Intelligence, Wisdom, or Charisma is your spellcasting ability for it (choose when you draw this card).",
                         wildness: 0.0,
                         worth: 0.8
                     },
@@ -392,7 +401,7 @@
                         worth: 0.7
                     },
                     {   name: "Harbinger",
-                        desc: "Three tarrasques appear in unoccupied spaces within 1 mile of you. The tarrasques always know where you are, but they are hostile to all creatures. They disappear after 3d4 days if they are not killed before then.", 
+                        desc: "Three tarrasques appear in unoccupied spaces within 1 mile of you. The tarrasques always know where you are, but they are hostile to all creatures. Each tarrasque disappears after 3d4 days if it is not killed before then.", 
                         wildness: 1.0,
                         worth: 0.0
                     },
@@ -402,7 +411,7 @@
                         worth: 0.5
                     },
                     {   name: "Academia",
-                        desc: "Your Intelligence score increases by 10 (to a maximum of 30), and your Strength score is reduced by 10 (to a minimum of 1). Each day at dawn, your Intelligence score is reduced by 1 and your Strength score is increased by one; this continues for 1d4 + 4 days, after which the remaining changes become permanent.",
+                        desc: "Your Intelligence score increases by 10 (to a maximum of 30), and your Strength score is reduced by 10 (to a minimum of 1). Each day at dawn, your Intelligence score is reduced by 1 and your Strength score increases by 1; this continues for 1d4 + 4 days, after which the remaining changes become permanent.",
                         wildness: 0.3,
                         worth: 0.4
                     },
@@ -448,7 +457,7 @@
                         worth: 0.1
                     },
                     {   name: "Aegis",
-                        desc: "You gain proficiency with shields, and you gain the services of a fey spirit which takes the form of an <i>animated shield</i> that appears at your feet. When you activate it, and as a bonus action while it is animated, you can choose a creature within 60 feet of you and cause the shield to move to and protect that creature.",
+                        desc: "You gain proficiency with shields, and you gain the service of a fey spirit which takes the form of an <i>animated shield</i> that appears at your feet. When you activate it, and as a bonus action while it is animated, you can choose a creature within 60 feet of you and cause the shield to move to and protect that creature.",
                         wildness: 0.3,
                         worth: 0.9
                     },
@@ -513,12 +522,12 @@
                         worth: 0.6
                     },
                     {   name: "Memory",
-                        desc: "You may ask the DM one question about the past, and you see a vision of a moment in the past which relates to the answer. The vision lasts no longer than 1 minute. For example, if you ask about the origin of a mysterious item, you might see it being created or it being left at the place where you found it.",
+                        desc: "You can ask the DM one question about the past, and you see a vision of a moment in the past which directly relates to the answer. The vision lasts no longer than a minute. You can use this card's magic as soon as you draw it or at any other time before you die.",
                         wildness: 0.5,
                         worth: 0.9
                     },
                     {   name: "Phoenix",
-                        desc: "After you die, burning your remains to ash indefinitely extends the time limit on spells that raise you from the dead. Any spell which would revive you acts as <i>true resurrection</i>, provided your remains were burned within the spell's original time limit. When you drop to 0 hit points, you can choose to be engulfed in flame, dying and turning to ashes immediately.",
+                        desc: "After you die, burning your remains to ash indefinitely extends the time limit on spells that raise you from the dead. Any spell which would revive you acts as <i>true resurrection</i>, provided your remains were burned within the spell's original time limit. When you drop to 0 hit points, you can choose to be engulfed in flame, dying and turning to ash immediately.",
                         wildness: 0.8,
                         worth: 1.0
                     }
@@ -526,6 +535,15 @@
                 
                 // Reflect how many cards are in the homebrew deck
                 l("allDeckOption").innerHTML = "an expanded homebrew deck (" + (fullDeck.length + homebrewDeck.length) + " cards)";
+                l("initialConfig").appendChild(l("declaredDrawsNode"));
+                l("initialConfig").appendChild(l("drawButton"));
+                
+                setDeckType();
+                setDeclaredDraws();
+                vetoes = 0;
+                deck = [];
+                lastCard = {};
+                drawing = false;
             }
 
             function analyzeDeck(arr) {
@@ -544,6 +562,17 @@
                 return document.getElementById(id);
             }
 
+            function getOrCreate(tagName, id, innerHTML) {
+                if (l(id)) {
+                    let el = l(id);
+                    if (innerHTML === "") {
+                        el.innerHTML = "";
+                    }
+                    return el;
+                }
+                return createElement(tagName, id, innerHTML);
+            }
+
             function createElement(tagName, id, innerHTML) {
                 let el = document.createElement(tagName);
                 if (id) {
@@ -556,38 +585,33 @@
             }
 
             function createButton(id, onclick, innerHTML) {
-                let btn = document.createElement("button");
+                let btn = getOrCreate("button", id, innerHTML);
                 btn.type = "button";
-                btn.id = id;
                 btn.onclick = onclick;
-                btn.innerHTML = innerHTML;
                 return btn;
             }
 
             function createOption(value, innerHTML) {
-                let opt = document.createElement("option");
+                let opt = createElement("option", undefined, innerHTML);
                 opt.value = value;
-                opt.innerHTML = innerHTML;
                 return opt;
             }
 
             function createRadio(group, value, label, valueHolder, selected) {
-                let el = document.createElement("input");
+                let el = getOrCreate("input", group + "_" + value);
                 el.type = "radio";
                 el.name = group;
                 el.value = value;
-                el.id = group + "_" + value;
                 el.onclick = function() { valueHolder.value = el.value; };
                 if (selected) {
                     el.checked = true;
                     el.onclick();
                 }
 
-                let lbl = document.createElement("label");
+                let lbl = createElement("label", undefined, label);
                 lbl.htmlFor = el.id;
-                lbl.innerHTML = label;
                 
-                let div = document.createElement("div");
+                let div = createElement("div");
                 div.appendChild(el);
                 div.appendChild(lbl);
 
@@ -595,15 +619,17 @@
             }
 
             function createCustomCardNode(card, i) {
-                let cardContainer = createElement("div", "customCardContainer" + i);
+                let cardContainer = getOrCreate("div", "customCardContainer" + i);
+                cardContainer.innerHTML = "";
                 cardContainer.className = "customCardContainer";
 
-                let cardNode = createElement("div", "customCard" + i);
+                let cardNode = getOrCreate("div", "customCard" + i);
+                cardNode.innerHTML = "";
                 cardNode.className = "customCard";
                 cardContainer.appendChild(cardNode);
 
                 // Card name
-                let nameInput = createElement("input", "customCardName" + i);
+                let nameInput = getOrCreate("input", "customCardName" + i);
                 nameInput.className = "cardNameInput";
                 nameInput.value = (card.name !== undefined)? card.name : "";
                 nameInput.onchange = function(){card.name = nameInput.value};
@@ -611,7 +637,7 @@
                 cardNode.appendChild(nameInput);
 
                 // Card description
-                let descInput = createElement("textarea", "customCardDesc" + i);
+                let descInput = getOrCreate("textarea", "customCardDesc" + i);
                 descInput.className = "cardDescInput";
                 descInput.value = (card.desc !== undefined)? card.desc : "";
                 descInput.onchange = function(){card.desc = descInput.value};
@@ -620,7 +646,8 @@
 
                 // Card draws effect
                 let drawsEffectNode = createElement("div");
-                let drawsEffectSelector = createElement("select", "drawsEffectSelector" + i);
+                let drawsEffectSelector = getOrCreate("select", "drawsEffectSelector" + i);
+                drawsEffectSelector.innerHTML = "";
                 drawsEffectSelector.appendChild(createOption("noeffect", "Doesn't affect draws"));
                 drawsEffectSelector.appendChild(createOption("nomore", "Prevents further draws"));
                 drawsEffectSelector.appendChild(createOption("forced", "Forces additional draw(s): "));
@@ -628,7 +655,7 @@
                 drawsEffectSelector.value = (card.drawsEffect)? card.drawsEffect : "noeffect";
                 drawsEffectNode.appendChild(drawsEffectSelector);
                 // Card draws number
-                let drawsInput = createElement("input", "drawsInput" + i);
+                let drawsInput = getOrCreate("input", "drawsInput" + i);
                 drawsInput.className = "numInput";
                 drawsInput.type = "number";
                 drawsInput.value = (card.draws !== undefined)? card.draws : 1;
@@ -651,11 +678,11 @@
                 drawsEffectSelector.onchange();
 
                 let reappearsNode = createElement("div");
-                let reappearsCheckbox = createElement("input", "reappearsCheckbox" + i);
+                let reappearsCheckbox = getOrCreate("input", "reappearsCheckbox" + i);
                 reappearsCheckbox.type = "checkbox";
                 reappearsCheckbox.checked = (card.reappears !== false);
                 reappearsCheckbox.onchange = function() {card.reappears = reappearsCheckbox.checked;};
-                let reappearsLabel = document.createElement("label");
+                let reappearsLabel = createElement("label");
                 reappearsLabel.htmlFor = "reappearsCheckbox" + i;
                 reappearsLabel.innerHTML = "Reappears in deck";
                 reappearsNode.appendChild(reappearsCheckbox);
@@ -693,6 +720,8 @@
                         break;
                     default:
                         console.log("Unknown deck type!");
+                        l("declaredDrawsNode").hidden = false;
+                        break;
                 }
             }
 
@@ -718,48 +747,42 @@
                         customize();
                         break;
                     case "fullCustom":
-                        deck = [...fullDeck];
+                        deck = fullDeck.map(card => ({...card}));
                         fullCustomize();
                         break;
                     case "imported":
                         importDeck();
                         break;
                     case "partial":
-                        deck = [...partialDeck];
+                        deck = partialDeck.map(card => ({...card}));
                         draw();
                         break;
                     case "full":
-                        deck = [...fullDeck];
+                        deck = fullDeck.map(card => ({...card}));
                         draw();
                         break;
                     case "random":
-                        deck = (Math.random() < 0.25)? [...fullDeck] : [...partialDeck];
+                        deck = ((Math.random() < 0.25)? fullDeck : partialDeck).map(card => ({...card}));;
                         draw();
                         break;
                     case "all":
-                        deck = fullDeck.concat(homebrewDeck);
+                        deck = fullDeck.concat(homebrewDeck).map(card => ({...card}));;
                         draw();
                         break;
                 }
             }
 
             function createCustCardSrcNode() {
-                let custCardSrcNode = document.createElement("div");
-                custCardSrcNode.id = "custCardSrc";
+                let custCardSrcNode = getOrCreate("div", "custCardSrc");
 
                 // Header
-                let custCardSrcHeader = document.createElement("h3");
-                custCardSrcHeader.innerHTML = "Card sources";
-                custCardSrcNode.appendChild(custCardSrcHeader);
+                custCardSrcNode.appendChild(getOrCreate("h3", "custCardSrcHeader", "Card sources"));
 
                 // Selector label
-                let custCardSrcLbl = document.createElement("label");
-                custCardSrcLbl.id = "custCardSrcLbl";
+                let custCardSrcLbl = getOrCreate("label", "custCardSrcLbl", "Use cards from: ");
                 custCardSrcLbl.htmlFor = "custCardSrcSelector";
-                custCardSrcLbl.innerHTML = "Use cards from: "
                 // Selector
-                let custCardSrcSelector = document.createElement("select");
-                custCardSrcSelector.id = "custCardSrcSelector";
+                let custCardSrcSelector = getOrCreate("select", "custCardSrcSelector", "");
                 custCardSrcSelector.appendChild(createOption("partial", "the partial deck of 13 cards"));
                 custCardSrcSelector.appendChild(createOption("full", "the full deck of 22 cards"));
                 custCardSrcSelector.appendChild(createOption("all", "the full deck plus homebrew cards"));
@@ -775,31 +798,25 @@
             }
 
             function createCustWildNode() {
-                let custWildNode = document.createElement("div");
-                custWildNode.id = "custWildNode";
+                let custWildNode = createElement("div", "custWildNode", "");
 
                 // Header
-                let custWildHeader = document.createElement("h3");
-                custWildHeader.id = "custWildHeader";
-                custWildHeader.innerHTML = "Wildness";
-                custWildNode.appendChild(custWildHeader);
+                custWildNode.appendChild(getOrCreate("h3", "custWildHeader", "Wildness"));
 
                 // Note
-                let custWildNote = document.createElement("p");
-                custWildNote.innerHTML = "You can filter cards based on how wild they are. Each card is assigned a \"wildness value\", from the tame cards with simple and straightforward effects, to the earth-shattering and often very disruptive cards. Using this option removes cards from the deck; each card in the deck is still equally likely to be drawn.";
-                custWildNode.appendChild(custWildNote);
+                custWildNode.appendChild(getOrCreate("p", "custWildNote", "You can filter cards based on how wild they are. Each card is assigned a \"wildness value\", from the tame cards with simple and straightforward effects, to the earth-shattering and often very disruptive cards. Using this option removes cards from the deck; each card in the deck is still equally likely to be drawn."));
 
                 // Wildness bias strength selector
-                let custWildStrSelector = document.createElement("select");
-                custWildStrSelector.id = custWildStrSelector.name = "custWildStrSelector";
+                let custWildStrSelector = getOrCreate("select", "custWildStrSelector", "");
+                custWildStrSelector.name = "custWildStrSelector";
                 custWildStrSelector.appendChild(createOption("off", "Don't bias cards by wildness"));
                 custWildStrSelector.appendChild(createOption("weak", "Weakly bias toward&hellip;"));
                 custWildStrSelector.appendChild(createOption("strong", "Strongly bias toward&hellip;"))
                 custWildNode.appendChild(custWildStrSelector);
 
                 // Wildness value selector
-                let custWildValSelector = document.createElement("select");
-                custWildValSelector.id = custWildValSelector.name = "custWildValSelector";
+                let custWildValSelector = getOrCreate("select", "custWildValSelector", "");
+                custWildValSelector.name = "custWildValSelector";
                 custWildValSelector.appendChild(createOption("0", "very tame cards"));
                 custWildValSelector.appendChild(createOption("0.25", "tame cards"));
                 custWildValSelector.appendChild(createOption("0.5", "middling cards"));
@@ -820,28 +837,25 @@
             }
 
             function createCustWorthNode() {
-                let custWorthNode = document.createElement("div");
-                custWorthNode.id = "custWildNode";
+                let custWorthNode = getOrCreate("div", "custWildNode");
 
                 // Header
-                custWorthNode.appendChild(createElement("h3", "custWorthHeader", "Worth"));
+                custWorthNode.appendChild(getOrCreate("h3", "custWorthHeader", "Worth"));
 
                 // Note
-                let custWorthNote = document.createElement("p");
-                custWorthNote.innerHTML = "You can filter cards based on how good they are for the one who draws them. Each card is assigned a \"worth value\", from the disastrous to the miraculous. Using this option removes cards from the deck; each card in the deck is still equally likely to be drawn.";
-                custWorthNode.appendChild(custWorthNote);
+                custWorthNode.appendChild(getOrCreate("p", "custWorthNote", "You can filter cards based on how good they are for the one who draws them. Each card is assigned a \"worth value\", from the disastrous to the miraculous. Using this option removes cards from the deck; each card in the deck is still equally likely to be drawn."));
 
                 // Wildness bias strength selector
-                let custWorthStrSelector = document.createElement("select");
-                custWorthStrSelector.id = custWorthStrSelector.name = "custWorthStrSelector";
+                let custWorthStrSelector = getOrCreate("select", "custWorthStrSelector", "");
+                custWorthStrSelector.name = "custWorthStrSelector";
                 custWorthStrSelector.appendChild(createOption("off", "Don't bias cards by worth"));
                 custWorthStrSelector.appendChild(createOption("weak", "Weakly bias toward&hellip;"));
                 custWorthStrSelector.appendChild(createOption("strong", "Strongly bias toward&hellip;"))
                 custWorthNode.appendChild(custWorthStrSelector);
 
                 // Wildness value selector
-                let custWorthValSelector = document.createElement("select");
-                custWorthValSelector.id = custWorthValSelector.name = "custWorthValSelector";
+                let custWorthValSelector = getOrCreate("select", "custWorthValSelector", "");
+                custWorthValSelector.name = "custWorthValSelector";
                 custWorthValSelector.appendChild(createOption("0", "very bad cards"));
                 custWorthValSelector.appendChild(createOption("0.25", "bad cards"));
                 custWorthValSelector.appendChild(createOption("0.5", "middling cards"));
@@ -862,11 +876,10 @@
             }
 
             function createCustXPNode() {
-                let custXPNode = document.createElement("div");
-                custXPNode.id = "custXPNode";
+                let custXPNode = getOrCreate("div", "custXPNode", "");
 
                 // Header
-                custXPNode.appendChild(createElement("h3", "custXPHeader", "Experience and level-based effects"));
+                custXPNode.appendChild(getOrCreate("h3", "custXPHeader", "Experience and level-based effects"));
 
                 custXP = {};
                 custXPNode.appendChild(createRadio("custXP", "default", "Use effects that involve experience points (default)", custXP, true));
@@ -877,8 +890,8 @@
             }
             
             function customize() {
-                let customMenu = document.createElement("div");
-                customMenu.id = "customMenu";
+                let customMenu = getOrCreate("div", "customMenu", "");
+                customMenu.hidden = false;
 
                 customMenu.appendChild(createCustCardSrcNode());
 
@@ -904,7 +917,7 @@
                     draw();
                 }, "Draw!"));
 
-                document.body.appendChild(customMenu);
+                l("main").appendChild(customMenu);
             }
 
             function finishCustomization() {
@@ -914,16 +927,20 @@
                 // Start with (a copy of) the deck to use
                 switch (custCardSrc) {
                     case "partial":
-                        deck = [...partialDeck];
+                        deck = copyObjectArray(partialDeck);
                         break;
                     case "full":
-                        deck = [...fullDeck];
+                        deck = copyObjectArray(fullDeck);
                         break;
                     case "all":
-                        deck = fullDeck.concat(homebrewDeck);
+                        deck = copyObjectArray(fullDeck.concat(homebrewDeck));
                         break;
                     case "homebrew":
-                        deck = [...homebrewDeck];
+                        deck = copyObjectArray(homebrewDeck);
+                        break;
+                    default:
+                        console.error("Unknown card source: " + custCardSrc);
+                        deck = [];
                         break;
                 }
 
@@ -957,6 +974,18 @@
                 }
             }
 
+            /**
+             * Determines whether the val provided is sufficiently close to the target value.
+             * If val == target, then true is always returned; otherwise, the probability of
+             * returning true decreases as the difference between {@code val} and target grows.
+             * The probability is never zero, but it approaches zero as the difference approaches infinity.
+             * With a high strictness, the probability approaches zero more quickly.
+             * 
+             * @param {number} val - the input value
+             * @param {number} target - the target value to compare {@code val} against
+             * @param {number} strictness - how strongly a given difference will push the probability toward zero
+             * @returns {number} {@code true} if {@code val} is randomly deemed sufficiently close to {@code target}
+             */
             function fits(val, target, strictness) {
                 // Don't reject a undefined val as unfitting
                 if (val === undefined) return true;
@@ -964,21 +993,28 @@
                 // The closer val is to target, the more likely it is that true will be returned.
                 // When val == target, the probability is 1.
                 // High strictness makes the probability drop off quickly as val and target differ.
-                let prob = Math.pow(Math.E, -(Math.pow(strictness * (target - val), 2)));
+                // prob = e^(-(difference * strictness)^2)
+                let prob = Math.exp(-(Math.pow((target - val) * strictness, 2)));
                 return (Math.random() < prob);
             }
 
-            function fullCustomize() {
-                let fullCustomMenu = createElement("div", "fullCustomMenu");
-                fullCustomMenu.appendChild(createElement("h3", "fullCustomMenuHeader", "Here you can customize each card in the deck."));
+            function copyObjectArray(arr) {
+                return arr.map(obj => ({...obj}));
+            }
 
-                let fullCustomCardsNode = createElement("div", "fullCustomCardsNode");
+            function fullCustomize() {
+                let fullCustomMenu = getOrCreate("div", "fullCustomMenu");
+                fullCustomMenu.hidden = false;
+                fullCustomMenu.appendChild(getOrCreate("h3", "fullCustomMenuHeader", "Here you can customize each card in the deck."));
+
+                let fullCustomCardsNode = getOrCreate("div", "fullCustomCardsNode");
+                fullCustomCardsNode.innerHTML = ""; // empty it out
                 for (let i in deck) {
                     fullCustomCardsNode.appendChild(createCustomCardNode(deck[i], i));
                 }
                 fullCustomMenu.appendChild(fullCustomCardsNode);
 
-                let fullCustomMenuFooter = createElement("div", "fullCustomMenuFooter");
+                let fullCustomMenuFooter = getOrCreate("div", "fullCustomMenuFooter");
                 fullCustomMenuFooter.style = "clear: left;";
                 fullCustomMenu.appendChild(fullCustomMenuFooter);
 
@@ -999,29 +1035,34 @@
                     draw();
                 }, "Draw!"));
 
-                document.body.appendChild(fullCustomMenu);
+                l("main").appendChild(fullCustomMenu);
             }
 
             function draw() {
-                if (l("drawingNode")) {
+                if (drawing) {
                     var drawingNode = l("drawingNode");
-                    drawingNode.hidden = false;
                 } else {
                     // Create the node for card drawing
-                    var drawingNode = createElement("div", "drawingNode");
+                    var drawingNode = getOrCreate("div", "drawingNode");
+                    drawingNode.innerHTML = "";
                     // Newly drawn cards are put at the end of the drawnCards node
-                    drawingNode.appendChild(createElement("div", "drawnCards"));
+                    var drawnCards = getOrCreate("div", "drawnCards");
+                    drawingNode.appendChild(drawnCards);
+                    drawnCards.innerHTML = "";
                     // The footer is always at the bottom
-                    let drawingFooter = createElement("div", "drawingFooter");
+                    let drawingFooter = getOrCreate("div", "drawingFooter");
+                    drawingFooter.innerHTML = "";
 
                     // proceedNode holds the non-card message and the button container
-                    let proceedNode = createElement("div", "proceedNode");
-                    let proceedLabel = createElement("div", "proceedLabel");
+                    let proceedNode = getOrCreate("div", "proceedNode");
+                    proceedNode.innerHTML = "";
+                    let proceedLabel = getOrCreate("div", "proceedLabel");
                     // proceedLabel.innerHTML is set or updated later to reflect # of cards
                     proceedNode.appendChild(proceedLabel);
 
-                    let buttonHolder = createElement("p", "proceedButtonHolder");
+                    let buttonHolder = getOrCreate("p", "proceedButtonHolder");
                     // drawMoreButton is the "Yes" option when a card allows additional draws
+                    // (Okay to just append createButton, which will grab the existing button if it exists)
                     buttonHolder.appendChild(createButton("drawMoreButton", function(){
                         declaredDraws += lastCard.draws;
                         if (lastCard.onDrawMore) lastCard.onDrawMore();
@@ -1038,15 +1079,27 @@
 
                     // "Export deck" button
                     drawingFooter.appendChild(createElement("p"));
-                    drawingFooter.appendChild(createElement("div", undefined, "Click this button to export the current deck to your clipboard. (Note: If any cards have been drawn which don't reappear in the deck, they'll be gone from the exported deck too.)"));
+                    drawingFooter.appendChild(getOrCreate("div", "exportExplain", "Click this button to export the current deck to your clipboard. (Note: If any cards have been drawn which don't reappear in the deck, they'll be gone from the exported deck too.)"));
                     drawingFooter.appendChild(createButton("exportButton", exportDeck, "Export deck"));
-                    let exportedText = createElement("textarea", "exportedText");
+                    let exportedText = getOrCreate("textarea", "exportedText");
                     exportedText.hidden = true;
                     drawingFooter.appendChild(exportedText);
 
+                    // "Start over" button
+                    drawingFooter.appendChild(createElement("p"));
+                    drawingFooter.appendChild(createButton("restartButton", function() {
+                        l("drawnCards").innerHTML = "";
+                        drawingNode.hidden = true;
+                        l("initialConfig").hidden = false;
+                        init();
+                    }, "Start over"));
+
                     drawingNode.appendChild(drawingFooter);
-                    document.body.appendChild(drawingNode);
+                    l("main").appendChild(drawingNode);
                 }
+
+                drawingNode.hidden = false;
+                drawing = true;
 
                 // declaredDraws can be 0 if user declined an optional draw-more from their last card.
                 // In that case, skip to end-of-draw stuff.
@@ -1172,7 +1225,7 @@
                     }
                 }, "Import and draw"))
 
-                document.body.appendChild(importNode);
+                l("main").appendChild(importNode);
             }
             
             init();
