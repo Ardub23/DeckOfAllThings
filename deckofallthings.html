@@ -19,6 +19,9 @@
                 justify-content: space-between;
                 row-gap: 40px;
             }
+            .declaredDrawsInput {
+                width: 2.5em;
+            }
             .numInput {
                 width: 2.5em;
             }
@@ -118,7 +121,7 @@
                 </p>
                 <div id="initialDeclaredDraws">
                     <label for="initialDeclaredDrawsInput">How many cards will you draw?</label>
-                    <input class="numInput" id="initialDeclaredDrawsInput" type="number" value=1 min=1 onchange="setDeclaredDraws(l('initialDeclaredDrawsInput'))" />
+                    <input class="declaredDrawsInput" id="initialDeclaredDrawsInput" type="number" value=1 min=1 onchange="setDeclaredDraws(l('initialDeclaredDrawsInput'))" />
                 </div>
                 <button id="initialDrawButton" type="button" onclick="readyDeck()">Begin</button>
             </div>
@@ -187,7 +190,7 @@
                         <td style="display: flex; flex-direction: column; align-items: center;">
                             <div>
                                 <label for="custDeclaredDraws">How many cards will you draw?</label>
-                                <input class="numInput" id="custDeclaredDraws" type="number" value=1 min=1 onchange="setDeclaredDraws(l('custDeclaredDraws'))" />
+                                <input class="declaredDrawsInput" id="custDeclaredDraws" type="number" value=1 min=1 onchange="setDeclaredDraws(l('custDeclaredDraws'))" />
                             </div>
                             <button id="custDrawButton" type="button" onclick="finishCustomization(); draw();">Draw!</button>
                         </td>
@@ -203,7 +206,7 @@
                     <button id="addCustomCardBtn" type="button" onclick="addCustomCard()">Add another card</button>
                     <p>
                         <label for="fullDeclaredDrawsInput">How many cards will you draw?</label>
-                        <input class="numInput" id="fullDeclaredDrawsInput" type="number" value=1 min=1 onchange="setDeclaredDraws(l('fullDeclaredDrawsInput'))" />
+                        <input class="declaredDrawsInput" id="fullDeclaredDrawsInput" type="number" value=1 min=1 onchange="setDeclaredDraws(l('fullDeclaredDrawsInput'))" />
                     </p>
                     <button id="fullDrawButton" type="button" onclick="finishFullCustomization()">Draw!</button>
                 </div>
@@ -220,7 +223,7 @@
                         <td style="display: flex; flex-direction: column; align-items: center;">
                             <div>
                                 <label for="importDeclaredDraws">How many cards will you draw?</label>
-                                <input class="numInput" id="importDeclaredDraws" type="number" value=1 min=1 onchange="setDeclaredDraws(l('importDeclaredDraws'))" />
+                                <input class="declaredDrawsInput" id="importDeclaredDraws" type="number" value=1 min=1 onchange="setDeclaredDraws(l('importDeclaredDraws'))" />
                             </div>
                             <button id="importDrawButton" type="button" onclick="importAndThen(draw)">Draw!</button>
                         </td>
@@ -666,7 +669,8 @@
                 // l("initialConfig").appendChild(l("drawButton"));
                 
                 setDeckType();
-                setDeclaredDraws(l("initialDeclaredDrawsInput"));
+                l("initialDeclaredDrawsInput").value = 1;
+                l("initialDeclaredDrawsInput").onchange();
                 vetoes = 0;
                 deck = [];
                 lastCard = {};
@@ -858,8 +862,12 @@
                 if (!(declaredDraws >= 1)) {
                     declaredDraws = 1;
                 }
-                // Clean up any weirdness in the input field
-                inputElement.value = declaredDraws;
+                
+                // Update all the declaredDrawsInputs to have the value the user just put in
+                let inputs = document.getElementsByClassName("declaredDrawsInput");
+                for (let i = 0; i < inputs.length; i++) {
+                    inputs[i].value = declaredDraws;
+                }
             }
 
             function readyDeck() {
