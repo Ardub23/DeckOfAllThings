@@ -119,13 +119,119 @@
                         <option value="imported">a deck you've previously exported&hellip;</option>
                     </select>
                 </p>
-                <p id="declaredDrawsNode">
-                    <label id="declaredDrawsInputLabel" for="declaredDrawsInput">How many cards will you draw?</label>
-                    <input class="numInput" id="declaredDrawsInput" type="number" value=1 min=1 onchange="setDeclaredDraws()" />
+                <div id="initialDeclaredDraws">
+                    <label for="initialDeclaredDrawsInput">How many cards will you draw?</label>
+                    <input class="numInput" id="initialDeclaredDrawsInput" type="number" value=1 min=1 onchange="setDeclaredDraws(l('initialDeclaredDrawsInput'))" />
+                </div>
+                <button id="initialDrawButton" type="button" onclick="readyDeck()">Begin</button>
+            </div>
+
+            <div id="customMenu" hidden>
+                <h3 id="custCardSrcHeader">Card sources</h3>
+                <label id="custCardSrcLbl" for="custCardSrcSelector">Use cards from: </label>
+                <select id="custCardSrcSelector" name="custCardSrcSelector" value="all" onchange="custCardSrc = l('custCardSrcSelector').value;">
+                    <option value="partial">the partial deck of 13 cards</option>
+                    <option value="full">the full deck of 22 cards</option>
+                    <option value="all">the full deck plus homebrew cards</option>
+                    <option value="homebrew">homebrew cards only</option>
+                </select>
+
+                <h3>Wildness and worth</h3>
+                <p>You can filter cards based on how wild their effects are and how good they are for the player who draws them. Each card is assigned a "wildness value", from the tame cards with simple and straightforward effects, to the earth-shattering and often very disruptive cards. Each also has a "worth value", from the disastrous to the miraculous. These options remove cards from the deck; each card in the deck is still equally likely to be drawn.</p>
+                <p>
+                    <select id="custWildStrSelector" name="custWildStrSelector" value="off" onchange="setCustWild()">
+                        <option value="off">Don't bias cards by wildness</option>
+                        <option value="weak">Weakly bias toward&hellip;</option>
+                        <option value="strong">Strongly bias toward&hellip;</option>
+                    </select>
+                    <select id="custWildValSelector" name="custWildValSelector" value="0.5" onchange="setCustWild()">
+                        <option value="0.0">very tame cards</option>
+                        <option value="0.25">tame cards</option>
+                        <option value="0.5">middling cards</option>
+                        <option value="0.75">wild cards</option>
+                        <option value="1.0">very wild cards</option>
+                    </select>
                 </p>
-                <button id="drawButton" type="button" onclick="readyDeck()">Begin</button>
+                <p>
+                    <select id="custWorthStrSelector" name="custWorthStrSelector" value="off" onchange="setCustWorth()">
+                        <option value="off">Don't bias cards by worth</option>
+                        <option value="weak">Weakly bias toward&hellip;</option>
+                        <option value="strong">Strongly bias toward&hellip;</option>
+                    </select>
+                    <select id="custWorthValSelector" name="custWorthValSelector" value="0.5" onchange="setCustWorth()">
+                        <option value="0.0">very bad cards</option>
+                        <option value="0.25">bad cards</option>
+                        <option value="0.5">so-so cards</option>
+                        <option value="0.75">good cards</option>
+                        <option value="1.0">very good cards</option>
+                    </select>
+                </p>
+
+                <h3>Experience and level-based effects</h3>
+                <div>
+                    <input type="radio" name="custXP" id="custXPDefault" value="default" onclick="custXP = 'default'" checked />
+                    <label for="custXPDefault">Use effects that involve experience points (default)</label>
+                </div>
+                <div>
+                    <input type="radio" name="custXP" id="custXPNoXP" value="noxp" onclick="custXP = 'noxp'" />
+                    <label for="custXPNoXP">Replace XP-based effects with ones that don't use XP, but may affect character levels</label>
+                </div>
+                <div>
+                    <input type="radio" name="custXP" id="custXPNoLevel" value="nolevel" onclick="custXP = 'nolevel'" />
+                    <label for="custXPNoLevel">Replace XP-based effects with ones that can't affect character levels</label>
+                </div>
+
+                <h3>Finish</h3>
+                <p>The buttons below will create a deck based on your parameters. You can further customize each card in the generated deck, or you can go in blind and start drawing!</p>
+                <table>
+                    <tr>
+                        <td><button id="customFullCustomBtn" type="button" onclick="finishCustomization(); fullCustomize();">Customize individual cards&hellip;</button></td>
+                        <td style="padding: 0px 15px">&ndash; OR &ndash;</td>
+                        <td style="display: flex; flex-direction: column; align-items: center;">
+                            <div>
+                                <label for="custDeclaredDraws">How many cards will you draw?</label>
+                                <input class="numInput" id="custDeclaredDraws" type="number" value=1 min=1 onchange="setDeclaredDraws(l('custDeclaredDraws'))" />
+                            </div>
+                            <button id="custDrawButton" type="button" onclick="finishCustomization(); draw();">Draw!</button>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <div id="fullCustomMenu" hidden>
+                <h3>Here you can individually customize each card in the deck.</h3>
+                <div id="fullCustomCardsNode"></div>
+
+                <div id="fullCustomMenuFooter" style="clear: left;">
+                    <button id="addCustomCardBtn" type="button" onclick="addCustomCard()">Add another card</button>
+                    <p>
+                        <label for="fullDeclaredDrawsInput">How many cards will you draw?</label>
+                        <input class="numInput" id="fullDeclaredDrawsInput" type="number" value=1 min=1 onchange="setDeclaredDraws(l('fullDeclaredDrawsInput'))" />
+                    </p>
+                    <button id="fullDrawButton" type="button" onclick="finishFullCustomization()">Draw!</button>
+                </div>
+            </div>
+
+            <div id="importMenu" hidden>
+                <div><label for="importTextarea">Paste your exported deck below.</label></div>
+                <textarea id="importTextarea"></textarea>
+                <p>Import and then&hellip;</p>
+                <table>
+                    <tr>
+                        <td><button id="importFullCustomBtn" type="button" onclick="importAndThen(fullCustomize)">Customize individual cards&hellip;</button></td>
+                        <td style="padding: 0px 15px">&ndash; OR &ndash;</td>
+                        <td style="display: flex; flex-direction: column; align-items: center;">
+                            <div>
+                                <label for="importDeclaredDraws">How many cards will you draw?</label>
+                                <input class="numInput" id="importDeclaredDraws" type="number" value=1 min=1 onchange="setDeclaredDraws(l('importDeclaredDraws'))" />
+                            </div>
+                            <button id="importDrawButton" type="button" onclick="importAndThen(draw)">Draw!</button>
+                        </td>
+                    </tr>
+                </table>
             </div>
         </div>
+
         <div id="disclaimer">The Deck of All Things includes unofficial Fan Content permitted under the Fan Content Policy. Not approved/endorsed by Wizards. Portions of the materials used are from the <i>Dungeons & Dragons</i> 5th Edition Systems Reference Document, property of Wizards of the Coast. ©Wizards of the Coast LLC.</div>
         
         <script>
@@ -535,11 +641,11 @@
                 
                 // Reflect how many cards are in the homebrew deck
                 l("allDeckOption").innerHTML = "an expanded homebrew deck (" + (fullDeck.length + homebrewDeck.length) + " cards)";
-                l("initialConfig").appendChild(l("declaredDrawsNode"));
-                l("initialConfig").appendChild(l("drawButton"));
+                // l("initialConfig").appendChild(l("declaredDrawsNode"));
+                // l("initialConfig").appendChild(l("drawButton"));
                 
                 setDeckType();
-                setDeclaredDraws();
+                setDeclaredDraws(l("initialDeclaredDrawsInput"));
                 vetoes = 0;
                 deck = [];
                 lastCard = {};
@@ -711,32 +817,31 @@
                     case "partial":
                     case "full":
                     case "all":
-                        l("declaredDrawsNode").hidden = false;
+                        l("initialDeclaredDraws").hidden = false;
                         break;
                     case "custom":
                     case "fullCustom":
                     case "imported":
-                        l("declaredDrawsNode").hidden = true;
+                        l("initialDeclaredDraws").hidden = true;
                         break;
                     default:
                         console.log("Unknown deck type!");
-                        l("declaredDrawsNode").hidden = false;
+                        l("initialDeclaredDraws").hidden = false;
                         break;
                 }
             }
 
-            function setDeclaredDraws() {
-                declaredDraws = Math.floor(l("declaredDrawsInput").valueAsNumber);
+            function setDeclaredDraws(inputElement) {
+                declaredDraws = Math.floor(inputElement.valueAsNumber);
                 // Don't let the maniacs type in negative numbers or erase the input
                 if (!(declaredDraws >= 1)) {
                     declaredDraws = 1;
                 }
                 // Clean up any weirdness in the input field
-                l("declaredDrawsInput").value = declaredDraws;
+                inputElement.value = declaredDraws;
             }
 
             function readyDeck() {
-                setDeclaredDraws();
                 setDeckType();
                 
                 // Hide initial config input
@@ -811,7 +916,7 @@
                 custWildStrSelector.name = "custWildStrSelector";
                 custWildStrSelector.appendChild(createOption("off", "Don't bias cards by wildness"));
                 custWildStrSelector.appendChild(createOption("weak", "Weakly bias toward&hellip;"));
-                custWildStrSelector.appendChild(createOption("strong", "Strongly bias toward&hellip;"))
+                custWildStrSelector.appendChild(createOption("strong", "Strongly bias toward&hellip;"));
                 custWildNode.appendChild(custWildStrSelector);
 
                 // Wildness value selector
@@ -834,6 +939,30 @@
                 custWildStrSelector.onchange();
 
                 return custWildNode;
+            }
+
+            function setCustWild() {
+                custWildBias = l("custWildStrSelector").value;
+
+                let valSelect = l("custWildValSelector");
+                if (custWildBias == "off") {
+                    valSelect.hidden = true;
+                } else {
+                    valSelect.hidden = false;
+                    custWildVal = parseFloat(valSelect.value);
+                }
+            }
+
+            function setCustWorth() {
+                custWorthBias = l("custWorthStrSelector").value;
+
+                let valSelect = l("custWorthValSelector");
+                if (custWorthBias == "off") {
+                    valSelect.hidden = true;
+                } else {
+                    valSelect.hidden = false;
+                    custWorthVal = parseFloat(valSelect.value);
+                }
             }
 
             function createCustWorthNode() {
@@ -890,34 +1019,41 @@
             }
             
             function customize() {
-                let customMenu = getOrCreate("div", "customMenu", "");
-                customMenu.hidden = false;
+                // let customMenu = getOrCreate("div", "customMenu", "");
+                // customMenu.hidden = false;
+                l("customMenu").hidden = false;
+                // customMenu.appendChild(createCustCardSrcNode());
+                l("custCardSrcSelector").value = "all";
+                l("custCardSrcSelector").onchange();
+                // customMenu.appendChild(createCustWildNode());
+                l("custWildStrSelector").value = "off";
+                l("custWildValSelector").value = "0.5";
+                setCustWild();
+                // customMenu.appendChild(createCustWorthNode());
+                l("custWorthStrSelector").value = "off";
+                l("custWorthValSelector").value = "0.5";
+                setCustWorth();
+                // customMenu.appendChild(createCustXPNode());
+                l("custXPDefault").checked = true;
+                l("custXPDefault").onclick();
 
-                customMenu.appendChild(createCustCardSrcNode());
+                // customMenu.appendChild(createElement("h3", undefined, "Finish"));
+                // customMenu.appendChild(createElement("p", undefined, "The buttons below will create a deck based on your parameters. You can further customize each card in the generated deck, or you can go in blind and start drawing!"));
 
-                customMenu.appendChild(createCustWildNode());
+                // customMenu.appendChild(createButton("customFullCustomBtn", function() {
+                //     finishCustomization();
+                //     fullCustomize();
+                // }, "Customize individual cards"));
 
-                customMenu.appendChild(createCustWorthNode());
-
-                customMenu.appendChild(createCustXPNode());
-
-                customMenu.appendChild(createElement("h3", undefined, "Finish"));
-                customMenu.appendChild(createElement("p", undefined, "The buttons below will create a deck based on your parameters. You can further customize each card in the generated deck, or you can go in blind and start drawing!"));
-
-                customMenu.appendChild(createButton("customFullCustomBtn", function() {
-                    finishCustomization();
-                    fullCustomize();
-                }, "Customize individual cards"));
-
-                l("declaredDrawsNode").hidden = false;
-                customMenu.appendChild(l("declaredDrawsNode"));
+                // l("declaredDrawsNode").hidden = false;
+                // customMenu.appendChild(l("declaredDrawsNode"));
                 
-                customMenu.appendChild(createButton("customDrawBtn", function() {
-                    finishCustomization();
-                    draw();
-                }, "Draw!"));
+                // customMenu.appendChild(createButton("customDrawBtn", function() {
+                //     finishCustomization();
+                //     draw();
+                // }, "Draw!"));
 
-                l("main").appendChild(customMenu);
+                // l("main").appendChild(customMenu);
             }
 
             function finishCustomization() {
@@ -957,14 +1093,14 @@
                     deck = deck.filter(x => fits(x.worth, custWorthVal, 3));
                 }
 
-                if (custXP.value == "noxp") {
+                if (custXP == "noxp") {
                     deck.forEach(x => {
                         if (x.noXPDesc)
                             x.desc = x.noXPDesc;
                         else if (x.noLevelDesc)
                             x.desc = x.noLevelDesc;
                     });
-                } else if (custXP.value == "nolevel") {
+                } else if (custXP == "nolevel") {
                     deck.forEach(x => {
                         if (x.noLevelDesc)
                             x.desc = x.noLevelDesc;
@@ -1002,40 +1138,53 @@
                 return arr.map(obj => ({...obj}));
             }
 
-            function fullCustomize() {
-                let fullCustomMenu = getOrCreate("div", "fullCustomMenu");
-                fullCustomMenu.hidden = false;
-                fullCustomMenu.appendChild(getOrCreate("h3", "fullCustomMenuHeader", "Here you can customize each card in the deck."));
+            function addCustomCard() {
+                let newCard = {name: "New Card", desc: ""};
+                deck.push(newCard);
+                l("fullCustomCardsNode").appendChild(createCustomCardNode(newCard, deck.length - 1));
+            }
 
-                let fullCustomCardsNode = getOrCreate("div", "fullCustomCardsNode");
+            function fullCustomize() {
+                // let fullCustomMenu = getOrCreate("div", "fullCustomMenu");
+                // fullCustomMenu.hidden = false;
+                l("fullCustomMenu").hidden = false;
+                // fullCustomMenu.appendChild(getOrCreate("h3", "fullCustomMenuHeader", "Here you can customize each card in the deck."));
+
+                let fullCustomCardsNode = l("fullCustomCardsNode");
                 fullCustomCardsNode.innerHTML = ""; // empty it out
                 for (let i in deck) {
                     fullCustomCardsNode.appendChild(createCustomCardNode(deck[i], i));
                 }
-                fullCustomMenu.appendChild(fullCustomCardsNode);
 
-                let fullCustomMenuFooter = getOrCreate("div", "fullCustomMenuFooter");
-                fullCustomMenuFooter.style = "clear: left;";
-                fullCustomMenu.appendChild(fullCustomMenuFooter);
+                // let fullCustomMenuFooter = getOrCreate("div", "fullCustomMenuFooter");
+                // fullCustomMenuFooter.style = "clear: left;";
+                // fullCustomMenu.appendChild(fullCustomMenuFooter);
 
-                // "Add card" button
-                fullCustomMenuFooter.appendChild(createButton("addCustomCardBtn", function() {
-                    let newCard = {name: "New Card", desc: ""};
-                    deck.push(newCard);
-                    fullCustomCardsNode.appendChild(createCustomCardNode(newCard, deck.length - 1));
-                }, "Add another card"));
+                // // "Add card" button
+                // fullCustomMenuFooter.appendChild(createButton("addCustomCardBtn", function() {
+                //     let newCard = {name: "New Card", desc: ""};
+                //     deck.push(newCard);
+                //     fullCustomCardsNode.appendChild(createCustomCardNode(newCard, deck.length - 1));
+                // }, "Add another card"));
 
-                l("declaredDrawsNode").hidden = false;
-                fullCustomMenuFooter.appendChild(l("declaredDrawsNode"));
-                // "Finish customization and draw" button
-                fullCustomMenuFooter.appendChild(createButton("fullCustomDrawBtn", function(){
-                    fullCustomMenu.hidden = true;
-                    // Get rid of nulls (removed cards) before drawing
-                    deck = deck.filter(a => a !== null);
-                    draw();
-                }, "Draw!"));
+                // l("declaredDrawsNode").hidden = false;
+                // fullCustomMenuFooter.appendChild(l("declaredDrawsNode"));
+                // // "Finish customization and draw" button
+                // fullCustomMenuFooter.appendChild(createButton("fullCustomDrawBtn", function(){
+                //     fullCustomMenu.hidden = true;
+                //     // Get rid of nulls (removed cards) before drawing
+                //     deck = deck.filter(a => a !== null);
+                //     draw();
+                // }, "Draw!"));
 
-                l("main").appendChild(fullCustomMenu);
+                // l("main").appendChild(fullCustomMenu);
+            }
+
+            function finishFullCustomization() {
+                l("fullCustomMenu").hidden = true;
+                // Get rid of nulls (removed cards) before drawing
+                deck = deck.filter(a => a !== null);
+                draw();
             }
 
             function draw() {
@@ -1192,40 +1341,52 @@
             }
 
             function importDeck() {
-                let importNode = createElement("div", "importNode");
+                // let importNode = createElement("div", "importNode");
+                l("importMenu").hidden = false;
 
-                let importLabel = createElement("label", undefined, "Paste your exported deck below.");
-                importLabel.htmlFor = "importTextarea";
-                importNode.appendChild(importLabel);
-                importNode.appendChild(createElement("div")); // line break
+                // let importLabel = createElement("label", undefined, "Paste your exported deck below.");
+                // importLabel.htmlFor = "importTextarea";
+                // importNode.appendChild(importLabel);
+                // importNode.appendChild(createElement("div")); // line break
 
-                let importTextarea = createElement("textarea", "importTextarea");
-                importNode.appendChild(importTextarea);
-                importNode.appendChild(createElement("p")); // paragraph break
+                // let importTextarea = createElement("textarea", "importTextarea");
+                // importNode.appendChild(importTextarea);
+                // importNode.appendChild(createElement("p")); // paragraph break
+                l("importTextarea").value = "";
 
-                importNode.appendChild(createButton("importFullCustBtn", function() {
-                    try {
-                        deck = JSON.parse(importTextarea.value);
-                        l("importNode").hidden = true;
-                        fullCustomize();
-                    } catch (err) {
-                        alert("Import failed! " + err);
-                    }
-                }, "Import and customize individual cards"));
+                // importNode.appendChild(createButton("importFullCustBtn", function() {
+                //     try {
+                //         deck = JSON.parse(importTextarea.value);
+                //         l("importNode").hidden = true;
+                //         fullCustomize();
+                //     } catch (err) {
+                //         alert("Import failed! " + err);
+                //     }
+                // }, "Import and customize individual cards"));
 
-                l("declaredDrawsNode").hidden = false;
-                importNode.appendChild(l("declaredDrawsNode"));
-                importNode.appendChild(createButton("importDrawBtn", function() {
-                    try {
-                        deck = JSON.parse(importTextarea.value);
-                        l("importNode").hidden = true;
-                        draw();
-                    } catch (err) {
-                        alert("Import failed! " + err);
-                    }
-                }, "Import and draw"))
+                // l("declaredDrawsNode").hidden = false;
+                // importNode.appendChild(l("declaredDrawsNode"));
+                // importNode.appendChild(createButton("importDrawBtn", function() {
+                //     try {
+                //         deck = JSON.parse(importTextarea.value);
+                //         l("importNode").hidden = true;
+                //         draw();
+                //     } catch (err) {
+                //         alert("Import failed! " + err);
+                //     }
+                // }, "Import and draw"))
 
-                l("main").appendChild(importNode);
+                // l("main").appendChild(importNode);
+            }
+
+            function importAndThen(func) {
+                try {
+                    deck = JSON.parse(importTextarea.value);
+                    l("importMenu").hidden = true;
+                    func();
+                } catch (err) {
+                    alert("Import failed! " + err);
+                }
             }
             
             init();
