@@ -111,9 +111,9 @@
                 font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
                 text-align: center;
             }
-            .initialButton {
+            .bigButton {
                 max-width: 100%;
-                background: rgb(50, 0, 100);
+                background: rgb(50, 25, 75);
                 text-decoration: none;
                 text-align: center;
                 font-weight: bold;
@@ -122,11 +122,11 @@
                 display: inline-flex;
                 flex-direction: column;
                 border-style: solid;
-                border-color: rgb(230, 140, 255);
+                border-color: rgb(200, 180, 230);
                 border-radius: 15px;
                 cursor: pointer;
             }
-            .initialButton > * {
+            .bigButton > * {
                 max-width: 192px;
                 width: auto;
                 line-height: 1.5em;
@@ -136,6 +136,7 @@
                 display: inline-flex;
                 height: 2em;
                 line-height: 2em;
+                align-self: center;
             }
             .declaredDrawsBox > * {
                 width: 2em;
@@ -193,7 +194,7 @@
             <div id="initialConfig">
                 <h2>A deck of wondrous power is presented to you&hellip;</h2>
 
-                <div class="initialButton" id="drawRandomButton" onclick="readyDeck('random')">
+                <div class="bigButton" id="drawRandomButton" onclick="readyDeck('random')">
                     <img src="images/icon_drawrandom.png" />
                     <div onclick="event.stopPropagation()">
                         <label for="initRandDeclInput">Draw </label>
@@ -205,7 +206,7 @@
                         <label for="initRandDeclInput"> from a mysterious deck (13 or 22 cards)</label>
                     </div>
                 </div>
-                <div class="initialButton" id="drawPartialButton" onclick="readyDeck('partial')">
+                <div class="bigButton" id="drawPartialButton" onclick="readyDeck('partial')">
                     <img src="images/icon_drawpartial.png" />
                     <div onclick="event.stopPropagation()">
                         <label for="initPartDeclInput">Draw </label>
@@ -217,7 +218,7 @@
                         <label for="initPartDeclInput"> from a partial deck (13 cards)</label>
                     </div>
                 </div>
-                <div class="initialButton" id="drawFullButton" onclick="readyDeck('full')">
+                <div class="bigButton" id="drawFullButton" onclick="readyDeck('full')">
                     <img src="images/icon_drawfull.png" />
                     <div onclick="event.stopPropagation()">
                         <label for="initFullDeclInput">Draw </label>
@@ -229,7 +230,7 @@
                         <label for="initFullDeclInput"> from a full deck (22 cards)</label>
                     </div>
                 </div>
-                <div class="initialButton" id="drawAllButton" onclick="readyDeck('all')">
+                <div class="bigButton" id="drawAllButton" onclick="readyDeck('all')">
                     <img src="images/icon_drawall.png" />
                     <div onclick="event.stopPropagation()">
                         <label for="initAllDeclInput">Draw </label>
@@ -243,11 +244,11 @@
                 </div>
 
                 <hr />
-                <div class="initialButton" id="customizeButton" onclick="customize()">
+                <div class="bigButton" id="customizeButton" onclick="customize()">
                     <img src="images/square.png">
                     Customize deck
                 </div>
-                <div class="initialButton" id="drawAllButton" onclick="importDeck()">
+                <div class="bigButton" id="drawAllButton" onclick="importDeck()">
                     <img src="images/square.png" />
                     Import deck
                 </div>
@@ -313,28 +314,20 @@
                 <h3>Finish</h3>
                 <p>The buttons below will create a deck based on your parameters.</p>
                 <div class="fullOrDraw">
-                    <div><button id="customFullCustomBtn" type="button" onclick="finishCustomization(); fullCustomize();">Customize individual cards&hellip;</button></div>
+                    <div class="bigButton" onclick="finishCustomization(); fullCustomize();">Edit individual cards</div>
                     <div class="nowrap">&ndash; OR &ndash;</div>
-                    <div style="display: flex; flex-direction: column; align-items: center;">
-                        <div>
-                            <label for="custDeclaredDraws">How many cards will you draw?</label>
-                            <input class="declaredDrawsInput" id="custDeclaredDraws" type="number" value=1 min=1 onchange="setDeclaredDraws(l('custDeclaredDraws'))" />
-                        </div>
-                        <button id="custDrawButton" type="button" onclick="finishCustomization(); draw();">Draw!</button>
+                    <div class="bigButton" onclick="finishCustomization(); draw();">
+                        <span>
+                            Draw
+                            <div class="declaredDrawsBox" onclick="event.stopPropagation()">
+                                <span class="minusButton" onclick="adjustDeclaredDraws(-1)">&minus;</span>
+                                <input class="declaredDrawsInput" id="custDeclInput" type="number" value=1 min=1 onchange="setDeclaredDraws(l('custDeclInput'))">
+                                <span class="plusButton" onclick="adjustDeclaredDraws(1)">+</span>
+                            </div>
+                            from the custom deck
+                        </span>
                     </div>
                 </div>
-                <!--<table class="fullOrDraw">
-                    <tr>
-                        <td></td>
-                        <td class="nowrap" style="padding: 15px">&ndash; OR &ndash;</td>
-                        <td style="display: flex; flex-direction: column; align-items: center;">
-                            <div>
-                                
-                            </div>
-                            <button id="custDrawButton" type="button" onclick="finishCustomization(); draw();">Draw!</button>
-                        </td>
-                    </tr>
-                </table>-->
             </div>
 
             <div id="fullCustomMenu" hidden>
@@ -343,12 +336,19 @@
                 <div id="fullCustomCardsNode"></div>
 
                 <div id="fullCustomMenuFooter" style="clear: left;">
-                    <button id="addCustomCardBtn" type="button" onclick="addCustomCard()">Add another card</button>
-                    <p>
-                        <label for="fullDeclaredDrawsInput">How many cards will you draw?</label>
-                        <input class="declaredDrawsInput" id="fullDeclaredDrawsInput" type="number" value=1 min=1 onchange="setDeclaredDraws(l('fullDeclaredDrawsInput'))" />
-                    </p>
-                    <button id="fullDrawButton" type="button" onclick="finishFullCustomization()">Draw!</button>
+                    <div class="bigButton" onclick="addCustomCard()">+ Add another card</div>
+                    <br />
+                    <div class="bigButton" onclick="finishFullCustomization()">
+                        <span>
+                            Draw
+                            <div class="declaredDrawsBox" onclick="event.stopPropagation()">
+                                <span class="minusButton" onclick="adjustDeclaredDraws(-1)">&minus;</span>
+                                <input class="declaredDrawsInput" id="fullDeclInput" type="number" value=1 min=1 onchange="setDeclaredDraws(l('fullDeclInput'))">
+                                <span class="plusButton" onclick="adjustDeclaredDraws(1)">+</span>
+                            </div>
+                            from this deck
+                        </span>
+                    </div>
                 </div>
             </div>
 
@@ -358,19 +358,21 @@
                 <div><label for="importTextarea">Paste your exported deck below.</label></div>
                 <textarea id="importTextarea"></textarea>
                 <p>Import and then&hellip;</p>
-                <table class="fullOrDraw">
-                    <tr>
-                        <td><button id="importFullCustomBtn" type="button" onclick="importAndThen(fullCustomize)">Customize individual cards&hellip;</button></td>
-                        <td class="nowrap" style="padding: 15px">&ndash; OR &ndash;</td>
-                        <td style="display: flex; flex-direction: column; align-items: center;">
-                            <div>
-                                <label for="importDeclaredDraws">How many cards will you draw?</label>
-                                <input class="declaredDrawsInput" id="importDeclaredDraws" type="number" value=1 min=1 onchange="setDeclaredDraws(l('importDeclaredDraws'))" />
+                <div class="fullOrDraw">
+                    <div class="bigButton" onclick="importAndThen(fullCustomize)">Edit individual cards</div>
+                    <div class="nowrap">&ndash; OR &ndash;</div>
+                    <div class="bigButton" onclick="importAndThen(draw)">
+                        <span>
+                            Draw
+                            <div class="declaredDrawsBox" onclick="event.stopPropagation()">
+                                <span class="minusButton" onclick="adjustDeclaredDraws(-1)">&minus;</span>
+                                <input class="declaredDrawsInput" id="importDeclDraws" type="number" value=1 min=1 onchange="setDeclaredDraws(l('importDeclDraws'))">
+                                <span class="plusButton" onclick="adjustDeclaredDraws(1)">+</span>
                             </div>
-                            <button id="importDrawButton" type="button" onclick="importAndThen(draw)">Draw!</button>
-                        </td>
-                    </tr>
-                </table>
+                            from this deck
+                        </span>
+                    </div>
+                </div>
             </div>
 
             <div id="drawingNode" hidden>
