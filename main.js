@@ -403,13 +403,10 @@ function init() {
     ];
     
     // Reflect how many cards are in the homebrew deck
-    l("allDeckOption").innerHTML = "an expanded homebrew deck (" + (fullDeck.length + homebrewDeck.length) + " cards)";
-    // l("initialConfig").appendChild(l("declaredDrawsNode"));
-    // l("initialConfig").appendChild(l("drawButton"));
+    l("allDeckCount").innerHTML = "(" + (fullDeck.length + homebrewDeck.length) + " cards)";
     
-    setDeckType();
-    l("initialDeclaredDrawsInput").value = 1;
-    l("initialDeclaredDrawsInput").onchange();
+    l("initRandDeclInput").value = 1;
+    l("initRandDeclInput").onchange();
     vetoes = 0;
     deck = [];
     lastCard = {};
@@ -596,8 +593,15 @@ function setDeckType() {
     }
 }
 
+function adjustDeclaredDraws(amount) {
+    declaredDraws += amount;
+    setDeclaredDraws();
+}
+
 function setDeclaredDraws(inputElement) {
-    declaredDraws = Math.floor(inputElement.valueAsNumber);
+    if (inputElement) {
+        declaredDraws = Math.floor(inputElement.valueAsNumber);
+    }
     // Don't let the maniacs type in negative numbers or erase the input
     if (!(declaredDraws >= 1)) {
         declaredDraws = 1;
@@ -610,9 +614,13 @@ function setDeclaredDraws(inputElement) {
     }
 }
 
-function readyDeck() {
-    setDeckType();
-    
+function readyDeck(type) {
+    if (type === undefined) {
+        setDeckType();
+    } else {
+        deckType = type;
+    }
+
     // Hide initial config input
     l("initialConfig").hidden = true;
 
@@ -671,6 +679,7 @@ function setCustWorth() {
 }
 
 function customize() {
+    l("initialConfig").hidden = true;
     l("customMenu").hidden = false;
     
     l("custCardSrcSelector").value = "all";
@@ -907,6 +916,7 @@ function exportDeck() {
 }
 
 function importDeck() {
+    l("initialConfig").hidden = true;
     l("importMenu").hidden = false;
     l("importTextarea").value = "";
 }

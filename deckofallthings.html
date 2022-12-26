@@ -19,12 +19,6 @@
                 justify-content: space-between;
                 row-gap: 40px;
             }
-            .declaredDrawsInput {
-                width: 2.5em;
-            }
-            .numInput {
-                width: 2.5em;
-            }
             .cardNameInput {
                 font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
                 font-weight: bold;
@@ -81,14 +75,14 @@
             }
             .fullOrDraw {
                 text-align: center;
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                gap: 15px;
             }
             @media screen and (max-width: 400px) {
                 .fullOrDraw {
-                    display: block;
-                    width: 100%;
-                }
-                .fullOrDraw td {
-                    display: block;
+                    flex-direction: column;
                 }
             }
             .radioContainer {
@@ -117,6 +111,81 @@
                 font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
                 text-align: center;
             }
+            .initialButton {
+                max-width: 100%;
+                background: rgb(50, 0, 100);
+                text-decoration: none;
+                text-align: center;
+                font-weight: bold;
+                padding: 10px;
+                margin: 5px;
+                display: inline-flex;
+                flex-direction: column;
+                border-style: solid;
+                border-color: rgb(230, 140, 255);
+                border-radius: 15px;
+                cursor: pointer;
+            }
+            .initialButton > * {
+                max-width: 192px;
+                width: auto;
+                line-height: 1.5em;
+                vertical-align: center;
+            }
+            .declaredDrawsBox {
+                display: inline-flex;
+                height: 2em;
+                line-height: 2em;
+            }
+            .declaredDrawsBox > * {
+                width: 2em;
+            }
+            .minusButton,
+            .plusButton {
+                -webkit-touch-callout: none; /* Disable Android and iOS callouts */
+                -webkit-user-select: none; /* Disable Chrome and Safari text selection */
+                -khtml-user-select: none; /* Disable Konqueror text selection */
+                -moz-user-select: none; /* Disable Firefox text selection */
+                -ms-user-select: none; /* Disable Internet Explorer text selection */
+                user-select: none; /* Disable text selection in modern browsers */
+            }
+            .minusButton {
+                background: rgb(127, 0, 0);
+                
+            }
+            .minusButton:hover {
+                background: rgb(160, 0, 0);
+            }
+            .minusButton:active {
+                background: rgb(64, 0, 0);
+            }
+            .plusButton {
+                background: rgb(0, 127, 0);
+
+            }
+            .plusButton:hover {
+                background: rgb(0, 160, 0);
+            }
+            .plusButton:active {
+                background: rgb(0, 64, 0);
+            }
+            .declaredDrawsInput {
+                text-align: center;
+                background: transparent;
+                color: white;
+                font-weight: bold;
+            }
+            .numInput {
+                width: 2.5em;
+            }
+            input[type="number"]::-webkit-inner-spin-button,
+            input[type="number"]::-webkit-outer-spin-button {
+                -webkit-appearance: none;
+                margin: 0;
+            }
+            input[type="number"] {
+                -moz-appearance: textfield;
+            }
         </style>
     </head>
     <body>
@@ -124,23 +193,64 @@
             <div id="initialConfig">
                 <h2>A deck of wondrous power is presented to you&hellip;</h2>
 
-                <p>
-                    <label id="deckTypeSelectorLabel" for="deckTypeSelector">Before you sits&hellip;</label>
-                    <select id="deckTypeSelector" name="deckTypeSelector" onchange="setDeckType()">
-                        <option value="random">a mysterious deck (13 or 22 cards)</option>
-                        <option value="partial">a partial deck (13 cards)</option>
-                        <option value="full">a full deck (22 cards)</option>
-                        <option value="all" id="allDeckOption">an expanded homebrew deck</option>
-                        <option value="custom">a customized deck&hellip;</option>
-                        <option value="fullCustom">a deck of fully customized cards&hellip;</option>
-                        <option value="imported">a deck you've previously exported&hellip;</option>
-                    </select>
-                </p>
-                <div id="initialDeclaredDraws">
-                    <label for="initialDeclaredDrawsInput">How many cards will you draw?</label>
-                    <input class="declaredDrawsInput" id="initialDeclaredDrawsInput" type="number" value=1 min=1 onchange="setDeclaredDraws(l('initialDeclaredDrawsInput'))" />
+                <div class="initialButton" id="drawRandomButton" onclick="readyDeck('random')">
+                    <img src="images/icon_drawrandom.png" />
+                    <div onclick="event.stopPropagation()">
+                        <label for="initRandDeclInput">Draw </label>
+                        <div class="declaredDrawsBox">
+                            <span class="minusButton" onclick="adjustDeclaredDraws(-1)">&minus;</span>
+                            <input class="declaredDrawsInput" id="initRandDeclInput" type="number" value=1 min=1 onchange="setDeclaredDraws(l('initRandDeclInput'))">
+                            <span class="plusButton" onclick="adjustDeclaredDraws(1)">+</span>
+                        </div>
+                        <label for="initRandDeclInput"> from a mysterious deck (13 or 22 cards)</label>
+                    </div>
                 </div>
-                <button id="initialDrawButton" type="button" onclick="readyDeck()">Begin</button>
+                <div class="initialButton" id="drawPartialButton" onclick="readyDeck('partial')">
+                    <img src="images/icon_drawpartial.png" />
+                    <div onclick="event.stopPropagation()">
+                        <label for="initPartDeclInput">Draw </label>
+                        <div class="declaredDrawsBox">
+                            <span class="minusButton" onclick="adjustDeclaredDraws(-1)">&minus;</span>
+                            <input class="declaredDrawsInput" id="initPartDeclInput" type="number" value=1 min=1 onchange="setDeclaredDraws(l('initPartDeclInput'))">
+                            <span class="plusButton" onclick="adjustDeclaredDraws(1)">+</span>
+                        </div>
+                        <label for="initPartDeclInput"> from a partial deck (13 cards)</label>
+                    </div>
+                </div>
+                <div class="initialButton" id="drawFullButton" onclick="readyDeck('full')">
+                    <img src="images/icon_drawfull.png" />
+                    <div onclick="event.stopPropagation()">
+                        <label for="initFullDeclInput">Draw </label>
+                        <div class="declaredDrawsBox">
+                            <span class="minusButton" onclick="adjustDeclaredDraws(-1)">&minus;</span>
+                            <input class="declaredDrawsInput" id="initFullDeclInput" type="number" value=1 min=1 onchange="setDeclaredDraws(l('initFullDeclInput'))">
+                            <span class="plusButton" onclick="adjustDeclaredDraws(1)">+</span>
+                        </div>
+                        <label for="initFullDeclInput"> from a full deck (22 cards)</label>
+                    </div>
+                </div>
+                <div class="initialButton" id="drawAllButton" onclick="readyDeck('all')">
+                    <img src="images/icon_drawall.png" />
+                    <div onclick="event.stopPropagation()">
+                        <label for="initAllDeclInput">Draw </label>
+                        <div class="declaredDrawsBox">
+                            <span class="minusButton" onclick="adjustDeclaredDraws(-1)">&minus;</span>
+                            <input class="declaredDrawsInput" id="initAllDeclInput" type="number" value=1 min=1 onchange="setDeclaredDraws(l('initAllDeclInput'))">
+                            <span class="plusButton" onclick="adjustDeclaredDraws(1)">+</span>
+                        </div>
+                        <label for="initAllDeclInput"> from an expanded homebrew deck <span id="allDeckCount"></span></label>
+                    </div>
+                </div>
+
+                <hr />
+                <div class="initialButton" id="customizeButton" onclick="customize()">
+                    <img src="images/square.png">
+                    Customize deck
+                </div>
+                <div class="initialButton" id="drawAllButton" onclick="importDeck()">
+                    <img src="images/square.png" />
+                    Import deck
+                </div>
             </div>
 
             <div id="customMenu" hidden>
@@ -201,20 +311,30 @@
                 </div>
 
                 <h3>Finish</h3>
-                <p>The buttons below will create a deck based on your parameters. You can further customize each card in the generated deck, or you can go in blind and start drawing!</p>
-                <table class="fullOrDraw">
+                <p>The buttons below will create a deck based on your parameters.</p>
+                <div class="fullOrDraw">
+                    <div><button id="customFullCustomBtn" type="button" onclick="finishCustomization(); fullCustomize();">Customize individual cards&hellip;</button></div>
+                    <div class="nowrap">&ndash; OR &ndash;</div>
+                    <div style="display: flex; flex-direction: column; align-items: center;">
+                        <div>
+                            <label for="custDeclaredDraws">How many cards will you draw?</label>
+                            <input class="declaredDrawsInput" id="custDeclaredDraws" type="number" value=1 min=1 onchange="setDeclaredDraws(l('custDeclaredDraws'))" />
+                        </div>
+                        <button id="custDrawButton" type="button" onclick="finishCustomization(); draw();">Draw!</button>
+                    </div>
+                </div>
+                <!--<table class="fullOrDraw">
                     <tr>
-                        <td><button id="customFullCustomBtn" type="button" onclick="finishCustomization(); fullCustomize();">Customize individual cards&hellip;</button></td>
+                        <td></td>
                         <td class="nowrap" style="padding: 15px">&ndash; OR &ndash;</td>
                         <td style="display: flex; flex-direction: column; align-items: center;">
                             <div>
-                                <label for="custDeclaredDraws">How many cards will you draw?</label>
-                                <input class="declaredDrawsInput" id="custDeclaredDraws" type="number" value=1 min=1 onchange="setDeclaredDraws(l('custDeclaredDraws'))" />
+                                
                             </div>
                             <button id="custDrawButton" type="button" onclick="finishCustomization(); draw();">Draw!</button>
                         </td>
                     </tr>
-                </table>
+                </table>-->
             </div>
 
             <div id="fullCustomMenu" hidden>
@@ -254,7 +374,7 @@
             </div>
 
             <div id="drawingNode" hidden>
-                <h2>Drawing</h2>
+                <h2>Let's see what you've drawn&hellip;</h2>
 
                 <div id="drawnCards"></div>
                 <div id="drawingFooter">
