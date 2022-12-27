@@ -461,9 +461,9 @@ function fadeIn(id, milliseconds, andThen) {
     }, 50);
 }
 
-function fadeTransition(from, to, milliseconds) {
+function fadeTransition(from, to, milliseconds, andThen) {
     if (milliseconds === undefined) milliseconds = 500;
-    fadeOut(from, milliseconds / 2, function(){fadeIn(to, milliseconds / 2)});
+    fadeOut(from, milliseconds / 2, function(){fadeIn(to, milliseconds / 2, andThen)});
 }
 
 function setOpacity(id, opacity) {
@@ -608,8 +608,12 @@ function createCustomCardNode(card, i) {
     // Remove card button
     let removeBtnHolder = createElement("div");
     removeBtnHolder.appendChild(createButton("removeCardBtn" + i, function() {
-        deck[i] = null; // nulls are filtered out before drawing
+        deck[i] = null; // nulls will filtered out before drawing; for now, keep correlation between element id and deck index
         l("fullCustomCardsNode").removeChild(cardContainer);
+        
+        // No fade unless we can get the other cards to slide slickly to their new positions.
+        // (Fade doesn't look cool if another card instantly teleports into the vacated space)
+        // fadeOut(cardContainer, 150, function() {l("fullCustomCardsNode").removeChild(cardContainer)});
     }, "Remove card"));
     cardNode.appendChild(removeBtnHolder);
 
@@ -732,10 +736,7 @@ function customize() {
     l("custXPDefault").onclick();
 }
 
-function finishCustomization() {
-    // Generates the deck according to the customization parameters
-    l("customMenu").hidden = true;
-
+function finishCustomization(andThen) {
     // Start with (a copy of) the deck to use
     switch (custCardSrc) {
         case "partial":
@@ -782,8 +783,19 @@ function finishCustomization() {
                 x.desc = x.noLevelDesc;
             else if (x.noXPDesc)
                 x.desc = x.noXPDesc;
-        })
+        });
     }
+
+    switch (andThen) {
+        case fullCustomize:
+            fadeTransition("customMenu", "fullCustomMenu");
+            break;
+        case draw:
+            fadeTransition("customMenu", "drawingNode");
+            break;
+    }
+    if (typeof andThen === "function")
+        andThen();
 }
 
 /**
@@ -817,12 +829,14 @@ function copyObjectArray(arr) {
 function addCustomCard() {
     let newCard = {name: "New Card", desc: ""};
     deck.push(newCard);
-    l("fullCustomCardsNode").appendChild(createCustomCardNode(newCard, deck.length - 1));
+
+    let cardNode = createCustomCardNode(newCard, deck.length - 1);
+    setOpacity(cardNode, 0);
+    l("fullCustomCardsNode").appendChild(cardNode);
+    fadeIn(cardNode, 150);
 }
 
 function fullCustomize() {
-    l("fullCustomMenu").hidden = false;
-
     let fullCustomCardsNode = l("fullCustomCardsNode");
     fullCustomCardsNode.innerHTML = ""; // empty it out
     for (let i in deck) {
@@ -831,9 +845,10 @@ function fullCustomize() {
 }
 
 function finishFullCustomization() {
-    l("fullCustomMenu").hidden = true;
     // Get rid of nulls (removed cards) before drawing
     deck = deck.filter(a => a !== null);
+
+    fadeTransition("fullCustomMenu", "drawingNode");
     draw();
 }
 
@@ -845,9 +860,7 @@ function drawMore() {
 }
 
 function startOver() {
-    l("drawnCards").innerHTML = "";
-    l("drawingNode").hidden = true;
-    l("initialConfig").hidden = false;
+    fadeTransition("drawingNode", "initialConfig", 1000, function() {l("drawnCards").innerHTML = ""});
     init();
 }
 
@@ -951,13 +964,22 @@ function exportDeck() {
 
 function importDeck() {
     fadeTransition("initialConfig", "importMenu");
-    l("importTextarea").value = "";
+    l("importTextarea").value = "[]";
 }
 
 function importAndThen(func) {
     try {
         deck = JSON.parse(importTextarea.value);
-        l("importMenu").hidden = true;
+        switch (func) {
+            case fullCustomize:
+                fadeTransition("importMenu", "fullCustomMenu");
+                break;
+            case draw:
+                fadeTransition("importMenu", "drawingNode");
+                break;
+            default:
+                fadeOut("importMenu");
+        }
         func();
     } catch (err) {
         alert("Import failed! " + err);

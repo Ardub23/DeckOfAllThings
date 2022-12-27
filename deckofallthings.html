@@ -315,9 +315,9 @@
                 <h3>Finish</h3>
                 <p>The buttons below will create a deck based on your parameters.</p>
                 <div class="fullOrDraw">
-                    <div class="bigButton" onclick="finishCustomization(); fullCustomize();">Edit individual cards</div>
+                    <div class="bigButton" onclick="finishCustomization(fullCustomize)">Edit individual cards</div>
                     <div class="nowrap">&ndash; OR &ndash;</div>
-                    <div class="bigButton" onclick="finishCustomization(); draw();">
+                    <div class="bigButton" onclick="finishCustomization(draw)">
                         <span>
                             Draw
                             <div class="declaredDrawsBox" onclick="event.stopPropagation()">
@@ -356,8 +356,9 @@
             <div id="importMenu" hidden>
                 <h2>Import deck</h2>
 
-                <div><label for="importTextarea">Paste your exported deck below.</label></div>
-                <textarea id="importTextarea"></textarea>
+                <label for="importTextarea">Paste your exported deck below.</label>
+                <br />
+                <textarea id="importTextarea" onfocus="l('importTextarea').select()"></textarea>
                 <p>Import and then&hellip;</p>
                 <div class="fullOrDraw">
                     <div class="bigButton" onclick="importAndThen(fullCustomize)">Edit individual cards</div>
