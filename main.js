@@ -396,7 +396,7 @@ function init() {
             worth: 0.9
         },
         {   name: "Phoenix",
-            desc: "After you die, burning your remains to ash indefinitely extends the time limit on spells that raise you from the dead. Any spell which would revive you acts as <i>true resurrection</i>, provided your remains were burned within the spell's original time limit. When you drop to 0 hit points, you can choose to be engulfed in flame, dying and turning to ash immediately.",
+            desc: "After you die, burning your remains to ash indefinitely extends the time limit on spells that raise you from the dead. Any spell which would revive you has the same effects as <i>true resurrection</i>, provided your remains were burned within the spell's original time limit and the caster touches the ashes. When you drop to 0 hit points, you can choose to be engulfed in flame, dying and turning to ash immediately.",
             wildness: 0.8,
             worth: 1.0
         }
@@ -425,8 +425,56 @@ function analyzeDeck(arr) {
     console.log("Worth: " + (worthSum / arr.length));
 }
 
+function fadeOut(id, milliseconds, andThen) {
+    if (milliseconds === undefined) milliseconds = 250;
+
+    var op = 1;
+    var timer = setInterval(function() {
+        if (op >= 0.1) {
+            setOpacity(id, op);
+            op -= (50 / milliseconds);
+        } else {
+            clearInterval(timer);
+            l(id).hidden = true;
+            setOpacity(id, 1); // Return opacity to normal for when it's unhidden later
+            if (typeof andThen === "function")
+                andThen();
+        }
+    }, 50);
+}
+
+function fadeIn(id, milliseconds, andThen) {
+    if (milliseconds === undefined) milliseconds = 250;
+
+    var op = 0;
+    var timer = setInterval(function() {
+        if (op <= 0.9) {
+            setOpacity(id, op);
+            op += (50 / milliseconds);
+            l(id).hidden = false;
+        } else {
+            setOpacity(id, 1);
+            clearInterval(timer);
+            if (typeof andThen === "function")
+                andThen();
+        }
+    }, 50);
+}
+
+function fadeTransition(from, to, milliseconds) {
+    if (milliseconds === undefined) milliseconds = 500;
+    fadeOut(from, milliseconds / 2, function(){fadeIn(to, milliseconds / 2)});
+}
+
+function setOpacity(id, opacity) {
+    l(id).style.opacity = opacity;
+    l(id).style.filter = "alpha(opacity=" + (opacity * 100) + ")";
+}
+
 function l(id) {
     // L for eLement
+    if (id instanceof Node) return id;
+    
     return document.getElementById(id);
 }
 
@@ -621,19 +669,12 @@ function readyDeck(type) {
         deckType = type;
     }
 
-    // Hide initial config input
-    l("initialConfig").hidden = true;
+    fadeTransition("initialConfig", "drawingNode");
 
     switch (deckType) {
-        case "custom":
-            customize();
-            break;
-        case "fullCustom":
-            deck = fullDeck.map(card => ({...card}));
-            fullCustomize();
-            break;
-        case "imported":
-            importDeck();
+        case "random":
+            deck = ((Math.random() < 0.25)? fullDeck : partialDeck).map(card => ({...card}));;
+            draw();
             break;
         case "partial":
             deck = partialDeck.map(card => ({...card}));
@@ -641,10 +682,6 @@ function readyDeck(type) {
             break;
         case "full":
             deck = fullDeck.map(card => ({...card}));
-            draw();
-            break;
-        case "random":
-            deck = ((Math.random() < 0.25)? fullDeck : partialDeck).map(card => ({...card}));;
             draw();
             break;
         case "all":
@@ -679,9 +716,8 @@ function setCustWorth() {
 }
 
 function customize() {
-    l("initialConfig").hidden = true;
-    l("customMenu").hidden = false;
-    
+    fadeTransition("initialConfig", "customMenu");
+
     l("custCardSrcSelector").value = "all";
     l("custCardSrcSelector").onchange();
     
@@ -753,14 +789,14 @@ function finishCustomization() {
 /**
  * Determines whether the val provided is sufficiently close to the target value.
  * If val == target, then true is always returned; otherwise, the probability of
- * returning true decreases as the difference between {@code val} and target grows.
- * The probability is never zero, but it approaches zero as the difference approaches infinity.
- * With a high strictness, the probability approaches zero more quickly.
+ * returning true decreases as the difference between val and target grows. The
+ * probability is never zero, but it approaches zero as the difference approaches
+ * infinity. With a high strictness, the probability approaches zero more quickly.
  * 
  * @param {number} val - the input value
- * @param {number} target - the target value to compare {@code val} against
+ * @param {number} target - the target value to compare val against
  * @param {number} strictness - how strongly a given difference will push the probability toward zero
- * @returns {number} {@code true} if {@code val} is randomly deemed sufficiently close to {@code target}
+ * @returns {number} true if val is randomly deemed sufficiently close to target
  */
 function fits(val, target, strictness) {
     // Don't reject a undefined val as unfitting
@@ -816,11 +852,6 @@ function startOver() {
 }
 
 function draw() {
-    let drawingNode = l("drawingNode");
-
-    drawingNode.hidden = false;
-    drawing = true;
-
     // declaredDraws can be 0 if user declined an optional draw-more from their last card.
     // In that case, skip to end-of-draw stuff.
     if (declaredDraws > 0 && deck.length > 0) { // we're really gonna draw a card
@@ -836,11 +867,14 @@ function draw() {
         // Make the card node and put it in the drawnCards node
         let cardDiv = createElement("div");
         cardDiv.className = "drawnCard";
+        setOpacity(cardDiv, 0);
         let cardName = createElement("h3", undefined, card.name);
         cardName.className = "drawnCardName";
         cardDiv.appendChild(cardName);
         cardDiv.appendChild(createElement("p", undefined, card.desc));
+        
         l("drawnCards").appendChild(cardDiv);
+        fadeIn(cardDiv);
 
         // Conditional changes to declaredDraws (including "nomore", which can be vetoed) are handled by the buttons
         declaredDraws -= 1;
@@ -916,8 +950,7 @@ function exportDeck() {
 }
 
 function importDeck() {
-    l("initialConfig").hidden = true;
-    l("importMenu").hidden = false;
+    fadeTransition("initialConfig", "importMenu");
     l("importTextarea").value = "";
 }
 
