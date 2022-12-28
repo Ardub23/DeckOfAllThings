@@ -126,6 +126,15 @@
                 border-radius: 15px;
                 cursor: pointer;
             }
+            .bigButton:not(:has(.mouseGreedy:hover)):hover {
+                background: rgb(80, 50, 110);
+            }
+            .bigButton:hover .declaredDrawsBox:hover {
+                background: rgb(50 25 75);
+            }
+            .bigButton:active {
+                background: rgb(30, 20, 40);
+            }
             .bigButton > * {
                 max-width: 192px;
                 width: auto;
@@ -149,6 +158,7 @@
                 -moz-user-select: none; /* Disable Firefox text selection */
                 -ms-user-select: none; /* Disable Internet Explorer text selection */
                 user-select: none; /* Disable text selection in modern browsers */
+                cursor: pointer;
             }
             .minusButton {
                 background: rgb(127, 0, 0);
@@ -179,6 +189,9 @@
             .numInput {
                 width: 2.5em;
             }
+            .mouseGreedy {
+                cursor: default;
+            }
             input[type="number"]::-webkit-inner-spin-button,
             input[type="number"]::-webkit-outer-spin-button {
                 -webkit-appearance: none;
@@ -187,16 +200,29 @@
             input[type="number"] {
                 -moz-appearance: textfield;
             }
+
+            .slowFading {
+                opacity: 1;
+                transition: opacity 500ms;
+            }
+            .fading {
+                opacity: 1;
+                transition: opacity 250ms;
+            }
+            .fadedOut {
+                opacity: 0;
+                pointer-events: none;
+            }
         </style>
     </head>
     <body>
         <div id="main">
-            <div id="initialConfig">
+            <div id="initialConfig" class="fading">
                 <h2>A deck of wondrous power is presented to you&hellip;</h2>
 
                 <div class="bigButton" id="drawRandomButton" onclick="readyDeck('random')">
                     <img src="images/icon_drawrandom.png" />
-                    <div onclick="event.stopPropagation()">
+                    <div class="mouseGreedy" onclick="event.stopPropagation()">
                         <label for="initRandDeclInput">Draw </label>
                         <div class="declaredDrawsBox">
                             <span class="minusButton" onclick="adjustDeclaredDraws(-1)">&minus;</span>
@@ -208,7 +234,7 @@
                 </div>
                 <div class="bigButton" id="drawPartialButton" onclick="readyDeck('partial')">
                     <img src="images/icon_drawpartial.png" />
-                    <div onclick="event.stopPropagation()">
+                    <div class="mouseGreedy" onclick="event.stopPropagation()">
                         <label for="initPartDeclInput">Draw </label>
                         <div class="declaredDrawsBox">
                             <span class="minusButton" onclick="adjustDeclaredDraws(-1)">&minus;</span>
@@ -220,7 +246,7 @@
                 </div>
                 <div class="bigButton" id="drawFullButton" onclick="readyDeck('full')">
                     <img src="images/icon_drawfull.png" />
-                    <div onclick="event.stopPropagation()">
+                    <div class="mouseGreedy" onclick="event.stopPropagation()">
                         <label for="initFullDeclInput">Draw </label>
                         <div class="declaredDrawsBox">
                             <span class="minusButton" onclick="adjustDeclaredDraws(-1)">&minus;</span>
@@ -232,7 +258,7 @@
                 </div>
                 <div class="bigButton" id="drawAllButton" onclick="readyDeck('all')">
                     <img src="images/icon_drawall.png" />
-                    <div onclick="event.stopPropagation()">
+                    <div class="mouseGreedy" onclick="event.stopPropagation()">
                         <label for="initAllDeclInput">Draw </label>
                         <div class="declaredDrawsBox">
                             <span class="minusButton" onclick="adjustDeclaredDraws(-1)">&minus;</span>
@@ -254,7 +280,7 @@
                 </div>
             </div>
 
-            <div id="customMenu" hidden>
+            <div id="customMenu" class="fading fadedOut" hidden>
                 <h2>Deck customization</h2>
 
                 <h3 id="custCardSrcHeader">Card sources</h3>
@@ -331,8 +357,8 @@
                 </div>
             </div>
 
-            <div id="fullCustomMenu" hidden>
-                <h2>Card customization</h2>
+            <div id="fullCustomMenu" class="fading fadedOut" hidden>
+                <h2>Edit cards</h2>
 
                 <div id="fullCustomCardsNode"></div>
 
@@ -353,7 +379,7 @@
                 </div>
             </div>
 
-            <div id="importMenu" hidden>
+            <div id="importMenu" class="fading fadedOut" hidden>
                 <h2>Import deck</h2>
 
                 <label for="importTextarea">Paste your exported deck below.</label>
@@ -377,7 +403,7 @@
                 </div>
             </div>
 
-            <div id="drawingNode" hidden>
+            <div id="drawingNode" class="fading fadedOut" hidden>
                 <h2>Let's see what you've drawn&hellip;</h2>
 
                 <div id="drawnCards"></div>

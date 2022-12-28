@@ -425,50 +425,46 @@ function analyzeDeck(arr) {
     console.log("Worth: " + (worthSum / arr.length));
 }
 
-function fadeOut(id, milliseconds, andThen) {
-    if (milliseconds === undefined) milliseconds = 250;
+function parseDuration(str) {
+    if (!str) return 0;
 
-    var op = 1;
-    var timer = setInterval(function() {
-        if (op >= 0.1) {
-            setOpacity(id, op);
-            op -= (50 / milliseconds);
-        } else {
-            clearInterval(timer);
-            l(id).hidden = true;
-            setOpacity(id, 1); // Return opacity to normal for when it's unhidden later
-            if (typeof andThen === "function")
-                andThen();
-        }
-    }, 50);
+    // Split the string into a number and a unit
+    const [value, unit] = str.split(/(?<![A-Za-z])(?=[A-Za-z])/);
+
+    // Parse the number
+    const num = parseFloat(value);
+
+    // Return the number of milliseconds
+    if (unit === 's') return num * 1000;
+    if (unit === 'ms') return num;
+    return 0;
 }
 
-function fadeIn(id, milliseconds, andThen) {
-    if (milliseconds === undefined) milliseconds = 250;
-
-    var op = 0;
-    var timer = setInterval(function() {
-        if (op <= 0.9) {
-            setOpacity(id, op);
-            op += (50 / milliseconds);
-            l(id).hidden = false;
-        } else {
-            setOpacity(id, 1);
-            clearInterval(timer);
-            if (typeof andThen === "function")
-                andThen();
-        }
-    }, 50);
+function fadeTransition(from, to, andThen) {
+    hide(from, function(){show(to, andThen)});
 }
 
-function fadeTransition(from, to, milliseconds, andThen) {
-    if (milliseconds === undefined) milliseconds = 500;
-    fadeOut(from, milliseconds / 2, function(){fadeIn(to, milliseconds / 2, andThen)});
+function show(id, callback) {
+    l(id).hidden = false;
+    l(id).classList.remove('fadedOut');
+
+    if (typeof callback === "function") {
+        const duration = parseDuration(getComputedStyle(l(id)).transitionDuration);
+        const delay = parseDuration(getComputedStyle(l(id)).transitionDelay);
+
+        setTimeout(callback, duration + delay);
+    }
 }
 
-function setOpacity(id, opacity) {
-    l(id).style.opacity = opacity;
-    l(id).style.filter = "alpha(opacity=" + (opacity * 100) + ")";
+function hide(id, callback) {
+    l(id).classList.add('fadedOut');
+
+    if (typeof callback === "function") {
+        const duration = parseDuration(getComputedStyle(l(id)).transitionDuration);
+        const delay = parseDuration(getComputedStyle(l(id)).transitionDelay);
+        setTimeout(callback, duration + delay);
+        setTimeout(function(){l(id).hidden = true}, duration + delay);
+    }
 }
 
 function l(id) {
@@ -537,7 +533,7 @@ function createRadio(group, value, label, valueHolder, selected) {
 function createCustomCardNode(card, i) {
     let cardContainer = getOrCreate("div", "customCardContainer" + i);
     cardContainer.innerHTML = "";
-    cardContainer.className = "customCardContainer";
+    cardContainer.classList = "customCardContainer slowFading fadedOut";
 
     let cardNode = getOrCreate("div", "customCard" + i);
     cardNode.innerHTML = "";
@@ -613,7 +609,7 @@ function createCustomCardNode(card, i) {
         
         // No fade unless we can get the other cards to slide slickly to their new positions.
         // (Fade doesn't look cool if another card instantly teleports into the vacated space)
-        // fadeOut(cardContainer, 150, function() {l("fullCustomCardsNode").removeChild(cardContainer)});
+        // hide(cardContainer, function() {l("fullCustomCardsNode").removeChild(cardContainer)});
     }, "Remove card"));
     cardNode.appendChild(removeBtnHolder);
 
@@ -831,9 +827,8 @@ function addCustomCard() {
     deck.push(newCard);
 
     let cardNode = createCustomCardNode(newCard, deck.length - 1);
-    setOpacity(cardNode, 0);
     l("fullCustomCardsNode").appendChild(cardNode);
-    fadeIn(cardNode, 150);
+    setTimeout(function() {show(cardNode)});
 }
 
 function fullCustomize() {
@@ -842,6 +837,18 @@ function fullCustomize() {
     for (let i in deck) {
         fullCustomCardsNode.appendChild(createCustomCardNode(deck[i], i));
     }
+
+    setTimeout(function() {
+        var i = 0;
+        let timer = setInterval(function() {
+            if (i < deck.length) {
+                show(fullCustomCardsNode.childNodes[i]);
+                i++;
+            } else {
+                clearInterval(timer);
+            }
+        }, 50);
+    }, 200);
 }
 
 function finishFullCustomization() {
@@ -860,7 +867,7 @@ function drawMore() {
 }
 
 function startOver() {
-    fadeTransition("drawingNode", "initialConfig", 1000, function() {l("drawnCards").innerHTML = ""});
+    fadeTransition("drawingNode", "initialConfig", function() {l("drawnCards").innerHTML = ""});
     init();
 }
 
@@ -879,15 +886,14 @@ function draw() {
 
         // Make the card node and put it in the drawnCards node
         let cardDiv = createElement("div");
-        cardDiv.className = "drawnCard";
-        setOpacity(cardDiv, 0);
+        cardDiv.classList = "drawnCard fading fadedOut";
         let cardName = createElement("h3", undefined, card.name);
         cardName.className = "drawnCardName";
         cardDiv.appendChild(cardName);
         cardDiv.appendChild(createElement("p", undefined, card.desc));
         
         l("drawnCards").appendChild(cardDiv);
-        fadeIn(cardDiv);
+        setTimeout(function(){show(cardDiv)}, 200);
 
         // Conditional changes to declaredDraws (including "nomore", which can be vetoed) are handled by the buttons
         declaredDraws -= 1;
