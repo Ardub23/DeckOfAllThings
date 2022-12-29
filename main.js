@@ -692,25 +692,30 @@ function readyDeck(type) {
 }
 
 function setCustWild() {
-    wildBiasStr = l("wildStrSlider").valueAsNumber;
+    /* With linear slider-to-bias mapping, the first bit of the slider (0%-25%) has
+     * a great impact, while the last bit (75%-100%) isn't as significant. The middle
+     * of the slider turned out to be quite strong. Raising the slider value to a power
+     * weakens the beginning and strengthens the ending.
+     */
+    wildBiasStr = Math.pow(l("wildStrSlider").valueAsNumber, 1.25);
     wildVal = l("wildValSlider").valueAsNumber;
 
     const baseSlider = l("wildBaselineSlider");
     wildBaseline = (advancedOptions)? baseSlider.valueAsNumber : 0;
-    const maxSlider = l("wildMaxSlider");
-    wildMax = (advancedOptions)? maxSlider.valueAsNumber : 1;
+    const maxSliderVal = l("wildMaxSlider").valueAsNumber;
+    wildMax = (advancedOptions)? Math.pow(maxSliderVal, 2) * Math.sign(maxSliderVal) : 1;
 
     drawProbabilityPlot("wildGraph", "wildness", wildBiasStr, wildVal, wildBaseline, wildMax);
 }
 
 function setCustWorth() {
-    worthBiasStr = l("worthStrSlider").valueAsNumber;
+    worthBiasStr = Math.pow(l("worthStrSlider").valueAsNumber, 1.25);
     worthVal = l("worthValSlider").valueAsNumber;
 
     const baseSlider = l("worthBaselineSlider");
-    worthBaseline = (baseSlider.hidden)? 0 : baseSlider.valueAsNumber;
-    const maxSlider = l("worthMaxSlider");
-    worthMax = (maxSlider.hidden)? 1 : maxSlider.valueAsNumber;
+    worthBaseline = (advancedOptions)? baseSlider.valueAsNumber : 0;
+    const maxSliderVal = l("worthMaxSlider").valueAsNumber;
+    worthMax = (advancedOptions)? Math.pow(maxSliderVal, 2) * Math.sign(maxSliderVal) : 1;
 
     drawProbabilityPlot("worthGraph", "worth", worthBiasStr, worthVal, worthBaseline, worthMax);
 }
@@ -731,7 +736,8 @@ function setCustWorth() {
  */
 function probability(x, target, strictness, baseline, max) {
     if (baseline === undefined) baseline = 0;
-    const prob = ((Math.exp(-(Math.pow((target - x) * strictness, 2)))) * (1 - baseline) * max + baseline);
+
+    const prob = ((Math.exp(-(Math.pow((target - x) * strictness, 2)))) * (max - baseline) + baseline);
 
     // Clamp to [0..1] range
     return Math.max(0, Math.min(1, prob));
@@ -739,8 +745,9 @@ function probability(x, target, strictness, baseline, max) {
 
 function drawProbabilityPlot(div, chartTitle, biasStr, val, baseline, max) {
     let points = [];
-    for (let i = 0; i <= 1; i += 0.05) {
-        points.push(i);
+    for (let i = 0; i <= 20; i += 1) {
+        // Can't just count by 0.05 because float imprecision means the 20th result is >1.0
+        points.push(i / 20);
     }
     const trace = {
         x: points,

@@ -222,8 +222,12 @@
                 height: 240px;
             }
             .sliderContainer {
+                max-width: 360px;
                 display: flex;
                 align-items: center;
+            }
+            input[type="range"] {
+                flex: 1;
             }
             .resetButton {
                 margin-left: 5px;
@@ -329,7 +333,7 @@
                 <b>Bias strength</b>
                 <div class="sliderContainer">
                     <label for="wildStrSlider">(none)</label>
-                    <input id="wildStrSlider" type="range" min=0 max=4 value=0 step=0.1 />
+                    <input id="wildStrSlider" type="range" min=0 max=3 value=0 step=0.1 />
                     <label for="wildStrSlider">(very strong)</label>
                     <img src="images/icon_reset.png" class="resetButton" onclick="l('wildStrSlider').value = 0; setCustWild();" />
                 </div>
@@ -345,17 +349,18 @@
                     <p></p>
                     <b>Baseline</b>
                     <div class="sliderContainer">
-                        <label for="wildBaselineSlider">0</label>
-                        <input id="wildBaselineSlider" type="range" min=0 max=1 value=0 step=0.025 />
-                        <label for="wildBaselineSlider">1</label>
+                        <label for="wildBaselineSlider">&minus;1</label>
+                        <input id="wildBaselineSlider" type="range" min=-1 max=2 value=0 step=0.025 />
+                        <label for="wildBaselineSlider">2</label>
                         <img src="images/icon_reset.png" class="resetButton" onclick="l('wildBaselineSlider').value = 0; setCustWild();" />
                     </div>
                     <p></p>
-                    <b>Maximum</b>
+                    <b>Peak</b>
                     <div class="sliderContainer">
-                        <label for="wildMaxSlider">0</label>
-                        <input id="wildMaxSlider" type="range" min=0 max=2 value=1 step=0.025 />
-                        <label for="wildMaxSlider">2</label>
+                        <!-- The slider value is squared (but its sign preserved) -->
+                        <label for="wildMaxSlider">&minus;4</label>
+                        <input id="wildMaxSlider" type="range" min=-2 max=2 value=1 step=0.025 />
+                        <label for="wildMaxSlider">4</label>
                         <img src="images/icon_reset.png" class="resetButton" onclick="l('wildMaxSlider').value = 1; setCustWild();" />
                     </div>
                 </div>
@@ -365,7 +370,7 @@
                 <b>Bias strength</b>
                 <div class="sliderContainer">
                     <label for="worthStrSlider">(none)</label>
-                    <input id="worthStrSlider" type="range" min=0 max=4 value=0 step=0.1 />
+                    <input id="worthStrSlider" type="range" min=0 max=3 value=0 step=0.1 />
                     <label for="worthStrSlider">(very strong)</label>
                     <img src="images/icon_reset.png" class="resetButton" onclick="l('worthStrSlider').value = 0; setCustWorth();" />
                 </div>
@@ -381,17 +386,18 @@
                     <p></p>
                     <b>Baseline</b>
                     <div class="sliderContainer">
-                        <label for="worthBaselineSlider">0</label>
-                        <input id="worthBaselineSlider" type="range" min=0 max=1 value=0 step=0.025 />
-                        <label for="wildBaselineSlider">1</label>
+                        <label for="worthBaselineSlider">&minus;1</label>
+                        <input id="worthBaselineSlider" type="range" min=-1 max=2 value=0 step=0.025 />
+                        <label for="wildBaselineSlider">2</label>
                         <img src="images/icon_reset.png" class="resetButton" onclick="l('worthBaselineSlider').value = 0; setCustWorth();" />
                     </div>
                     <p></p>
-                    <b>Maximum</b>
+                    <b>Peak</b>
                     <div class="sliderContainer">
-                        <label for="worthMaxSlider">0</label>
-                        <input id="worthMaxSlider" type="range" min=0 max=2 value=1 step=0.025 />
-                        <label for="worthMaxSlider">2</label>
+                        <!-- The slider value is squared (but its sign preserved) -->
+                        <label for="worthMaxSlider">&minus;4</label>
+                        <input id="worthMaxSlider" type="range" min=-2 max=2 value=1 step=0.025 />
+                        <label for="worthMaxSlider">4</label>
                         <img src="images/icon_reset.png" class="resetButton" onclick="l('worthMaxSlider').value = 1; setCustWorth();" />
                     </div>
                 </div>
