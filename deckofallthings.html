@@ -449,6 +449,12 @@
                             from this deck
                         </span>
                     </div>
+
+                    <div style="margin-top: 40px">
+                        <label for="fullExportButton">Click this button to export the current deck to your clipboard.</label>
+                        <br />
+                        <button id="fullExportButton" type="button" onclick="exportDeck()">Export deck</button>
+                    </div>
                 </div>
             </div>
 
@@ -493,7 +499,6 @@
                         <label for="exportButton">Click this button to export the current deck to your clipboard. (Note: If any cards have been drawn which don't reappear in the deck, they'll be gone from the exported deck too.)</label>
                         <br />
                         <button id="exportButton" type="button" onclick="exportDeck()">Export deck</button>
-                        <textarea id="exportedText" hidden></textarea>
                     </div>
                     <div style="margin-top: 10px">
                         <label for="startOverButton">Click this button to start completely over. The current deck will be lost unless you've exported it.</label>

@@ -979,27 +979,36 @@ function draw() {
 }
 
 function exportDeck() {
-    let copyTextarea = l("exportedText");
-    copyTextarea.hidden = false;
-    copyTextarea.value = JSON.stringify(deck);
-    copyTextarea.focus();
-    copyTextarea.select();
-    try {
-        let successful = document.execCommand('copy');
-        if (successful) {
-            alert("Deck has been copied to clipboard. You can import it by choosing that option when selecting the type of deck to use.");
-        } else {
-            alert("Failed to copy deck to clipboard");
-        }
-    } catch (err) {
-        alert('Unable to copy! ' + err);
-    }
-    copyTextarea.hidden = true;
+    const text = JSON.stringify(deck);
+    navigator.clipboard.writeText(text)
+        .then(() => { alert('Successfully copied to clipboard! Import the deck by clicking \"Import deck\" on the main menu.'); })
+        .catch(err => { alert('Error in copying text: ', err); });
+    
+    // let copyTextarea = l("exportedText");
+    // copyTextarea.value = JSON.stringify(deck);
+    // copyTextarea.hidden = false;
+    // copyTextarea.focus();
+    // copyTextarea.select();
+    // try {
+    //     let successful = document.execCommand('copy');
+    //     if (successful) {
+    //         alert("Deck has been copied to clipboard. You can import it by choosing that option when selecting the type of deck to use.");
+    //     } else {
+    //         alert("Failed to copy deck to clipboard");
+    //     }
+    // } catch (err) {
+    //     alert('Unable to copy! ' + err);
+    // }
+    // copyTextarea.hidden = true;
 }
 
 function importDeck() {
-    fadeTransition("initialConfig", "importMenu");
-    l("importTextarea").value = "[]";
+    const textarea = l("importTextarea");
+    textarea.value = "[]";
+    fadeTransition("initialConfig", "importMenu", function() {
+        textarea.focus();
+        textarea.select();
+    });
 }
 
 function importAndThen(func) {
