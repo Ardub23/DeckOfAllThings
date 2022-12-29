@@ -162,7 +162,8 @@
             }
             .minusButton {
                 background: rgb(127, 0, 0);
-                
+                border-top-left-radius: 15px;
+                border-bottom-left-radius: 15px;
             }
             .minusButton:hover {
                 background: rgb(160, 0, 0);
@@ -172,7 +173,8 @@
             }
             .plusButton {
                 background: rgb(0, 127, 0);
-
+                border-top-right-radius: 15px;
+                border-bottom-right-radius: 15px;
             }
             .plusButton:hover {
                 background: rgb(0, 160, 0);
@@ -182,9 +184,11 @@
             }
             .declaredDrawsInput {
                 text-align: center;
-                background: transparent;
+                background: rgb(63, 63, 109);
                 color: white;
                 font-weight: bold;
+                border-top: 1px solid rgb(72, 72, 151);
+                border-bottom: 1px solid rgb(140, 140, 226);
             }
             .numInput {
                 width: 2.5em;
@@ -415,7 +419,7 @@
                     <div class="bigButton" onclick="finishCustomization(draw)">
                         <span>
                             Draw
-                            <div class="declaredDrawsBox" onclick="event.stopPropagation()">
+                            <div class="declaredDrawsBox mouseGreedy" onclick="event.stopPropagation()">
                                 <span class="minusButton" onclick="adjustDeclaredDraws(-1)">&minus;</span>
                                 <input class="declaredDrawsInput" id="custDeclInput" type="number" value=1 min=1 onchange="setDeclaredDraws(l('custDeclInput'))">
                                 <span class="plusButton" onclick="adjustDeclaredDraws(1)">+</span>
@@ -437,7 +441,7 @@
                     <div class="bigButton" onclick="finishFullCustomization()">
                         <span>
                             Draw
-                            <div class="declaredDrawsBox" onclick="event.stopPropagation()">
+                            <div class="declaredDrawsBox mouseGreedy" onclick="event.stopPropagation()">
                                 <span class="minusButton" onclick="adjustDeclaredDraws(-1)">&minus;</span>
                                 <input class="declaredDrawsInput" id="fullDeclInput" type="number" value=1 min=1 onchange="setDeclaredDraws(l('fullDeclInput'))">
                                 <span class="plusButton" onclick="adjustDeclaredDraws(1)">+</span>
@@ -461,7 +465,7 @@
                     <div class="bigButton" onclick="importAndThen(draw)">
                         <span>
                             Draw
-                            <div class="declaredDrawsBox" onclick="event.stopPropagation()">
+                            <div class="declaredDrawsBox mouseGreedy" onclick="event.stopPropagation()">
                                 <span class="minusButton" onclick="adjustDeclaredDraws(-1)">&minus;</span>
                                 <input class="declaredDrawsInput" id="importDeclDraws" type="number" value=1 min=1 onchange="setDeclaredDraws(l('importDeclDraws'))">
                                 <span class="plusButton" onclick="adjustDeclaredDraws(1)">+</span>
@@ -487,18 +491,19 @@
                     </div>
                     <div style="margin-top: 40px">
                         <label for="exportButton">Click this button to export the current deck to your clipboard. (Note: If any cards have been drawn which don't reappear in the deck, they'll be gone from the exported deck too.)</label>
+                        <br />
                         <button id="exportButton" type="button" onclick="exportDeck()">Export deck</button>
                         <textarea id="exportedText" hidden></textarea>
                     </div>
                     <div style="margin-top: 10px">
-                        <label for="startOverButton">Click this button to start completely over. (The current deck will be lost unless you've exported it.)</label>
-                        <div></div>
+                        <label for="startOverButton">Click this button to start completely over. The current deck will be lost unless you've exported it.</label>
+                        <br />
                         <button id="startOverButton" type="button" onclick="startOver()">Start over</button>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div id="disclaimer">The Deck of All Things includes unofficial Fan Content permitted under the Fan Content Policy. Not approved/endorsed by Wizards. Portions of the materials used are from the <i>Dungeons & Dragons</i> 5th Edition Systems Reference Document, property of Wizards of the Coast. ©Wizards of the Coast LLC.</div>
+        <div id="disclaimer">The Deck of All Things includes unofficial Fan Content permitted under the Fan Content Policy. Not approved/endorsed by Wizards. Portions of the materials used are from the <i>Dungeons & Dragons</i> 5th Edition Systems Reference Document, property of Wizards of the Coast. &copy;Wizards of the Coast LLC.</div>
     </body>
 </html>
