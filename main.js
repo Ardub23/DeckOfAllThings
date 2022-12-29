@@ -58,7 +58,7 @@ function init() {
         },
         {   name: "Talons",
             desc: "Every magic item you wear or carry disintegrates. Artifacts in your possession aren't destroyed but do vanish.",
-            wildness: 0.6,
+            wildness: 0.8,
             worth: 0.1
         },
         {   name: "The Void",
@@ -92,8 +92,8 @@ function init() {
         },
         {   name: "Ruin",
             desc: "All forms of wealth that you carry or own, other than magic items, are lost to you. Portable property vanishes. Businesses, buildings, and land you own are lost in a way that alters reality the least. Any documentation that proves you should own something lost to this card also disappears.",
-            wildness: 0.5,
-            worth: 0.2
+            wildness: 0.7,
+            worth: 0.1
         },
         {   name: "Euryale",
             desc: "The card's medusa-like visage curses you. You take a &minus;2 penalty on saving throws while cursed in this way. Only a god or the magic of The Fates card can end this curse.",
@@ -404,13 +404,34 @@ function init() {
     
     // Reflect how many cards are in the homebrew deck
     l("allDeckCount").innerHTML = "(" + (fullDeck.length + homebrewDeck.length) + " cards)";
+
+    l("custAdvancedCheckbox").addEventListener("change", toggleCustAdvanced);
     
+    [
+        "wildStrSlider",
+        "wildValSlider",
+        "wildBaselineSlider",
+        "wildMaxSlider"
+    ].forEach(x => l(x).addEventListener("input", setCustWild));
+
+    [
+        "worthStrSlider",
+        "worthValSlider",
+        "worthBaselineSlider",
+        "worthMaxSlider"
+    ].forEach(x => l(x).addEventListener("input", setCustWorth));
+    
+    setUp();
+}
+
+function setUp() {
     l("initRandDeclInput").value = 1;
     l("initRandDeclInput").onchange();
     vetoes = 0;
     deck = [];
     lastCard = {};
     drawing = false;
+    advancedOptions = false;
 }
 
 function analyzeDeck(arr) {
@@ -507,27 +528,6 @@ function createOption(value, innerHTML) {
     let opt = createElement("option", undefined, innerHTML);
     opt.value = value;
     return opt;
-}
-
-function createRadio(group, value, label, valueHolder, selected) {
-    let el = getOrCreate("input", group + "_" + value);
-    el.type = "radio";
-    el.name = group;
-    el.value = value;
-    el.onclick = function() { valueHolder.value = el.value; };
-    if (selected) {
-        el.checked = true;
-        el.onclick();
-    }
-
-    let lbl = createElement("label", undefined, label);
-    lbl.htmlFor = el.id;
-    
-    let div = createElement("div");
-    div.appendChild(el);
-    div.appendChild(lbl);
-
-    return div;
 }
 
 function createCustomCardNode(card, i) {
@@ -692,27 +692,78 @@ function readyDeck(type) {
 }
 
 function setCustWild() {
-    custWildBias = l("custWildStrSelector").value;
+    wildBiasStr = l("wildStrSlider").valueAsNumber;
+    wildVal = l("wildValSlider").valueAsNumber;
 
-    let valSelect = l("custWildValSelector");
-    if (custWildBias == "off") {
-        valSelect.hidden = true;
-    } else {
-        valSelect.hidden = false;
-        custWildVal = parseFloat(valSelect.value);
-    }
+    const baseSlider = l("wildBaselineSlider");
+    wildBaseline = (advancedOptions)? baseSlider.valueAsNumber : 0;
+    const maxSlider = l("wildMaxSlider");
+    wildMax = (advancedOptions)? maxSlider.valueAsNumber : 1;
+
+    drawProbabilityPlot("wildGraph", "wildness", wildBiasStr, wildVal, wildBaseline, wildMax);
 }
 
 function setCustWorth() {
-    custWorthBias = l("custWorthStrSelector").value;
+    worthBiasStr = l("worthStrSlider").valueAsNumber;
+    worthVal = l("worthValSlider").valueAsNumber;
 
-    let valSelect = l("custWorthValSelector");
-    if (custWorthBias == "off") {
-        valSelect.hidden = true;
-    } else {
-        valSelect.hidden = false;
-        custWorthVal = parseFloat(valSelect.value);
+    const baseSlider = l("worthBaselineSlider");
+    worthBaseline = (baseSlider.hidden)? 0 : baseSlider.valueAsNumber;
+    const maxSlider = l("worthMaxSlider");
+    worthMax = (maxSlider.hidden)? 1 : maxSlider.valueAsNumber;
+
+    drawProbabilityPlot("worthGraph", "worth", worthBiasStr, worthVal, worthBaseline, worthMax);
+}
+
+/**
+ * Determines the probability that the val provided will be randomly deemed
+ * sufficiently close to the target value. If val == target, the returned value
+ * is max; otherwise, the probability decreases as the difference between val and
+ * target grows. The probability never reaches baseline, but it approaches baseline
+ * as the difference approaches infinity. With a high strictness, the probability
+ * approaches baseline more quickly.
+ * 
+ * @param {number} val - the input value
+ * @param {number} target - the target value to compare val against
+ * @param {number} strictness - how strongly a given difference will push the probability toward zero
+ * @param (number) baseline - the minimum probability
+ * @returns {number} the probability for val to be randomly deemed sufficiently close to target
+ */
+function probability(x, target, strictness, baseline, max) {
+    if (baseline === undefined) baseline = 0;
+    const prob = ((Math.exp(-(Math.pow((target - x) * strictness, 2)))) * (1 - baseline) * max + baseline);
+
+    // Clamp to [0..1] range
+    return Math.max(0, Math.min(1, prob));
+}
+
+function drawProbabilityPlot(div, chartTitle, biasStr, val, baseline, max) {
+    let points = [];
+    for (let i = 0; i <= 1; i += 0.05) {
+        points.push(i);
     }
+    const trace = {
+        x: points,
+        y: points.map(x => probability(x, val, biasStr, baseline, max)),
+        type: "scatter",
+        mode: "lines",
+        hoverinfo: "none"
+    }
+    const layout = {
+        showlegend: false,
+        margin: {
+            autoexpand: false,
+            l: 30,
+            r: 30,
+            t: 40,
+            b: 30
+        },
+        xaxis: {range: [0, 1]},
+        yaxis: {range: [0, 1.05]},
+        title: "Inclusion probability: " + chartTitle
+    };
+
+    Plotly.react(div, [trace], layout, {staticPlot: true});
 }
 
 function customize() {
@@ -721,15 +772,27 @@ function customize() {
     l("custCardSrcSelector").value = "all";
     l("custCardSrcSelector").onchange();
     
-    l("custWildStrSelector").value = "off";
-    l("custWildValSelector").value = "0.5";
+    l("wildStrSlider").value = 0;
+    l("wildValSlider").value = 0.5;
     setCustWild();
-    l("custWorthStrSelector").value = "off";
-    l("custWorthValSelector").value = "0.5";
+    l("worthStrSlider").value = 0;
+    l("worthValSlider").value = 0.5;
     setCustWorth();
     
     l("custXPDefault").checked = true;
     l("custXPDefault").onclick();
+}
+
+function toggleCustAdvanced() {
+    advancedOptions = l("custAdvancedCheckbox").checked;
+    
+    const options = document.getElementsByClassName("advancedOption");
+    for (let i = 0; i < options.length; i++) {
+        options[i].hidden = !advancedOptions;
+    }
+
+    setCustWild()
+    setCustWorth();
 }
 
 function finishCustomization(andThen) {
@@ -753,18 +816,8 @@ function finishCustomization(andThen) {
             break;
     }
 
-    // Filter by wildness
-    if (custWildBias == "weak") {
-        deck = deck.filter(x => fits(x.wildness, custWildVal, 1.5));
-    } else if (custWildBias == "strong") {
-        deck = deck.filter(x => fits(x.wildness, custWildVal, 3));
-    }
-    // Filter by worth
-    if (custWorthBias == "weak") {
-        deck = deck.filter(x => fits(x.worth, custWorthVal, 1.5));
-    } else if (custWorthBias == "strong") {
-        deck = deck.filter(x => fits(x.worth, custWorthVal, 3));
-    }
+    deck = deck.filter(x => Math.random() < probability(x.wildness, wildVal, wildBiasStr, wildBaseline, wildMax));
+    deck = deck.filter(x => Math.random() < probability(x.worth, worthVal, worthBiasStr, worthBaseline, worthMax));
 
     if (custXP == "noxp") {
         deck.forEach(x => {
@@ -792,30 +845,6 @@ function finishCustomization(andThen) {
     }
     if (typeof andThen === "function")
         andThen();
-}
-
-/**
- * Determines whether the val provided is sufficiently close to the target value.
- * If val == target, then true is always returned; otherwise, the probability of
- * returning true decreases as the difference between val and target grows. The
- * probability is never zero, but it approaches zero as the difference approaches
- * infinity. With a high strictness, the probability approaches zero more quickly.
- * 
- * @param {number} val - the input value
- * @param {number} target - the target value to compare val against
- * @param {number} strictness - how strongly a given difference will push the probability toward zero
- * @returns {number} true if val is randomly deemed sufficiently close to target
- */
-function fits(val, target, strictness) {
-    // Don't reject a undefined val as unfitting
-    if (val === undefined) return true;
-
-    // The closer val is to target, the more likely it is that true will be returned.
-    // When val == target, the probability is 1.
-    // High strictness makes the probability drop off quickly as val and target differ.
-    // prob = e^(-(difference * strictness)^2)
-    let prob = Math.exp(-(Math.pow((target - val) * strictness, 2)));
-    return (Math.random() < prob);
 }
 
 function copyObjectArray(arr) {
@@ -868,7 +897,7 @@ function drawMore() {
 
 function startOver() {
     fadeTransition("drawingNode", "initialConfig", function() {l("drawnCards").innerHTML = ""});
-    init();
+    setUp();
 }
 
 function draw() {
