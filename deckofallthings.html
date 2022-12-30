@@ -220,14 +220,10 @@
             .graph {
                 width: 360px;
                 height: 240px;
-            }
-            .sliderContainer {
-                max-width: 360px;
-                display: flex;
-                align-items: center;
+                float: left;
             }
             input[type="range"] {
-                flex: 1;
+                width: 100%;
             }
             .resetButton {
                 margin-left: 5px;
@@ -246,7 +242,7 @@
     <body>
         <div id="main">
             <div id="initialConfig" class="fading">
-                <h1>A deck of wondrous power is presented to you&hellip;</h2>
+                <h1>A deck of wondrous power is presented to you&hellip;</h1>
 
                 <div class="bigButton" id="drawRandomButton" onclick="readyDeck('random')">
                     <img src="images/icon_drawrandom.png" />
@@ -309,9 +305,9 @@
             </div>
 
             <div id="customMenu" class="fading fadedOut" hidden>
-                <h1>Deck customization</h2>
+                <h1>Deck customization</h1>
 
-                <h2 id="custCardSrcHeader">Card sources</h3>
+                <h2 id="custCardSrcHeader">Card sources</h2>
                 <label id="custCardSrcLbl" for="custCardSrcSelector">Use cards from: </label>
                 <select id="custCardSrcSelector" name="custCardSrcSelector" value="all" onchange="custCardSrc = l('custCardSrcSelector').value;">
                     <option value="partial">the partial deck of 13 cards</option>
@@ -320,89 +316,101 @@
                     <option value="homebrew">homebrew cards only</option>
                 </select>
 
-                <h2>Wildness and worth</h3>
+                <h2>Wildness and worth</h2>
                 <p>You can filter cards based on how wild their effects are and how good they are for the player who draws them. Each card is assigned a "wildness value", from the tame cards with simple and straightforward effects, to the earth-shattering and often very disruptive cards. Each also has a "worth value", from the disastrous to the miraculous. These options remove cards from the deck; each card in the deck is still equally likely to be drawn.</p>
-
                 <p>
                     <input id="custAdvancedCheckbox" name="custAdvancedCheckbox" type="checkbox" />
                     <label for="custAdvancedCheckbox">Show advanced options</label>
                 </p>
 
-                <h3>Wildness</h4>
+                <h3>Wildness</h3>
+                <table style="max-width: 360px; float: left">
+                    <tr>
+                        <th colspan=3><label for="wildStrSlider">Bias strength</label></th>
+                    </tr>
+                    <tr>
+                        <td style="text-align: right;"><label for="wildStrSlider">none</label></td>
+                        <td style="width:100%"><input id="wildStrSlider" type="range" min=0 max=3 value=0 step=0.1 /></td>
+                        <td><label for="wildStrSlider">very strong</label></td>
+                        <td><img src="images/icon_reset.png" class="resetButton" onclick="l('wildStrSlider').value = 0; setCustWild();" /></td>
+                    </tr>
+                    <tr>
+                        <th colspan=3><label for="wildValSlider">Bias value</label></th>
+                    </tr>
+                    <tr>
+                        <td style="text-align: right;"><label for="wildValSlider">very tame</label></td>
+                        <td><input id="wildValSlider" type="range" min=0 max=1 value=0.5 step=0.025 /></td>
+                        <td><label for="wildValSlider">very wild</label></td>
+                        <td><img src="images/icon_reset.png" class="resetButton" onclick="l('wildValSlider').value = 0.5; setCustWild();" /></td>
+                    </tr>
+                    <tr class="advancedOption" hidden>
+                        <th colspan=3><label for="wildBaselineSlider">Baseline</label></th>
+                    </tr>
+                    <tr class="advancedOption" hidden>
+                        <td style="text-align: right;"><label for="wildBaselineSlider">&minus;1</label></td>
+                        <td><input id="wildBaselineSlider" type="range" min=-1 max=2 value=0 step=0.025 /></td>
+                        <td><label for="wildBaselineSlider">2</label></td>
+                        <td><img src="images/icon_reset.png" class="resetButton" onclick="l('wildBaselineSlider').value = 0; setCustWild();" /></td>
+                    </tr>
+                    <tr class="advancedOption" hidden>
+                        <th colspan=3><label for="wildMaxSlider">Peak</label></th>
+                    </tr>
+                    <tr class="advancedOption" hidden>
+                        <!-- The slider value is squared (but its sign preserved) -->
+                        <td style="text-align: right;"><label for="wildMaxSlider">&minus;4</label></td>
+                        <td><input id="wildMaxSlider" type="range" min=-2 max=2 value=1 step=0.025 /></td>
+                        <td><label for="wildMaxSlider">4</label></td>
+                        <td><img src="images/icon_reset.png" class="resetButton" onclick="l('wildMaxSlider').value = 1; setCustWild();" /></td>
+                    </tr>
+                </table>
                 <div id="wildGraph" class="graph advancedOption" hidden></div>
-                <b>Bias strength</b>
-                <div class="sliderContainer">
-                    <label for="wildStrSlider">(none)</label>
-                    <input id="wildStrSlider" type="range" min=0 max=3 value=0 step=0.1 />
-                    <label for="wildStrSlider">(very strong)</label>
-                    <img src="images/icon_reset.png" class="resetButton" onclick="l('wildStrSlider').value = 0; setCustWild();" />
-                </div>
-                <p></p>
-                <b>Bias value</b>
-                <div class="sliderContainer">
-                    <label for="wildValSlider">(very tame)</label>
-                    <input id="wildValSlider" type="range" min=0 max=1 value=0.5 step=0.025 />
-                    <label for="wildValSlider">(very wild)</label>
-                    <img src="images/icon_reset.png" class="resetButton" onclick="l('wildValSlider').value = 0.5; setCustWild();" />
-                </div>
-                <div class="advancedOption" hidden>
-                    <p></p>
-                    <b>Baseline</b>
-                    <div class="sliderContainer">
-                        <label for="wildBaselineSlider">&minus;1</label>
-                        <input id="wildBaselineSlider" type="range" min=-1 max=2 value=0 step=0.025 />
-                        <label for="wildBaselineSlider">2</label>
-                        <img src="images/icon_reset.png" class="resetButton" onclick="l('wildBaselineSlider').value = 0; setCustWild();" />
-                    </div>
-                    <p></p>
-                    <b>Peak</b>
-                    <div class="sliderContainer">
-                        <!-- The slider value is squared (but its sign preserved) -->
-                        <label for="wildMaxSlider">&minus;4</label>
-                        <input id="wildMaxSlider" type="range" min=-2 max=2 value=1 step=0.025 />
-                        <label for="wildMaxSlider">4</label>
-                        <img src="images/icon_reset.png" class="resetButton" onclick="l('wildMaxSlider').value = 1; setCustWild();" />
-                    </div>
-                </div>
 
-                <h3>Worth</h4>
+                <div style="clear: left; margin-bottom: 15px"></div>
+                <h3>Worth</h3>
+                <table style="max-width: 360px; float: left;">
+                    <tr>
+                        <th colspan=3><label for="worthStrSlider">Bias strength</label></th>
+                    </tr>
+                    <tr>
+                        <td style="text-align: right;"><label for="worthStrSlider">none</label></td>
+                        <td style="width: 100%"><input id="worthStrSlider" type="range" min=0 max=3 value=0 step=0.1 /></td>
+                        <td><label for="worthStrSlider">very strong</label></td>
+                        <td><img src="images/icon_reset.png" class="resetButton" onclick="l('worthStrSlider').value = 0; setCustWorth();" /></td>
+                    </tr>
+                    <tr>
+                        <th colspan=3><label for="worthValSlider">Bias value</label></th>
+                    </tr>
+                    <tr>
+                        <td style="text-align: right;"><label for="worthValSlider">very bad</label></td>
+                        <td><input id="worthValSlider" type="range" min=0 max=1 value=0.5 step=0.025 /></td>
+                        <td><label for="worthValSlider">very good</label></td>
+                        <td><img src="images/icon_reset.png" class="resetButton" onclick="l('worthValSlider').value = 0.5; setCustWorth();" /></td>
+                    </tr>
+                    <tr class="advancedOption" hidden>
+                        <th colspan=3><label for="worthBaselineSlider">Baseline</label></th>
+                    </tr>
+                    <tr class="advancedOption" hidden>
+                        <td style="text-align: right;"><label for="worthBaselineSlider">&minus;1</label></td>
+                        <td><input id="worthBaselineSlider" type="range" min=-1 max=2 value=0 step=0.025 /></td>
+                        <td><label for="worthBaselineSlider">2</label></td>
+                        <td><img src="images/icon_reset.png" class="resetButton" onclick="l('worthBaselineSlider').value = 0; setCustWorth();" /></td>
+                    </tr>
+                    <tr class="advancedOption" hidden>
+                        <th colspan=3><label for="worthMaxSlider">Peak</label></th>
+                    </tr>
+                    <tr class="advancedOption" hidden>
+                        <!-- The slider value is squared (but its sign preserved) -->
+                        <td style="text-align: right;"><label for="worthMaxSlider">&minus;4</label></td>
+                        <td><input id="worthMaxSlider" type="range" min=-2 max=2 value=1 step=0.025 /></td>
+                        <td><label for="worthMaxSlider">4</label></td>
+                        <td><img src="images/icon_reset.png" class="resetButton" onclick="l('worthMaxSlider').value = 1; setCustWorth();" /></td>
+                    </tr>
+                </table>
                 <div id="worthGraph" class="graph advancedOption" hidden></div>
-                <b>Bias strength</b>
-                <div class="sliderContainer">
-                    <label for="worthStrSlider">(none)</label>
-                    <input id="worthStrSlider" type="range" min=0 max=3 value=0 step=0.1 />
-                    <label for="worthStrSlider">(very strong)</label>
-                    <img src="images/icon_reset.png" class="resetButton" onclick="l('worthStrSlider').value = 0; setCustWorth();" />
-                </div>
-                <p></p>
-                <b>Bias value</b>
-                <div class="sliderContainer">
-                    <label for="worthValSlider">(very bad)</label>
-                    <input id="worthValSlider" type="range" min=0 max=1 value=0.5 step=0.025 />
-                    <label for="worthValSlider">(very good)</label>
-                    <img src="images/icon_reset.png" class="resetButton" onclick="l('worthValSlider').value = 0.5; setCustWorth();" />
-                </div>
-                <div class="advancedOption" hidden>
-                    <p></p>
-                    <b>Baseline</b>
-                    <div class="sliderContainer">
-                        <label for="worthBaselineSlider">&minus;1</label>
-                        <input id="worthBaselineSlider" type="range" min=-1 max=2 value=0 step=0.025 />
-                        <label for="wildBaselineSlider">2</label>
-                        <img src="images/icon_reset.png" class="resetButton" onclick="l('worthBaselineSlider').value = 0; setCustWorth();" />
-                    </div>
-                    <p></p>
-                    <b>Peak</b>
-                    <div class="sliderContainer">
-                        <!-- The slider value is squared (but its sign preserved) -->
-                        <label for="worthMaxSlider">&minus;4</label>
-                        <input id="worthMaxSlider" type="range" min=-2 max=2 value=1 step=0.025 />
-                        <label for="worthMaxSlider">4</label>
-                        <img src="images/icon_reset.png" class="resetButton" onclick="l('worthMaxSlider').value = 1; setCustWorth();" />
-                    </div>
-                </div>
+                
+                <div style="clear: left; margin-bottom: 15px"></div>
 
-                <h2>Experience and level-based effects</h3>
+                <h2>Experience and level-based effects</h2>
                 <p>Effects which deal with experience points are unsuited for campaigns that use other leveling systems, and some groups prefer to have all player characters at the same level.</p>
                 <div class="radioContainer">
                     <input type="radio" name="custXP" id="custXPDefault" value="default" onclick="custXP = 'default'" checked />
@@ -417,7 +425,7 @@
                     <label for="custXPNoLevel">Replace XP-based effects with ones that can't affect character levels</label>
                 </div>
 
-                <h2>Finish</h3>
+                <h2>Finish</h2>
                 <p>The buttons below will create a deck based on your parameters.</p>
                 <div class="fullOrDraw">
                     <div class="bigButton" onclick="finishCustomization(fullCustomize)">Edit individual cards</div>
@@ -437,7 +445,7 @@
             </div>
 
             <div id="fullCustomMenu" class="fading fadedOut" hidden>
-                <h1>Edit cards</h2>
+                <h1>Edit cards</h1>
 
                 <div id="fullCustomCardsNode"></div>
 
@@ -465,7 +473,7 @@
             </div>
 
             <div id="importMenu" class="fading fadedOut" hidden>
-                <h1>Import deck</h2>
+                <h1>Import deck</h1>
 
                 <label for="importTextarea">Paste your exported deck below.</label>
                 <br />
@@ -489,7 +497,7 @@
             </div>
 
             <div id="drawingNode" class="fading fadedOut" hidden>
-                <h1>Let's see what you've drawn&hellip;</h2>
+                <h1>Let's see what you've drawn&hellip;</h1>
 
                 <div id="drawnCards"></div>
                 <div id="drawingFooter">
