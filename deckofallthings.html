@@ -233,6 +233,13 @@
                 padding: 3px;
                 cursor: pointer;
                 align-self: center;
+                background: rgb(60, 60, 60);
+            }
+            .resetButton:hover {
+                background: rgb(100, 100, 100);
+            }
+            .resetButton:active {
+                background: transparent;
             }
         </style>
 
@@ -242,7 +249,7 @@
     <body>
         <div id="main">
             <div id="initialConfig" class="fading">
-                <h1>A deck of wondrous power is presented to you&hellip;</h1>
+                <h2>A deck of wondrous power is presented to you&hellip;</h2>
 
                 <div class="bigButton" id="drawRandomButton" onclick="readyDeck('random')">
                     <img src="images/icon_drawrandom.png" />
@@ -305,9 +312,9 @@
             </div>
 
             <div id="customMenu" class="fading fadedOut" hidden>
-                <h1>Deck customization</h1>
+                <h2>Deck customization</h2>
 
-                <h2 id="custCardSrcHeader">Card sources</h2>
+                <h2 id="custCardSrcHeader">Card sources</h3>
                 <label id="custCardSrcLbl" for="custCardSrcSelector">Use cards from: </label>
                 <select id="custCardSrcSelector" name="custCardSrcSelector" value="all" onchange="custCardSrc = l('custCardSrcSelector').value;">
                     <option value="partial">the partial deck of 13 cards</option>
@@ -316,14 +323,14 @@
                     <option value="homebrew">homebrew cards only</option>
                 </select>
 
-                <h2>Wildness and worth</h2>
+                <h3>Wildness and worth</h3>
                 <p>You can filter cards based on how wild their effects are and how good they are for the player who draws them. Each card is assigned a "wildness value", from the tame cards with simple and straightforward effects, to the earth-shattering and often very disruptive cards. Each also has a "worth value", from the disastrous to the miraculous. These options remove cards from the deck; each card in the deck is still equally likely to be drawn.</p>
                 <p>
                     <input id="custAdvancedCheckbox" name="custAdvancedCheckbox" type="checkbox" />
                     <label for="custAdvancedCheckbox">Show advanced options</label>
                 </p>
 
-                <h3>Wildness</h3>
+                <h4>Wildness</h4>
                 <table style="max-width: 360px; float: left">
                     <tr>
                         <th colspan=3><label for="wildStrSlider">Bias strength</label></th>
@@ -365,8 +372,9 @@
                 </table>
                 <div id="wildGraph" class="graph advancedOption" hidden></div>
 
-                <div style="clear: left; margin-bottom: 15px"></div>
-                <h3>Worth</h3>
+                <div style="clear: left; margin-block-end: 15px"></div>
+
+                <h4>Worth</h4>
                 <table style="max-width: 360px; float: left;">
                     <tr>
                         <th colspan=3><label for="worthStrSlider">Bias strength</label></th>
@@ -408,9 +416,9 @@
                 </table>
                 <div id="worthGraph" class="graph advancedOption" hidden></div>
                 
-                <div style="clear: left; margin-bottom: 15px"></div>
+                <div style="clear: left; margin-block-end: 15px"></div>
 
-                <h2>Experience and level-based effects</h2>
+                <h3>Experience and level-based effects</h3>
                 <p>Effects which deal with experience points are unsuited for campaigns that use other leveling systems, and some groups prefer to have all player characters at the same level.</p>
                 <div class="radioContainer">
                     <input type="radio" name="custXP" id="custXPDefault" value="default" onclick="custXP = 'default'" checked />
@@ -425,7 +433,7 @@
                     <label for="custXPNoLevel">Replace XP-based effects with ones that can't affect character levels</label>
                 </div>
 
-                <h2>Finish</h2>
+                <h3>Finish</h3>
                 <p>The buttons below will create a deck based on your parameters.</p>
                 <div class="fullOrDraw">
                     <div class="bigButton" onclick="finishCustomization(fullCustomize)">Edit individual cards</div>
@@ -445,7 +453,7 @@
             </div>
 
             <div id="fullCustomMenu" class="fading fadedOut" hidden>
-                <h1>Edit cards</h1>
+                <h2>Edit cards</h2>
 
                 <div id="fullCustomCardsNode"></div>
 
@@ -473,7 +481,7 @@
             </div>
 
             <div id="importMenu" class="fading fadedOut" hidden>
-                <h1>Import deck</h1>
+                <h2>Import deck</h2>
 
                 <label for="importTextarea">Paste your exported deck below.</label>
                 <br />
@@ -497,7 +505,7 @@
             </div>
 
             <div id="drawingNode" class="fading fadedOut" hidden>
-                <h1>Let's see what you've drawn&hellip;</h1>
+                <h2>Let's see what you've drawn&hellip;</h2>
 
                 <div id="drawnCards"></div>
                 <div id="drawingFooter">

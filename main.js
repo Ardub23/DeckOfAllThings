@@ -749,12 +749,28 @@ function drawProbabilityPlot(div, chartTitle, biasStr, val, baseline, max) {
         // Can't just count by 0.05 because float imprecision means the 20th result is >1.0
         points.push(i / 20);
     }
+
+    let ticks = false;
+    switch (chartTitle) {
+        case "wildness":
+            ticks = ["very tame", "middling", "very wild"];
+            break;
+        case "worth":
+            ticks = ["very bad", "so-so", "very good"];
+            break;
+    }
+
     const trace = {
         x: points,
         y: points.map(x => probability(x, val, biasStr, baseline, max)),
         type: "scatter",
         mode: "lines",
-        hoverinfo: "none"
+        line: {
+            color: "#cccccc",
+            width: 3,
+        },
+        fill: "tozeroy",
+        hoverinfo: "none",
     }
     const layout = {
         showlegend: false,
@@ -763,11 +779,23 @@ function drawProbabilityPlot(div, chartTitle, biasStr, val, baseline, max) {
             l: 30,
             r: 30,
             t: 40,
-            b: 30
+            b: 30,
         },
-        xaxis: {range: [0, 1]},
-        yaxis: {range: [0, 1.05]},
-        title: "Inclusion probability: " + chartTitle
+        xaxis: {
+            range: [0, 1],
+            color: "#cccccc",
+            tickmode: (ticks === false)? "auto" : "array",
+            tickvals: [0.05, 0.5, 0.95],
+            ticktext: ticks,
+        },
+        yaxis: {
+            range: [0, 1.05],
+            color: "#cccccc",
+        },
+        title: "Inclusion probability: " + chartTitle,
+        paper_bgcolor: "#555555",
+        plot_bgcolor: "#555555",
+        font: {color: "#cccccc",},
     };
 
     Plotly.react(div, [trace], layout, {staticPlot: true});
