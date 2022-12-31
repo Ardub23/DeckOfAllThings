@@ -15,7 +15,7 @@ function init() {
             worth: 1.0
         },
         {   name: "Moon",
-            desc: "You are granted the ability to cast the <i>wish</i> spell 1d3 times.",
+            desc: "You are granted the ability to cast the [wish](https://www.dndbeyond.com/spells/wish) spell 1d3 times.",
             wildness: 1.0,
             worth: 1.0
         },
@@ -62,7 +62,7 @@ function init() {
             worth: 0.1
         },
         {   name: "The Void",
-            desc: "This black card spells disaster. Your soul is drawn from your body and contained in an object in a place of the DM's choice. One or more powerful beings guard the place. While your soul is trapped in this way, your body is incapacitated. A <i>wish</i> spell can't restore your soul, but the spell reveals the location of the object that holds it. You draw no more cards.",
+            desc: "This black card spells disaster. Your soul is drawn from your body and contained in an object in a place of the DM's choice. One or more powerful beings guard the place. While your soul is trapped in this way, your body is incapacitated. A [wish](https://www.dndbeyond.com/spells/wish) spell can't restore your soul, but the spell reveals the location of the object that holds it. You draw no more cards.",
             drawsEffect: "nomore",
             wildness: 1.0,
             worth: 0.0
@@ -85,7 +85,7 @@ function init() {
             worth: 0.2
         },
         {   name: "Donjon",
-            desc: "You disappear and become entombed in a state of suspended animation in an extradimensional sphere. Everything you were wearing and carrying stays behind in the space you occupied when you disappeared. You remain imprisoned until you are found and removed from the sphere. You can't be located by any divination magic, but a <i>wish</i> spell can reveal the location of your prison. You draw no more cards.",
+            desc: "You disappear and become entombed in a state of suspended animation in an extradimensional sphere. Everything you were wearing and carrying stays behind in the space you occupied when you disappeared. You remain imprisoned until you are found and removed from the sphere. You can't be located by any divination magic, but a [wish](https://www.dndbeyond.com/spells/wish) spell can reveal the location of your prison. You draw no more cards.",
             drawsEffect: "nomore",
             wildness: 0.9,
             worth: 0.0
@@ -101,7 +101,7 @@ function init() {
             worth: 0.1
         },
         {   name: "Rogue",
-            desc: "A nonplayer character of the DM's choice becomes hostile toward you. The identity of your new enemy isn't known until the NPC or someone else reveals it. Nothing less than a <i>wish</i> spell or divine intervention can end the NPC's hostility toward you.",
+            desc: "A nonplayer character of the DM's choice becomes hostile toward you. The identity of your new enemy isn't known until the NPC or someone else reveals it. Nothing less than a [wish](https://www.dndbeyond.com/spells/wish) spell or divine intervention can end the NPC's hostility toward you.",
             wildness: 0.1,
             worth: 0.4
         },
@@ -149,12 +149,12 @@ function init() {
     
     homebrewDeck = [
         {   name: "Changeling",
-            desc: "Your body crumbles to dust, which immediately reconstitutes itself into a new body for you. Roll on the Reincarnate Races table from the <i>reincarnate</i> spell to determine your new race. Your racial traits change accordingly.",
+            desc: "Your body crumbles to dust, which immediately reconstitutes itself into a new body for you. Roll on the Reincarnate Races table from the [reincarnate](https://www.dndbeyond.com/spells/reincarnate) spell to determine your new race. Your racial traits change accordingly.",
             wildness: 0.4,
             worth: 0.4
         },
         {   name: "Torch",
-            desc: "All items you are wearing or carrying begin glowing as if affected by a <i>light</i> cantrip that lasts until dispelled.",
+            desc: "All items you are wearing or carrying begin glowing as if affected by a {light](https://www.dndbeyond.com/spells/light) cantrip that lasts until dispelled.",
             wildness: 0.0,
             worth: 0.5
         },
@@ -200,7 +200,7 @@ function init() {
             worth: 0.6
         },
         {   name: "Lycanthrope",
-            desc: "At the next dusk after you draw this card, you transform as if affected by the <i>polymorph</i> spell. The DM chooses the beast you turn into and controls you while you're transformed, as you're driven to kill every creature you encounter. At the end of each hour until the following dawn, you regain 1 hit point, then transform again.",
+            desc: "At the next dusk after you draw this card, you transform as if affected by the [polymorph](https://www.dndbeyond.com/spells/polymorph) spell. The DM chooses the beast you turn into and controls you while you're transformed, as you're driven to kill every creature you encounter. At the end of each hour until the following dawn, you regain 1 hit point, then transform again.",
             wildness: 0.5,
             worth: 0.3
         },
@@ -218,7 +218,7 @@ function init() {
             worth: 0.9
         },
         {   name: "Medic",
-            desc: "You gain the ability to cast the <i>power word heal</i> spell 3 times. You can't target yourself with it.",
+            desc: "You gain the ability to cast the [power word heal](http://dnd5e.wikidot.com/spell:power-word-heal) spell 3 times. You can't target yourself with it.",
             wildness: 0.8,
             worth: 1.0
         },
@@ -228,7 +228,7 @@ function init() {
             worth: 1.0
         },
         {   name: "Doldrums",
-            desc: "You gain a level of exhaustion. Rest can't reduce your exhaustion level below 1. If your exhaustion level is reduced to 0 another way, you regain a level of exhaustion after 24 hours. Only a <i>wish</i> spell or divine intervention can end this effect.",
+            desc: "You gain a level of exhaustion. Rest can't reduce your exhaustion level below 1. If your exhaustion level is reduced to 0 another way, you regain a level of exhaustion after 24 hours. Only a [wish](https://www.dndbeyond.com/spells/wish) spell or divine intervention can end this effect.",
             wildness: 0.4,
             worth: 0.2
         },
@@ -238,7 +238,7 @@ function init() {
             worth: 0.9
         },
         {   name: "Oaf",
-            desc: "Choose two skills with which you are proficient. You have a &minus;5 penalty to all checks you make with those skills. The penalty can be removed only by a <i>wish</i> spell or divine intervention.",
+            desc: "Choose two skills with which you are proficient. You have a &minus;5 penalty to all checks you make with those skills. The penalty can be removed only by a [wish](https://www.dndbeyond.com/spells/wish) spell or divine intervention.",
             wildness: 0.5,
             worth: 0.1
         },
@@ -250,7 +250,7 @@ function init() {
             worth: 0.4
         },
         {   name: "Ventriloquist",
-            desc: "You learn the <i>minor illusion</i> cantrip. When you create a sound with it, you can cast it without any components. If you already know <i>minor illusion</i>, you learn another cantrip of your choice. Intelligence, Wisdom, or Charisma is your spellcasting ability for it (choose when you draw this card).",
+            desc: "You learn the [minor illusion](https://www.dndbeyond.com/spells/minor-illusion) cantrip. When you create a sound with it, you can cast it without any components. If you already know _minor illusion_, you learn another cantrip of your choice. Intelligence, Wisdom, or Charisma is your spellcasting ability for it (choose when you draw this card).",
             wildness: 0.0,
             worth: 0.8
         },
@@ -295,7 +295,7 @@ function init() {
             worth: 0.6
         },
         {   name: "Connection",
-            desc: "You can cast the <i>detect thoughts</i> spell once without expending a spell slot, and you regain the ability to do so when you finish a long rest. When you cast it in this way, creatures you focus on automatically know you are probing into their minds, and they can read your mind in the same way for as long as you focus on them.",
+            desc: "You can cast the [wish](https://www.dndbeyond.com/spells/detect-thoughts) spell once without expending a spell slot, and you regain the ability to do so when you finish a long rest. When you cast it in this way, creatures you focus on automatically know you are probing into their minds, and they can read your mind in the same way for as long as you focus on them.",
             wildness: 0.4,
             worth: 0.6
         },
@@ -306,7 +306,7 @@ function init() {
             worth: 0.1
         },
         {   name: "Martyr",
-            desc: "You can cast the <i>wish</i> spell once without using a spell slot, and you regain the ability to do so when you finish a long rest. When you cast <i>wish</i> in this way, you drop to 0 hit points and immediately roll all of your death saving throws until you die or become stable. If you die as a result, you can't be brought back to life.",
+            desc: "You can cast the [wish](https://www.dndbeyond.com/spells/wish) spell once without using a spell slot, and you regain the ability to do so when you finish a long rest. When you cast _wish_ in this way, you drop to 0 hit points and immediately roll all of your death saving throws until you die or become stable. If you die as a result, you can't be brought back to life.",
             wildness: 0.9,
             worth: 0.9
         },
@@ -326,7 +326,7 @@ function init() {
             worth: 0.1
         },
         {   name: "Aegis",
-            desc: "You gain proficiency with shields, and you gain the service of a fey spirit which takes the form of an <i>animated shield</i> that appears at your feet. When you activate it, and as a bonus action while it is animated, you can choose a creature within 60 feet of you and cause the shield to move to and protect that creature.",
+            desc: "You gain proficiency with shields, and you gain the service of a fey spirit which takes the form of an [animated shield](https://www.dndbeyond.com/magic-items/4571-animated-shield) that appears at your feet. When you activate it, and as a bonus action while it is animated, you can choose a creature within 60 feet of you and cause the shield to move to and protect that creature.",
             wildness: 0.3,
             worth: 0.9
         },
@@ -366,7 +366,7 @@ function init() {
             worth: 0.6
         },
         {   name: "Prophet",
-            desc: "Four ivory strips worth 50 gp each, and incense worth 1000 gp, appear at your feet. You can cast the <i>legend lore</i> spell once without using a spell slot, and you regain the ability to do so when you finish a long rest.",
+            desc: "Four ivory strips worth 50 gp each, and incense worth 1000 gp, appear at your feet. You can cast the [legend lore](https://www.dndbeyond.com/spells/legend-lore) spell once without using a spell slot, and you regain the ability to do so when you finish a long rest.",
             wildness: 0.5,
             worth: 0.8
         },
@@ -380,8 +380,8 @@ function init() {
             wildness: 0.1,
             worth: 0.5
         },
-        {   name: "Dragon",
-            desc: "You gain the ability to transform into an adult dragon of your choice, as if by the <i>shapechange</i> spell (no concentration required). You can use this ability once.",
+        {   name: "Wyrm",
+            desc: "You gain the ability to transform into an adult dragon of your choice, as if by the [shapechange](https://www.dndbeyond.com/spells/shapechange) spell (no concentration required). You can use this ability once.",
             wildness: 0.5,
             worth: 1.0
         },
@@ -396,7 +396,7 @@ function init() {
             worth: 0.9
         },
         {   name: "Phoenix",
-            desc: "After you die, burning your remains to ash indefinitely extends the time limit on spells that raise you from the dead. Any spell which would revive you has the same effects as <i>true resurrection</i>, provided your remains were burned within the spell's original time limit and the caster touches the ashes. When you drop to 0 hit points, you can choose to be engulfed in flame, dying and turning to ash immediately.",
+            desc: "After you die, burning your remains to ash indefinitely extends the time limit on spells that raise you from the dead. Any spell which would revive you has the same effects as [true resurrection](https://www.dndbeyond.com/spells/true-resurrection), provided your remains were burned within the spell's original time limit and the caster touches the ashes. When you drop to 0 hit points, you can choose to be engulfed in flame, dying and turning to ash immediately.",
             wildness: 0.8,
             worth: 1.0
         }
@@ -978,7 +978,7 @@ function draw() {
         // Make the card node and put it in the drawnCards node
         let cardDiv = createElement("div");
         cardDiv.classList = "drawnCard fading fadedOut";
-        let cardName = createElement("h3", undefined, card.name);
+        let cardName = createElement("h3", undefined, DOMPurify.sanitize(card.name));
         cardName.className = "drawnCardName";
         cardDiv.appendChild(cardName);
 
