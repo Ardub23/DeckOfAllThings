@@ -715,57 +715,13 @@ function setCustBias(params, id) {
 }
 
 function setCustWild() {
-    wildParams = [];
+    wildParams = {};
     setCustBias(wildParams, "wild");
-    
-    // const strSliderVal = snap(l("wildStrSlider"), [0], 0.15);
-    // /* With linear slider-to-bias mapping, the first bit of the slider (0%-25%) has
-    //  * a great impact, while the last bit (75%-100%) isn't as significant. The middle
-    //  * of the slider turned out to be quite strong. Raising the slider value to a power
-    //  * weakens the beginning and strengthens the ending.
-    //  */
-    // wildBiasStr = Math.pow(strSliderVal, 1.25);
-
-    // wildVal = l("wildValSlider").valueAsNumber;
-
-    // if (advancedOptions) {
-    //     wildBaseline = snap(l("wildBaselineSlider"), 1, 0.1);
-        
-    //     // Snap to 0 and 1
-    //     snap(l("wildMaxSlider"), [0, 1], 0.1);
-    //     // x^3 - 1.5x^2 + 1.5x: close to x in 0-1 range, but flies off to infinity faster
-    //     // So the slider has high extremes but sticks between 0 and 1 for a while
-    //     const x = l("wildMaxSlider").valueAsNumber;
-    //     wildMax = Math.pow(x, 3) - 1.5 * Math.pow(x, 2) + 1.5 * x;
-    // } else {
-    //     wildBaseline = 0;
-    //     wildMax = 1;
-    // }
-
-    // drawProbabilityPlot("wildGraph", "wildness", wildBiasStr, wildVal, wildBaseline, wildMax);
 }
 
 function setCustWorth() {
     worthParams = {};
     setCustBias(worthParams, "worth");
-    // worthBiasStr = Math.pow(l("worthStrSlider").valueAsNumber, 1.25);
-    // worthVal = l("worthValSlider").valueAsNumber;
-
-    // if (advancedOptions) {
-    //     worthBaseline = snap(l("worthBaselineSlider"), 1, 0.1)
-
-    //     // Snap to 0 and 1
-    //     snap(l("worthMaxSlider"), [0, 1], 0.1);
-    //     // x^3 - 1.5x^2 + 1.5x: close to x in 0-1 range, but flies off to infinity faster
-    //     // So the slider has high extremes but sticks between 0 and 1 for a while
-    //     const x = l("worthMaxSlider").valueAsNumber;
-    //     worthMax = Math.pow(x, 3) - 1.5 * Math.pow(x, 2) + 1.5 * x;
-    // } else {
-    //     worthBaseline = 0;
-    //     worthMax = 1;
-    // }
-
-    // drawProbabilityPlot("worthGraph", "worth", worthBiasStr, worthVal, worthBaseline, worthMax);
 }
 
 function snap(slider, values, snapRange) {
@@ -1025,7 +981,9 @@ function draw() {
         let cardName = createElement("h3", undefined, card.name);
         cardName.className = "drawnCardName";
         cardDiv.appendChild(cardName);
-        cardDiv.appendChild(createElement("p", undefined, card.desc));
+
+        const sanitizedDesc = DOMPurify.sanitize(marked.parse(card.desc));
+        cardDiv.appendChild(createElement("p", undefined, sanitizedDesc));
         
         l("drawnCards").appendChild(cardDiv);
         setTimeout(function(){show(cardDiv)}, 200);
@@ -1136,4 +1094,4 @@ function importAndThen(func) {
     }
 }
 
-init();
+document.addEventListener("DOMContentLoaded", init);
