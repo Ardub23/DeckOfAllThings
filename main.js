@@ -179,7 +179,7 @@ function init() {
             worth: 0.2
         },
         {   name: "Wailing",
-            desc: "When you draw this card, you drop to 0 hit points. You can draw one additional card beyond your declared draws.",
+            desc: "When you draw this card, you drop to 0 hit points, and you gain vulnerability to psychic damage. You can draw one additional card beyond your declared draws.",
             drawsEffect: "optional",
             draws: 1,
             wildness: 0.1,
@@ -411,14 +411,14 @@ function init() {
         "wildStrSlider",
         "wildValSlider",
         "wildBaselineSlider",
-        "wildMaxSlider"
+        "wildMaxSlider",
     ].forEach(x => l(x).addEventListener("input", setCustWild));
 
     [
         "worthStrSlider",
         "worthValSlider",
         "worthBaselineSlider",
-        "worthMaxSlider"
+        "worthMaxSlider",
     ].forEach(x => l(x).addEventListener("input", setCustWorth));
     
     setUp();
@@ -691,33 +691,105 @@ function readyDeck(type) {
     }
 }
 
+function setCustBias(params, id) {
+    if (params === undefined) params = {};
+
+    const strSliderVal = snap(l(id + "StrSlider"), [0], 0.15);
+    params.biasStr = Math.pow(strSliderVal, 1.25);
+
+    params.val = l(id + "ValSlider").valueAsNumber;
+
+    if (advancedOptions) {
+        params.baseline = snap(l(id + "BaselineSlider"), [0, 1], 0.1);
+
+        snap(l(id + "MaxSlider"), [0, 1], 0.1);
+        const x = l(id + "MaxSlider").valueAsNumber;
+        params.max = x*x*x - 1.5 * x*x + 1.5 * x;
+    } else {
+        params.baseline = 0;
+        params.max = 1;
+    }
+
+    const chartTitle = (id === "wild")? "wildness" : id;
+    drawProbabilityPlot(id + "Graph", chartTitle, params)
+}
+
 function setCustWild() {
-    /* With linear slider-to-bias mapping, the first bit of the slider (0%-25%) has
-     * a great impact, while the last bit (75%-100%) isn't as significant. The middle
-     * of the slider turned out to be quite strong. Raising the slider value to a power
-     * weakens the beginning and strengthens the ending.
-     */
-    wildBiasStr = Math.pow(l("wildStrSlider").valueAsNumber, 1.25);
-    wildVal = l("wildValSlider").valueAsNumber;
+    wildParams = [];
+    setCustBias(wildParams, "wild");
+    
+    // const strSliderVal = snap(l("wildStrSlider"), [0], 0.15);
+    // /* With linear slider-to-bias mapping, the first bit of the slider (0%-25%) has
+    //  * a great impact, while the last bit (75%-100%) isn't as significant. The middle
+    //  * of the slider turned out to be quite strong. Raising the slider value to a power
+    //  * weakens the beginning and strengthens the ending.
+    //  */
+    // wildBiasStr = Math.pow(strSliderVal, 1.25);
 
-    const baseSlider = l("wildBaselineSlider");
-    wildBaseline = (advancedOptions)? baseSlider.valueAsNumber : 0;
-    const maxSliderVal = l("wildMaxSlider").valueAsNumber;
-    wildMax = (advancedOptions)? Math.pow(maxSliderVal, 2) * Math.sign(maxSliderVal) : 1;
+    // wildVal = l("wildValSlider").valueAsNumber;
 
-    drawProbabilityPlot("wildGraph", "wildness", wildBiasStr, wildVal, wildBaseline, wildMax);
+    // if (advancedOptions) {
+    //     wildBaseline = snap(l("wildBaselineSlider"), 1, 0.1);
+        
+    //     // Snap to 0 and 1
+    //     snap(l("wildMaxSlider"), [0, 1], 0.1);
+    //     // x^3 - 1.5x^2 + 1.5x: close to x in 0-1 range, but flies off to infinity faster
+    //     // So the slider has high extremes but sticks between 0 and 1 for a while
+    //     const x = l("wildMaxSlider").valueAsNumber;
+    //     wildMax = Math.pow(x, 3) - 1.5 * Math.pow(x, 2) + 1.5 * x;
+    // } else {
+    //     wildBaseline = 0;
+    //     wildMax = 1;
+    // }
+
+    // drawProbabilityPlot("wildGraph", "wildness", wildBiasStr, wildVal, wildBaseline, wildMax);
 }
 
 function setCustWorth() {
-    worthBiasStr = Math.pow(l("worthStrSlider").valueAsNumber, 1.25);
-    worthVal = l("worthValSlider").valueAsNumber;
+    worthParams = {};
+    setCustBias(worthParams, "worth");
+    // worthBiasStr = Math.pow(l("worthStrSlider").valueAsNumber, 1.25);
+    // worthVal = l("worthValSlider").valueAsNumber;
 
-    const baseSlider = l("worthBaselineSlider");
-    worthBaseline = (advancedOptions)? baseSlider.valueAsNumber : 0;
-    const maxSliderVal = l("worthMaxSlider").valueAsNumber;
-    worthMax = (advancedOptions)? Math.pow(maxSliderVal, 2) * Math.sign(maxSliderVal) : 1;
+    // if (advancedOptions) {
+    //     worthBaseline = snap(l("worthBaselineSlider"), 1, 0.1)
 
-    drawProbabilityPlot("worthGraph", "worth", worthBiasStr, worthVal, worthBaseline, worthMax);
+    //     // Snap to 0 and 1
+    //     snap(l("worthMaxSlider"), [0, 1], 0.1);
+    //     // x^3 - 1.5x^2 + 1.5x: close to x in 0-1 range, but flies off to infinity faster
+    //     // So the slider has high extremes but sticks between 0 and 1 for a while
+    //     const x = l("worthMaxSlider").valueAsNumber;
+    //     worthMax = Math.pow(x, 3) - 1.5 * Math.pow(x, 2) + 1.5 * x;
+    // } else {
+    //     worthBaseline = 0;
+    //     worthMax = 1;
+    // }
+
+    // drawProbabilityPlot("worthGraph", "worth", worthBiasStr, worthVal, worthBaseline, worthMax);
+}
+
+function snap(slider, values, snapRange) {
+    if (snapRange === undefined) snapRange = 0.1;
+
+    const sliderVal = slider.valueAsNumber;
+
+    // Snap to nearest multiple
+    if (typeof values === "number") {
+        const nearestMultiple = Math.round(sliderVal / values) * values;
+        if (Math.abs(nearestMultiple - sliderVal) < snapRange) {
+            return (slider.value = nearestMultiple);
+        }
+    }
+
+    // Snap to specific numbers
+    for (let i = 0; i < values.length; i++) {
+        if (Math.abs(values[i] - sliderVal) < snapRange) {
+            return (slider.value = values[i]);
+        }
+    }
+
+    // Not close enough to snap
+    return sliderVal;
 }
 
 /**
@@ -734,20 +806,19 @@ function setCustWorth() {
  * @param (number) baseline - the minimum probability
  * @returns {number} the probability for val to be randomly deemed sufficiently close to target
  */
-function probability(x, target, strictness, baseline, max) {
-    if (baseline === undefined) baseline = 0;
-
-    const prob = ((Math.exp(-(Math.pow((target - x) * strictness, 2)))) * (max - baseline) + baseline);
+function probability(x, params) {
+    const prob = ((Math.exp(-(Math.pow((params.val - x) * params.biasStr, 2)))) * (params.max - params.baseline) + params.baseline);
 
     // Clamp to [0..1] range
     return Math.max(0, Math.min(1, prob));
 }
 
-function drawProbabilityPlot(div, chartTitle, biasStr, val, baseline, max) {
+function drawProbabilityPlot(div, chartTitle, params) {
     let points = [];
-    for (let i = 0; i <= 20; i += 1) {
-        // Can't just count by 0.05 because float imprecision means the 20th result is >1.0
-        points.push(i / 20);
+    const numPoints = 40; // starts at 0 so there's technically one more than this, doesn't matter
+    for (let i = 0; i <= numPoints; i += 1) {
+        // Can't just count by 0.05 or whatever because float imprecision adds up
+        points.push(i / numPoints);
     }
 
     let ticks = false;
@@ -762,7 +833,7 @@ function drawProbabilityPlot(div, chartTitle, biasStr, val, baseline, max) {
 
     const trace = {
         x: points,
-        y: points.map(x => probability(x, val, biasStr, baseline, max)),
+        y: points.map(x => probability(x, params)),
         type: "scatter",
         mode: "lines",
         line: {
@@ -851,8 +922,8 @@ function finishCustomization(andThen) {
             break;
     }
 
-    deck = deck.filter(x => Math.random() < probability(x.wildness, wildVal, wildBiasStr, wildBaseline, wildMax));
-    deck = deck.filter(x => Math.random() < probability(x.worth, worthVal, worthBiasStr, worthBaseline, worthMax));
+    deck = deck.filter(x => Math.random() < probability(x.wildness, wildParams));
+    deck = deck.filter(x => Math.random() < probability(x.worth, worthParams));
 
     if (custXP == "noxp") {
         deck.forEach(x => {

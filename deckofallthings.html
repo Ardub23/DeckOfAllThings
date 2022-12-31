@@ -159,11 +159,12 @@
                 -ms-user-select: none; /* Disable Internet Explorer text selection */
                 user-select: none; /* Disable text selection in modern browsers */
                 cursor: pointer;
+                text-align: center;
             }
             .minusButton {
                 background: rgb(127, 0, 0);
-                border-top-left-radius: 15px;
-                border-bottom-left-radius: 15px;
+                border-top-left-radius: 12px;
+                border-bottom-left-radius: 12px;
             }
             .minusButton:hover {
                 background: rgb(160, 0, 0);
@@ -173,8 +174,8 @@
             }
             .plusButton {
                 background: rgb(0, 127, 0);
-                border-top-right-radius: 15px;
-                border-bottom-right-radius: 15px;
+                border-top-right-radius: 12px;
+                border-bottom-right-radius: 12px;
             }
             .plusButton:hover {
                 background: rgb(0, 160, 0);
@@ -184,14 +185,11 @@
             }
             .declaredDrawsInput {
                 text-align: center;
-                background: rgb(63, 63, 109);
+                background: rgba(255, 255, 255, 0.15);
                 color: white;
                 font-weight: bold;
                 border-top: 1px solid rgb(72, 72, 151);
                 border-bottom: 1px solid rgb(140, 140, 226);
-            }
-            .numInput {
-                width: 2.5em;
             }
             .mouseGreedy {
                 cursor: default;
@@ -203,6 +201,7 @@
             }
             input[type="number"] {
                 -moz-appearance: textfield;
+                width: 2.5em;
             }
 
             .slowFading {
@@ -338,7 +337,7 @@
                     </tr>
                     <tr>
                         <td style="text-align: right;"><label for="wildStrSlider">none</label></td>
-                        <td style="width:100%"><input id="wildStrSlider" type="range" min=0 max=3 value=0 step=0.1 /></td>
+                        <td style="width:100%"><input id="wildStrSlider" type="range" min=0 max=3 value=0 step=0.05 /></td>
                         <td><label for="wildStrSlider">very strong</label></td>
                         <td><img src="images/icon_reset.png" class="resetButton" onclick="l('wildStrSlider').value = 0; setCustWild();" /></td>
                     </tr>
@@ -347,7 +346,7 @@
                     </tr>
                     <tr>
                         <td style="text-align: right;"><label for="wildValSlider">very tame</label></td>
-                        <td><input id="wildValSlider" type="range" min=0 max=1 value=0.5 step=0.025 /></td>
+                        <td><input id="wildValSlider" type="range" min=0 max=1 value=0.5 step=0.02 /></td>
                         <td><label for="wildValSlider">very wild</label></td>
                         <td><img src="images/icon_reset.png" class="resetButton" onclick="l('wildValSlider').value = 0.5; setCustWild();" /></td>
                     </tr>
@@ -364,9 +363,9 @@
                         <th colspan=3><label for="wildMaxSlider">Peak</label></th>
                     </tr>
                     <tr class="advancedOption" hidden>
-                        <!-- The slider value is squared (but its sign preserved) -->
-                        <td style="text-align: right;"><label for="wildMaxSlider">&minus;4</label></td>
-                        <td><input id="wildMaxSlider" type="range" min=-2 max=2 value=1 step=0.025 /></td>
+                        <!-- The slider value is adjusted so the actual result is roughly in the displayed range -->
+                        <td style="text-align: right;"><label for="wildMaxSlider">&minus;3</label></td>
+                        <td><input id="wildMaxSlider" type="range" min=-0.85 max=1.85 value=1 step=0.025 /></td>
                         <td><label for="wildMaxSlider">4</label></td>
                         <td><img src="images/icon_reset.png" class="resetButton" onclick="l('wildMaxSlider').value = 1; setCustWild();" /></td>
                     </tr>
@@ -408,9 +407,9 @@
                         <th colspan=3><label for="worthMaxSlider">Peak</label></th>
                     </tr>
                     <tr class="advancedOption" hidden>
-                        <!-- The slider value is squared (but its sign preserved) -->
-                        <td style="text-align: right;"><label for="worthMaxSlider">&minus;4</label></td>
-                        <td><input id="worthMaxSlider" type="range" min=-2 max=2 value=1 step=0.025 /></td>
+                        <!-- The slider value is adjusted so the actual result is roughly in the displayed range -->
+                        <td style="text-align: right;"><label for="worthMaxSlider">&minus;3</label></td>
+                        <td><input id="worthMaxSlider" type="range" min=-0.85 max=1.85 value=1 step=0.025 /></td>
                         <td><label for="worthMaxSlider">4</label></td>
                         <td><img src="images/icon_reset.png" class="resetButton" onclick="l('worthMaxSlider').value = 1; setCustWorth();" /></td>
                     </tr>
