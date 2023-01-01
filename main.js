@@ -1,3 +1,6 @@
+/**
+ * First-time setup to run on page load.
+ */
 function init() {
     // I took out the linebreaks after the opening brackets so the name will still display when the block is collapsed in my IDE :P
     // partialDeck's declaration relies on the specific order of cards in fullDeck
@@ -424,6 +427,9 @@ function init() {
     setUp();
 }
 
+/**
+ * Resets several values and conditions to their initial state.
+ */
 function setUp() {
     l("initRandDeclInput").value = 1;
     l("initRandDeclInput").onchange();
@@ -434,22 +440,25 @@ function setUp() {
     advancedOptions = false;
 }
 
+/**
+ * Prints the average wildness and worth of the cards in the deck to the console.
+ * @param {array} arr - the deck to analyze
+ */
 function analyzeDeck(arr) {
-    let wildSum = 0, worthSum = 0;
-    for (i in arr) {
-        if (arr[i]) {
-            if (arr[i].wildness !== undefined) wildSum += arr[i].wildness;
-            if (arr[i].worth !== undefined) worthSum += arr[i].worth;
-        }
-    }
-    console.log("Wildness: " + (wildSum / arr.length));
-    console.log("Worth: " + (worthSum / arr.length));
+    const wildSum = arr.reduce((acc, card) => acc + (card.wildness? card.wildness : 0), 0);
+    const wildCount = arr.filter((card) => (card.wildness !== undefined)).length;
+
+    const worthSum = arr.reduce((acc, card) => acc + (card.worth? card.worth : 0), 0);
+    const worthCount = arr.filter((card) => (card.worth !== undefined)).length;
+
+    console.log("Average wildness: " + (wildSum / wildCount));
+    console.log("Average worth: " + (worthSum / worthCount));
 }
 
 function parseDuration(str) {
     if (!str) return 0;
 
-    // Split the string into a number and a unit
+    // Split the string into a number and a unit, e.g. ["500", "ms"]
     const [value, unit] = str.split(/(?<![A-Za-z])(?=[A-Za-z])/);
 
     // Parse the number
@@ -458,36 +467,46 @@ function parseDuration(str) {
     // Return the number of milliseconds
     if (unit === 's') return num * 1000;
     if (unit === 'ms') return num;
-    return 0;
+    return num;
 }
 
-function fadeTransition(from, to, andThen) {
-    hide(from, function(){show(to, andThen)});
+function fadeTransition(from, to, callback) {
+    hide(from, function(){show(to, callback)});
 }
 
 function show(id, callback) {
-    l(id).hidden = false;
-    l(id).classList.remove('fadedOut');
+    const el = l(id);
+    el.hidden = false;
 
-    if (typeof callback === "function") {
-        const duration = parseDuration(getComputedStyle(l(id)).transitionDuration);
-        const delay = parseDuration(getComputedStyle(l(id)).transitionDelay);
+    el.addEventListener("transitionend", callback, {once: true});
 
-        setTimeout(callback, duration + delay);
-    }
+    // stupid event listener doesn't fire if you start the transition right away
+    // dumb stupid
+    setTimeout(function() {
+        el.classList.remove('fadedOut');
+    }, 10);
+    // hide function works just fine without this
+    // baloney
 }
 
 function hide(id, callback) {
-    l(id).classList.add('fadedOut');
+    const el = l(id);
 
-    if (typeof callback === "function") {
-        const duration = parseDuration(getComputedStyle(l(id)).transitionDuration);
-        const delay = parseDuration(getComputedStyle(l(id)).transitionDelay);
-        setTimeout(callback, duration + delay);
-        setTimeout(function(){l(id).hidden = true}, duration + delay);
-    }
+    el.addEventListener("transitionend", function() {
+        el.hidden = true;
+        callback();
+    }, {once: true});
+    
+    el.classList.add('fadedOut');
 }
 
+/**
+ * Returns the DOM element with the given ID, as an abbreviation of
+ * document.getElementById(id). If the parameter is an element instead
+ * of an id, the element is returned, so l(l("foo")) is equivalent to
+ * l("foo").
+ * @param {any} id - the id of the element to find
+ */
 function l(id) {
     // L for eLement
     if (id instanceof Node) return id;
@@ -544,7 +563,7 @@ function createCustomCardNode(card, i) {
     let nameInput = getOrCreate("input", "customCardName" + i);
     nameInput.className = "cardNameInput";
     nameInput.value = (card.name !== undefined)? card.name : "";
-    nameInput.onchange = function(){card.name = nameInput.value};
+    nameInput.onchange = () => {card.name = nameInput.value};
     nameInput.onchange();
     cardNode.appendChild(nameInput);
 
@@ -572,7 +591,7 @@ function createCustomCardNode(card, i) {
     drawsInput.type = "number";
     drawsInput.value = (card.draws !== undefined)? card.draws : 1;
     drawsInput.min = 1;
-    drawsInput.onchange = function() {
+    drawsInput.onchange = () => {
         if (!(drawsInput.valueAsNumber >= 1))
             drawsInput.value = 1;
         drawsInput.value = Math.floor(drawsInput.valueAsNumber);
@@ -582,7 +601,7 @@ function createCustomCardNode(card, i) {
     drawsEffectNode.appendChild(drawsInput);
     cardNode.appendChild(drawsEffectNode);
 
-    drawsEffectSelector.onchange = function(){
+    drawsEffectSelector.onchange = () => {
         let f = drawsEffectSelector.value;
         card.drawsEffect = f;
         drawsInput.hidden = (f != "optional" && f != "forced");
@@ -604,12 +623,13 @@ function createCustomCardNode(card, i) {
     // Remove card button
     let removeBtnHolder = createElement("div");
     removeBtnHolder.appendChild(createButton("removeCardBtn" + i, function() {
-        deck[i] = null; // nulls will filtered out before drawing; for now, keep correlation between element id and deck index
-        l("fullCustomCardsNode").removeChild(cardContainer);
+        // Dmpty cards will be removed before drawing.
+        // For now, keep correlation between element id and deck index.
+        deck[i] = {};
         
         // No fade unless we can get the other cards to slide slickly to their new positions.
         // (Fade doesn't look cool if another card instantly teleports into the vacated space)
-        // hide(cardContainer, function() {l("fullCustomCardsNode").removeChild(cardContainer)});
+        l("fullCustomCardsNode").removeChild(cardContainer);
     }, "Remove card"));
     cardNode.appendChild(removeBtnHolder);
 
@@ -618,27 +638,6 @@ function createCustomCardNode(card, i) {
 
 function cardOrCards(num) {
     return (num == 1)? "card" : "cards";
-}
-
-function setDeckType() {
-    deckType = l("deckTypeSelector").value;
-    switch (deckType) {
-        case "random":
-        case "partial":
-        case "full":
-        case "all":
-            l("initialDeclaredDraws").hidden = false;
-            break;
-        case "custom":
-        case "fullCustom":
-        case "imported":
-            l("initialDeclaredDraws").hidden = true;
-            break;
-        default:
-            console.log("Unknown deck type!");
-            l("initialDeclaredDraws").hidden = false;
-            break;
-    }
 }
 
 function adjustDeclaredDraws(amount) {
@@ -750,17 +749,15 @@ function snap(slider, values, snapRange) {
 
 /**
  * Determines the probability that the val provided will be randomly deemed
- * sufficiently close to the target value. If val == target, the returned value
- * is max; otherwise, the probability decreases as the difference between val and
- * target grows. The probability never reaches baseline, but it approaches baseline
- * as the difference approaches infinity. With a high strictness, the probability
- * approaches baseline more quickly.
+ * sufficiently close to a target value. If val == params.val, the returned value
+ * is params.max; otherwise, the probability approaches params.baseline as the
+ * difference between val and params.val grows. The probability never reaches
+ * params.baseline, but it approaches it more quickly if params.biasStr is high.
+ * The probability is clamped to the [0..1] range.
  * 
  * @param {number} val - the input value
- * @param {number} target - the target value to compare val against
- * @param {number} strictness - how strongly a given difference will push the probability toward zero
- * @param (number) baseline - the minimum probability
- * @returns {number} the probability for val to be randomly deemed sufficiently close to target
+ * @param {object) params - an object containing the parameters for the probability function
+ * @returns {number} the probability for val to be randomly deemed sufficiently close to params.val
  */
 function probability(x, params) {
     const prob = ((Math.exp(-(Math.pow((params.val - x) * params.biasStr, 2)))) * (params.max - params.baseline) + params.baseline);
@@ -878,9 +875,11 @@ function finishCustomization(andThen) {
             break;
     }
 
+    // Filter out cards for wildness and worth
     deck = deck.filter(x => Math.random() < probability(x.wildness, wildParams));
     deck = deck.filter(x => Math.random() < probability(x.worth, worthParams));
 
+    // Correct undesirable card effects
     if (custXP == "noxp") {
         deck.forEach(x => {
             if (x.noXPDesc)
@@ -897,6 +896,7 @@ function finishCustomization(andThen) {
         });
     }
 
+    // Transition to new screen
     switch (andThen) {
         case fullCustomize:
             fadeTransition("customMenu", "fullCustomMenu");
@@ -943,8 +943,8 @@ function fullCustomize() {
 }
 
 function finishFullCustomization() {
-    // Get rid of nulls (removed cards) before drawing
-    deck = deck.filter(a => a !== null);
+    // Get rid of cards with no name or desc (this includes removed cards)
+    deck = deck.filter(a => (a.name || a.desc));
 
     fadeTransition("fullCustomMenu", "drawingNode");
     draw();
@@ -1043,27 +1043,12 @@ function draw() {
 }
 
 function exportDeck() {
-    const text = JSON.stringify(deck);
+    // Don't export with removed cards
+    const text = JSON.stringify(deck.filter(a => (a.name || a.desc)));
+
     navigator.clipboard.writeText(text)
         .then(() => { alert('Successfully copied to clipboard! Import the deck by clicking \"Import deck\" on the main menu.'); })
         .catch(err => { alert('Error in copying text: ', err); });
-    
-    // let copyTextarea = l("exportedText");
-    // copyTextarea.value = JSON.stringify(deck);
-    // copyTextarea.hidden = false;
-    // copyTextarea.focus();
-    // copyTextarea.select();
-    // try {
-    //     let successful = document.execCommand('copy');
-    //     if (successful) {
-    //         alert("Deck has been copied to clipboard. You can import it by choosing that option when selecting the type of deck to use.");
-    //     } else {
-    //         alert("Failed to copy deck to clipboard");
-    //     }
-    // } catch (err) {
-    //     alert('Unable to copy! ' + err);
-    // }
-    // copyTextarea.hidden = true;
 }
 
 function importDeck() {

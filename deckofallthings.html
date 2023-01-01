@@ -253,6 +253,7 @@
     </head>
     <body>
         <div id="main">
+            <!-- Shows options for what deck to draw from, or customize or import -->
             <div id="initialConfig" class="fading">
                 <h2>A deck of wondrous power is presented to you&hellip;</h2>
 
@@ -316,6 +317,7 @@
                 </div>
             </div>
 
+            <!-- User sets parameters to create a custom deck -->
             <div id="customMenu" class="fading fadedOut" hidden>
                 <h2>Deck customization</h2>
 
@@ -458,8 +460,11 @@
                 </div>
             </div>
 
+            <!-- Edit each card's name, description, and other attributes -->
             <div id="fullCustomMenu" class="fading fadedOut" hidden>
                 <h2>Edit cards</h2>
+
+                <p>Card descriptions can be formatted using <a href="https://www.markdownguide.org/basic-syntax/">Markdown</a>.</p>
 
                 <div id="fullCustomCardsNode"></div>
 
@@ -486,6 +491,7 @@
                 </div>
             </div>
 
+            <!-- Import a deck to edit or draw from -->
             <div id="importMenu" class="fading fadedOut" hidden>
                 <h2>Import deck</h2>
 
@@ -510,10 +516,12 @@
                 </div>
             </div>
 
+            <!-- Draw cards! -->
             <div id="drawingNode" class="fading fadedOut" hidden>
                 <h2>Let's see what you've drawn&hellip;</h2>
 
                 <div id="drawnCards"></div>
+                
                 <div id="drawingFooter">
                     <div id="proceedNode">
                         <p id="proceedLabel"></p>
@@ -523,16 +531,19 @@
                             <button id="noMoreButton" type="button" onclick="declaredDraws = 0;">No</button>
                         </div>
                     </div>
-                    <div style="margin-top: 40px">
+
+                    <div style="margin-top: 30px; margin-bottom: 30px;"><hr /></div>
+                    
+                    <p>
                         Click this button to export the current deck to your clipboard. (Note: If any cards have been drawn which don't reappear in the deck, they'll be gone from the exported deck too.)
                         <br />
                         <button id="exportButton" type="button" onclick="exportDeck()">Export deck</button>
-                    </div>
-                    <div style="margin-top: 10px">
+                    </p>
+                    <p style="margin-top: 10px">
                         Click this button to start completely over. <strong>The current deck will be lost</strong> unless you've exported it.
                         <br />
                         <button id="startOverButton" type="button" onclick="startOver()">Start over</button>
-                    </div>
+                    </p>
                 </div>
             </div>
         </div>
