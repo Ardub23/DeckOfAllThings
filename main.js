@@ -154,7 +154,7 @@ function init() {
             worth: 0.4
         },
         {   name: "Torch",
-            desc: "All items you are wearing or carrying begin glowing as if affected by a {light](https://www.dndbeyond.com/spells/light) cantrip that lasts until dispelled.",
+            desc: "All items you are wearing or carrying begin glowing as if affected by a [light](https://www.dndbeyond.com/spells/light) cantrip that lasts until dispelled.",
             wildness: 0.0,
             worth: 0.5
         },
@@ -270,7 +270,7 @@ function init() {
             worth: 0.7
         },
         {   name: "Harbinger",
-            desc: "Three tarrasques appear in unoccupied spaces within 1 mile of you. The tarrasques always know where you are, but they are hostile to all creatures. Each tarrasque disappears after 3d4 days if it is not killed before then.", 
+            desc: "Three [tarrasques](https://www.dndbeyond.com/monsters/17034-tarrasque) appear in unoccupied spaces within 1 mile of you. The tarrasques always know where you are, but they are hostile to all creatures. Each tarrasque disappears after 3d4 days if it is not killed before then.", 
             wildness: 1.0,
             worth: 0.0
         },
