@@ -197,7 +197,7 @@ function init() {
             desc: "A common magic item (chosen by the DM) appears in your hands, or you can draw five additional cards beyond your declared draws. If you choose to draw the additional cards, you can negate one card's effect when you draw it.",
             drawsEffect: "optional",
             draws: 5,
-            onDrawMore: function() {vetoes += 1;},
+            onDrawMore: () => {vetoes++},
             reappears: false,
             wildness: 0.5,
             worth: 0.6
@@ -402,6 +402,11 @@ function init() {
             desc: "After you die, burning your remains to ash indefinitely extends the time limit on spells that raise you from the dead. Any spell which would revive you has the same effects as [true resurrection](https://www.dndbeyond.com/spells/true-resurrection), provided your remains were burned within the spell's original time limit and the caster touches the ashes. When you drop to 0 hit points, you can choose to be engulfed in flame, dying and turning to ash immediately.",
             wildness: 0.8,
             worth: 1.0
+        },
+        {   name: "Storm",
+            desc: "Every magic item you are wearing or carrying, except for artifacts, vanishes and is replaced by another magic item of the same rarity. The DM determines the new items.",
+            wildness: 0.2,
+            worth: 0.4
         }
     ];
     
@@ -455,23 +460,8 @@ function analyzeDeck(arr) {
     console.log("Average worth: " + (worthSum / worthCount));
 }
 
-function parseDuration(str) {
-    if (!str) return 0;
-
-    // Split the string into a number and a unit, e.g. ["500", "ms"]
-    const [value, unit] = str.split(/(?<![A-Za-z])(?=[A-Za-z])/);
-
-    // Parse the number
-    const num = parseFloat(value);
-
-    // Return the number of milliseconds
-    if (unit === 's') return num * 1000;
-    if (unit === 'ms') return num;
-    return num;
-}
-
 function fadeTransition(from, to, callback) {
-    hide(from, function(){show(to, callback)});
+    hide(from, () => {show(to, callback)});
 }
 
 function show(id, callback) {
@@ -482,7 +472,7 @@ function show(id, callback) {
 
     // stupid event listener doesn't fire if you start the transition right away
     // dumb stupid
-    setTimeout(function() {
+    setTimeout(() => {
         el.classList.remove('fadedOut');
     }, 10);
     // hide function works just fine without this
@@ -492,7 +482,7 @@ function show(id, callback) {
 function hide(id, callback) {
     const el = l(id);
 
-    el.addEventListener("transitionend", function() {
+    el.addEventListener("transitionend", () => {
         el.hidden = true;
         callback();
     }, {once: true});
@@ -571,7 +561,7 @@ function createCustomCardNode(card, i) {
     let descInput = getOrCreate("textarea", "customCardDesc" + i);
     descInput.className = "cardDescInput";
     descInput.value = (card.desc !== undefined)? card.desc : "";
-    descInput.onchange = function(){card.desc = descInput.value};
+    descInput.onchange = () => {card.desc = descInput.value};
     descInput.onchange();
     cardNode.appendChild(descInput);
 
@@ -612,7 +602,7 @@ function createCustomCardNode(card, i) {
     let reappearsCheckbox = getOrCreate("input", "reappearsCheckbox" + i);
     reappearsCheckbox.type = "checkbox";
     reappearsCheckbox.checked = (card.reappears !== false);
-    reappearsCheckbox.onchange = function() {card.reappears = reappearsCheckbox.checked;};
+    reappearsCheckbox.onchange = () => {card.reappears = reappearsCheckbox.checked};
     let reappearsLabel = createElement("label");
     reappearsLabel.htmlFor = "reappearsCheckbox" + i;
     reappearsLabel.innerHTML = "Reappears in deck";
@@ -622,7 +612,7 @@ function createCustomCardNode(card, i) {
 
     // Remove card button
     let removeBtnHolder = createElement("div");
-    removeBtnHolder.appendChild(createButton("removeCardBtn" + i, function() {
+    removeBtnHolder.appendChild(createButton("removeCardBtn" + i, () => {
         // Dmpty cards will be removed before drawing.
         // For now, keep correlation between element id and deck index.
         deck[i] = {};
@@ -919,7 +909,7 @@ function addCustomCard() {
 
     let cardNode = createCustomCardNode(newCard, deck.length - 1);
     l("fullCustomCardsNode").appendChild(cardNode);
-    setTimeout(function() {show(cardNode)});
+    setTimeout(() => {show(cardNode)});
 }
 
 function fullCustomize() {
@@ -929,11 +919,11 @@ function fullCustomize() {
         fullCustomCardsNode.appendChild(createCustomCardNode(deck[i], i));
     }
 
-    setTimeout(function() {
+    setTimeout(() => {
         var i = 0;
-        let timer = setInterval(function() {
+        let timer = setInterval(() => {
             if (i < deck.length) {
-                show(fullCustomCardsNode.childNodes[i]);
+                show("customCardContainer" + i);
                 i++;
             } else {
                 clearInterval(timer);
@@ -958,7 +948,7 @@ function drawMore() {
 }
 
 function startOver() {
-    fadeTransition("drawingNode", "initialConfig", function() {l("drawnCards").innerHTML = ""});
+    fadeTransition("drawingNode", "initialConfig", () => {l("drawnCards").innerHTML = ""});
     setUp();
 }
 
@@ -986,7 +976,7 @@ function draw() {
         cardDiv.appendChild(createElement("p", undefined, sanitizedDesc));
         
         l("drawnCards").appendChild(cardDiv);
-        setTimeout(function(){show(cardDiv)}, 200);
+        setTimeout(() => {show(cardDiv)}, 200);
 
         // Conditional changes to declaredDraws (including "nomore", which can be vetoed) are handled by the buttons
         declaredDraws -= 1;
@@ -1054,7 +1044,8 @@ function exportDeck() {
 function importDeck() {
     const textarea = l("importTextarea");
     textarea.value = "[]";
-    fadeTransition("initialConfig", "importMenu", function() {
+    fadeTransition("initialConfig", "importMenu", () => {
+        // Immediately ready to paste over
         textarea.focus();
         textarea.select();
     });
