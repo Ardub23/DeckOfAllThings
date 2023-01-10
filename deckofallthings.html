@@ -91,7 +91,7 @@
             }
             .radioContainer {
                 display: flex;
-                padding: 5px 0px;
+                padding: 5px 0;
                 align-items: flex-start;
             }
             .nowrap {
@@ -106,7 +106,7 @@
             .drawnCard {
                 background: rgb(70, 70, 70);
                 margin: 15px;
-                padding: 0px 25px 0px 25px;
+                padding: 0 25px 0 25px;
                 border-style: solid;
                 border-radius: 10px;
                 max-width: 300px;
@@ -311,7 +311,7 @@
                     <img src="images/icon_customize.png">
                     Customize deck
                 </div>
-                <div class="bigButton" id="drawAllButton" onclick="importDeck()">
+                <div class="bigButton" id="importButton" onclick="importDeck()">
                     <img src="images/icon_import.png" />
                     Import deck
                 </div>
@@ -321,12 +321,12 @@
             <div id="customMenu" class="fading fadedOut" hidden>
                 <h2>Deck customization</h2>
 
-                <h2 id="custCardSrcHeader">Card sources</h3>
+                <h2 id="custCardSrcHeader">Card sources</h2>
                 <label id="custCardSrcLbl" for="custCardSrcSelector">Use cards from: </label>
-                <select id="custCardSrcSelector" name="custCardSrcSelector" value="all" onchange="custCardSrc = l('custCardSrcSelector').value;">
+                <select id="custCardSrcSelector" name="custCardSrcSelector" onchange="custCardSrc = l('custCardSrcSelector').value;">
                     <option value="partial">the partial deck of 13 cards</option>
                     <option value="full">the full deck of 22 cards</option>
-                    <option value="all">the full deck plus homebrew cards</option>
+                    <option value="all" selected>the full deck plus homebrew cards</option>
                     <option value="homebrew">homebrew cards only</option>
                 </select>
                 <p>To add your own cards, click "Edit individual cards" at the bottom of this page.</p>
@@ -449,11 +449,11 @@
                     <div class="bigButton" onclick="finishCustomization(draw)">
                         <span>
                             Draw
-                            <div class="declaredDrawsBox mouseGreedy" onclick="event.stopPropagation()">
+                            <span class="declaredDrawsBox mouseGreedy" onclick="event.stopPropagation()">
                                 <span class="minusButton" onclick="adjustDeclaredDraws(-1)">&minus;</span>
                                 <input class="declaredDrawsInput" id="custDeclInput" type="number" value=1 min=1 onchange="setDeclaredDraws(l('custDeclInput'))">
                                 <span class="plusButton" onclick="adjustDeclaredDraws(1)">+</span>
-                            </div>
+                            </span>
                             from the custom deck
                         </span>
                     </div>
@@ -474,11 +474,11 @@
                     <div class="bigButton" onclick="finishFullCustomization()">
                         <span>
                             Draw
-                            <div class="declaredDrawsBox mouseGreedy" onclick="event.stopPropagation()">
+                            <span class="declaredDrawsBox mouseGreedy" onclick="event.stopPropagation()">
                                 <span class="minusButton" onclick="adjustDeclaredDraws(-1)">&minus;</span>
                                 <input class="declaredDrawsInput" id="fullDeclInput" type="number" value=1 min=1 onchange="setDeclaredDraws(l('fullDeclInput'))">
                                 <span class="plusButton" onclick="adjustDeclaredDraws(1)">+</span>
-                            </div>
+                            </span>
                             from this deck
                         </span>
                     </div>
@@ -505,11 +505,11 @@
                     <div class="bigButton" onclick="importAndThen(draw)">
                         <span>
                             Draw
-                            <div class="declaredDrawsBox mouseGreedy" onclick="event.stopPropagation()">
+                            <span class="declaredDrawsBox mouseGreedy" onclick="event.stopPropagation()">
                                 <span class="minusButton" onclick="adjustDeclaredDraws(-1)">&minus;</span>
                                 <input class="declaredDrawsInput" id="importDeclDraws" type="number" value=1 min=1 onchange="setDeclaredDraws(l('importDeclDraws'))">
                                 <span class="plusButton" onclick="adjustDeclaredDraws(1)">+</span>
-                            </div>
+                            </span>
                             from this deck
                         </span>
                     </div>

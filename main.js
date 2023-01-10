@@ -379,7 +379,7 @@ function init() {
             worth: 0.0
         },
         {   name: "Barrier",
-            desc: "You can't teleport or travel to other planes of existence, regardless of whether you are willing. This effect lasts until you die.",
+            desc: "You can't teleport and can't travel to other planes of existence, regardless of whether you are willing. This effect lasts until you die.",
             wildness: 0.1,
             worth: 0.5
         },
@@ -590,7 +590,7 @@ function createCustomCardNode(card, i) {
     drawsEffectSelector.onchange = () => {
         let f = drawsEffectSelector.value;
         card.drawsEffect = f;
-        drawsInput.hidden = (f != "optional" && f != "forced");
+        drawsInput.hidden = (f !== "optional" && f !== "forced");
     };
     drawsEffectSelector.onchange();
 
@@ -623,7 +623,7 @@ function createCustomCardNode(card, i) {
 }
 
 function cardOrCards(num) {
-    return (num == 1)? "card" : "cards";
+    return (num === 1)? "card" : "cards";
 }
 
 function adjustDeclaredDraws(amount) {
@@ -658,7 +658,7 @@ function readyDeck(type) {
 
     switch (deckType) {
         case "random":
-            deck = ((Math.random() < 0.25)? fullDeck : partialDeck).map(card => ({...card}));;
+            deck = ((Math.random() < 0.25)? fullDeck : partialDeck).map(card => ({...card}));
             draw();
             break;
         case "partial":
@@ -670,7 +670,7 @@ function readyDeck(type) {
             draw();
             break;
         case "all":
-            deck = fullDeck.concat(homebrewDeck).map(card => ({...card}));;
+            deck = fullDeck.concat(homebrewDeck).map(card => ({...card}));
             draw();
             break;
     }
@@ -741,8 +741,8 @@ function snap(slider, values, snapRange) {
  * params.baseline, but it approaches it more quickly if params.biasStr is high.
  * The probability is clamped to the [0..1] range.
  * 
- * @param {number} val - the input value
- * @param {object) params - an object containing the parameters for the probability function
+ * @param {number} x - the input value
+ * @param {object} params - an object containing the parameters for the probability function
  * @returns {number} the probability for val to be randomly deemed sufficiently close to params.val
  */
 function probability(x, params) {
@@ -866,14 +866,14 @@ function finishCustomization(andThen) {
     deck = deck.filter(x => Math.random() < probability(x.worth, worthParams));
 
     // Correct undesirable card effects
-    if (custXP == "noxp") {
+    if (custXP === "noxp") {
         deck.forEach(x => {
             if (x.noXPDesc)
                 x.desc = x.noXPDesc;
             else if (x.noLevelDesc)
                 x.desc = x.noLevelDesc;
         });
-    } else if (custXP == "nolevel") {
+    } else if (custXP === "nolevel") {
         deck.forEach(x => {
             if (x.noLevelDesc)
                 x.desc = x.noLevelDesc;
@@ -988,7 +988,7 @@ function draw() {
         l("proceedButtonHolder").hidden = false;
 
         let cardsLeftStr = "You have " + declaredDraws + " " + cardOrCards(declaredDraws) + " left to draw";
-        if (lastCard.drawsEffect == "nomore") {
+        if (lastCard.drawsEffect === "nomore") {
             if (vetoes > 0) {
                 vetoes -= 1; // Even if they don't use it, they'll be done drawing so it won't matter that it's decremented
                 l("proceedLabel").innerHTML = "Negate this card and continue drawing anyway? (" + cardsLeftStr + " if you do.)";
@@ -1003,7 +1003,7 @@ function draw() {
             l("noMoreButton").hidden = true; // can't just decide to stop drawing
         }
 
-        if (lastCard.drawsEffect == "optional") {
+        if (lastCard.drawsEffect === "optional") {
             // "Proceed" button becomes "no" option (i.e. don't draw extra cards, just move on)
             l("proceedLabel").innerHTML = cardsLeftStr + ". Will you draw " + lastCard.draws + " additional " + cardOrCards(lastCard.draws) + "?";
             l("drawMoreButton").hidden = false;
@@ -1021,7 +1021,7 @@ function draw() {
         // Deck is empty
         l("proceedButtonHolder").hidden = true; // go away buttons!!
 
-        if (declaredDraws > 0 || lastCard.drawsEffect == "optional") {
+        if (declaredDraws > 0 || lastCard.drawsEffect === "optional") {
             // Tell them why they can't draw more cards: there are none
             l("proceedLabel").innerHTML = "There are no cards left in the deck.";
         }
