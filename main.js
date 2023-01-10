@@ -415,19 +415,15 @@ function init() {
 
     l("custAdvancedCheckbox").addEventListener("change", toggleCustAdvanced);
     
-    [
-        "wildStrSlider",
-        "wildValSlider",
-        "wildBaselineSlider",
-        "wildMaxSlider",
-    ].forEach(x => l(x).addEventListener("input", setCustWild));
+    const wildOptions = document.getElementsByClassName("wildOption");
+    for (let i = 0; i < wildOptions.length; i++) {
+        wildOptions[i].addEventListener("input", setCustWild);
+    }
 
-    [
-        "worthStrSlider",
-        "worthValSlider",
-        "worthBaselineSlider",
-        "worthMaxSlider",
-    ].forEach(x => l(x).addEventListener("input", setCustWorth));
+    const worthOptions = document.getElementsByClassName("worthOption");
+    for (let i = 0; i < worthOptions.length; i++) {
+        worthOptions[i].addEventListener("input", setCustWorth);
+    }
     
     setUp();
 }

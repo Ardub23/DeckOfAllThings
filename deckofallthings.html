@@ -345,7 +345,7 @@
                     </tr>
                     <tr>
                         <td style="text-align: right;"><label for="wildStrSlider">none</label></td>
-                        <td style="width:100%"><input id="wildStrSlider" type="range" min=0 max=3 value=0 step=0.05 /></td>
+                        <td style="width:100%"><input id="wildStrSlider" class="wildOption" type="range" min=0 max=3 value=0 step=0.05 /></td>
                         <td><label for="wildStrSlider">very strong</label></td>
                         <td><img src="images/icon_reset.png" class="resetButton" onclick="l('wildStrSlider').value = 0; setCustWild();" /></td>
                     </tr>
@@ -354,7 +354,7 @@
                     </tr>
                     <tr>
                         <td style="text-align: right;"><label for="wildValSlider">very tame</label></td>
-                        <td><input id="wildValSlider" type="range" min=0 max=1 value=0.5 step=0.02 /></td>
+                        <td><input id="wildValSlider" class="wildOption" type="range" min=0 max=1 value=0.5 step=0.02 /></td>
                         <td><label for="wildValSlider">very wild</label></td>
                         <td><img src="images/icon_reset.png" class="resetButton" onclick="l('wildValSlider').value = 0.5; setCustWild();" /></td>
                     </tr>
@@ -363,7 +363,7 @@
                     </tr>
                     <tr class="advancedOption" hidden>
                         <td style="text-align: right;"><label for="wildBaselineSlider">&minus;1</label></td>
-                        <td><input id="wildBaselineSlider" type="range" min=-1 max=2 value=0 step=0.025 /></td>
+                        <td><input id="wildBaselineSlider" class="wildOption" type="range" min=-1 max=2 value=0 step=0.025 /></td>
                         <td><label for="wildBaselineSlider">2</label></td>
                         <td><img src="images/icon_reset.png" class="resetButton" onclick="l('wildBaselineSlider').value = 0; setCustWild();" /></td>
                     </tr>
@@ -373,7 +373,7 @@
                     <tr class="advancedOption" hidden>
                         <!-- The slider value is adjusted so the actual result is roughly in the displayed range -->
                         <td style="text-align: right;"><label for="wildMaxSlider">&minus;3</label></td>
-                        <td><input id="wildMaxSlider" type="range" min=-0.85 max=1.85 value=1 step=0.025 /></td>
+                        <td><input id="wildMaxSlider" class="wildOption" type="range" min=-0.85 max=1.85 value=1 step=0.025 /></td>
                         <td><label for="wildMaxSlider">4</label></td>
                         <td><img src="images/icon_reset.png" class="resetButton" onclick="l('wildMaxSlider').value = 1; setCustWild();" /></td>
                     </tr>
@@ -389,7 +389,7 @@
                     </tr>
                     <tr>
                         <td style="text-align: right;"><label for="worthStrSlider">none</label></td>
-                        <td style="width: 100%"><input id="worthStrSlider" type="range" min=0 max=3 value=0 step=0.1 /></td>
+                        <td style="width: 100%"><input id="worthStrSlider" class="worthOption" type="range" min=0 max=3 value=0 step=0.1 /></td>
                         <td><label for="worthStrSlider">very strong</label></td>
                         <td><img src="images/icon_reset.png" class="resetButton" onclick="l('worthStrSlider').value = 0; setCustWorth();" /></td>
                     </tr>
@@ -398,7 +398,7 @@
                     </tr>
                     <tr>
                         <td style="text-align: right;"><label for="worthValSlider">very bad</label></td>
-                        <td><input id="worthValSlider" type="range" min=0 max=1 value=0.5 step=0.025 /></td>
+                        <td><input id="worthValSlider" class="worthOption" type="range" min=0 max=1 value=0.5 step=0.025 /></td>
                         <td><label for="worthValSlider">very good</label></td>
                         <td><img src="images/icon_reset.png" class="resetButton" onclick="l('worthValSlider').value = 0.5; setCustWorth();" /></td>
                     </tr>
@@ -407,7 +407,7 @@
                     </tr>
                     <tr class="advancedOption" hidden>
                         <td style="text-align: right;"><label for="worthBaselineSlider">&minus;1</label></td>
-                        <td><input id="worthBaselineSlider" type="range" min=-1 max=2 value=0 step=0.025 /></td>
+                        <td><input id="worthBaselineSlider" class="worthOption" type="range" min=-1 max=2 value=0 step=0.025 /></td>
                         <td><label for="worthBaselineSlider">2</label></td>
                         <td><img src="images/icon_reset.png" class="resetButton" onclick="l('worthBaselineSlider').value = 0; setCustWorth();" /></td>
                     </tr>
