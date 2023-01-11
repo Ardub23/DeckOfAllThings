@@ -982,8 +982,6 @@ function weightedRandomIndex(arr) {
     const totalWeight = arr.reduce((acc, card) => acc + (card.weight? card.weight : 0), 0);
     const randomValue = Math.random() * totalWeight;
 
-    console.log("Looking for a value of " + randomValue + " (max: " + totalWeight + ")");
-
     // If all elements have weight 0, just return a random index
     if (totalWeight === 0) {
         return Math.floor(Math.random() * arr.length);
