@@ -332,7 +332,18 @@
                 <p>To add your own cards, click "Edit individual cards" at the bottom of this page.</p>
 
                 <h3>Wildness and worth</h3>
-                <p>You can filter cards based on how wild their effects are and how good they are for the player who draws them. Each card is assigned a "wildness value", from the tame cards with simple and straightforward effects, to the earth-shattering and often very disruptive cards. Each also has a "worth value", from the disastrous to the miraculous. These options remove cards from the deck; each card in the deck is still equally likely to be drawn.</p>
+                <p>You can make the deck more or less likely to produce cards based on how wild their effects are and how good they are for the player who draws them. Each card is assigned a "wildness value", from the tame cards with simple and straightforward effects, to the earth-shattering and often very disruptive cards. Each also has a "worth value", from the disastrous to the miraculous.</p>
+
+                These options control:
+                <div class="radioContainer">
+                    <input type="radio" name="weightMode" id="filterCardsOption" class="wildOption worthOption" onclick="useCardWeight = false" checked />
+                    <label for="filterCardsOption">Inclusion probability (probability for each card to be in the deck; included cards are all equally likely to be drawn)</label>
+                </div>
+                <div class="radioContainer">
+                    <input type="radio" name="weightMode" id="useWeightOption" class="wildOption worthOption" onclick="useCardWeight = true" />
+                    <label for="useWeightOption">Card weight (relative likelihood for each card to be drawn)</label>
+                </div>
+
                 <p>
                     <input id="custAdvancedCheckbox" name="custAdvancedCheckbox" type="checkbox" />
                     <label for="custAdvancedCheckbox">Show advanced options</label>

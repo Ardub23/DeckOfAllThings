@@ -439,6 +439,7 @@ function setUp() {
     lastCard = {};
     drawing = false;
     advancedOptions = false;
+    useCardWeight = false;
 }
 
 /**
@@ -606,6 +607,27 @@ function createCustomCardNode(card, i) {
     reappearsNode.appendChild(reappearsLabel);
     cardNode.appendChild(reappearsNode);
 
+    // Card weight
+    const weightNode = createElement("div");
+    const weightLabel = createElement("label", undefined, "Relative draw probability: ");
+    weightLabel.htmlFor = "weightInput" + i;
+    const weightInput = createElement("input", "weightInput" + i);
+    weightInput.className = "numInput";
+    weightInput.type = "number";
+    weightInput.value = (card.weight !== undefined)? card.weight.toFixed(2) : 1;
+    weightInput.min = 0;
+    weightInput.step = 0.01;
+    weightInput.onchange = () => {
+        if (!(weightInput.valueAsNumber >= 0))
+            weightInput.value = 0;
+        card.weight = weightInput.valueAsNumber;
+    };
+    weightInput.onchange();
+
+    weightNode.appendChild(weightLabel);
+    weightNode.appendChild(weightInput);
+    cardNode.appendChild(weightNode);
+
     // Remove card button
     let removeBtnHolder = createElement("div");
     removeBtnHolder.appendChild(createButton("removeCardBtn" + i, () => {
@@ -648,15 +670,9 @@ function setDeclaredDraws(inputElement) {
 }
 
 function readyDeck(type) {
-    if (type === undefined) {
-        setDeckType();
-    } else {
-        deckType = type;
-    }
-
     fadeTransition("initialConfig", "drawingNode");
 
-    switch (deckType) {
+    switch (type) {
         case "random":
             deck = ((Math.random() < 0.25)? fullDeck : partialDeck).map(card => ({...card}));
             draw();
@@ -665,6 +681,9 @@ function readyDeck(type) {
             deck = partialDeck.map(card => ({...card}));
             draw();
             break;
+        default:
+            alert("Unknown deck type \"" + type + "\"! Defaulting to full deck.");
+            // fall through
         case "full":
             deck = fullDeck.map(card => ({...card}));
             draw();
@@ -782,6 +801,7 @@ function drawProbabilityPlot(div, chartTitle, params) {
         fill: "tozeroy",
         hoverinfo: "none",
     }
+    const displayTitle = ((useCardWeight)? "Weight factor: " : "Inclusion probability: ") + chartTitle;
     const layout = {
         showlegend: false,
         margin: {
@@ -802,7 +822,7 @@ function drawProbabilityPlot(div, chartTitle, params) {
             range: [0, 1.05],
             color: "#cccccc",
         },
-        title: "Inclusion probability: " + chartTitle,
+        title: displayTitle,
         paper_bgcolor: "#555555",
         plot_bgcolor: "#555555",
         font: {color: "#cccccc",},
@@ -817,6 +837,9 @@ function customize() {
     l("custCardSrcSelector").value = "all";
     l("custCardSrcSelector").onchange();
     
+    l("filterCardsOption").checked = true;
+    l("filterCardsOption").onclick();
+
     l("wildStrSlider").value = 0;
     l("wildValSlider").value = 0.5;
     setCustWild();
@@ -861,9 +884,16 @@ function finishCustomization(andThen) {
             break;
     }
 
-    // Filter out cards for wildness and worth
-    deck = deck.filter(x => Math.random() < probability(x.wildness, wildParams));
-    deck = deck.filter(x => Math.random() < probability(x.worth, worthParams));
+    // Set each card's weight to 1
+    deck.forEach(card => {card.weight = 1});
+    if (useCardWeight) {
+        // Multiply card weight by wildness and worth
+        deck.forEach(card => card.weight *= probability(card.wildness, wildParams) * probability(card.worth, worthParams));
+    } else {
+        // Filter out cards for wildness and worth
+        deck = deck.filter(card => Math.random() < probability(card.wildness, wildParams));
+        deck = deck.filter(card => Math.random() < probability(card.worth, worthParams));
+    }
 
     // Correct undesirable card effects
     if (custXP === "noxp") {
@@ -948,12 +978,37 @@ function startOver() {
     setUp();
 }
 
+function weightedRandomIndex(arr) {
+    const totalWeight = arr.reduce((acc, card) => acc + (card.weight? card.weight : 0), 0);
+    const randomValue = Math.random() * totalWeight;
+
+    console.log("Looking for a value of " + randomValue + " (max: " + totalWeight + ")");
+
+    // If all elements have weight 0, just return a random index
+    if (totalWeight === 0) {
+        return Math.floor(Math.random() * arr.length);
+    }
+
+    for (let i = 0, crawl = 0; i < arr.length; i++) {
+        // It crawls toward randomValue
+        crawl += arr[i].weight;
+        // Only check if we've passed the target, not met it
+        // Otherwise a randomValue of 0 will give us 0 even if arr[0].weight is zero
+        if (crawl > randomValue) {
+            return i;
+        }
+    }
+
+    // Should've returned by now... Just pick a random one
+    return Math.floor(Math.random() * arr.length);
+}
+
 function draw() {
     // declaredDraws can be 0 if user declined an optional draw-more from their last card.
     // In that case, skip to end-of-draw stuff.
     if (declaredDraws > 0 && deck.length > 0) { // we're really gonna draw a card
         // Pick a card, any card
-        let cardIndex = Math.floor(Math.random() * deck.length);
+        let cardIndex = weightedRandomIndex(deck);
         let card = deck[cardIndex];
         lastCard = card;
         if (card.reappears === false) {
@@ -976,7 +1031,7 @@ function draw() {
 
         // Conditional changes to declaredDraws (including "nomore", which can be vetoed) are handled by the buttons
         declaredDraws -= 1;
-        if (card.drawsEffect == "forced") {
+        if (card.drawsEffect === "forced") {
             declaredDraws += card.draws;
         }
     }
