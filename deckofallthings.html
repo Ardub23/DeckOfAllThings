@@ -6,13 +6,13 @@
         <style>
             * {
                 box-sizing: border-box;
-                word-wrap: break-word;
             }
             body {
                 min-height: 100vh;
                 margin: 0;
                 padding: 10px;
                 font-family: Arial, Helvetica, sans-serif;
+                word-wrap: break-word;
                 background: rgb(31, 31, 31);
                 color: rgb(247, 247, 247);
                 display: flex;
@@ -23,6 +23,9 @@
             a {
                 color: lightblue;
             }
+			label {
+                color: rgb(247, 247, 247);
+			}
             .cardNameInput {
                 font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
                 font-weight: bold;
@@ -39,23 +42,23 @@
                 background: rgba(0, 0, 0, 0);
                 color: white;
             }
-            .customCard {
-                background: rgb(70, 70, 70);
-                padding: 5px;
-                border-style: solid;
-                border-radius: 10px;
-                display: flex;
-                flex-direction: column;
-                flex: 1;
-            }
+			.customCard {
+				height: 100%;
+				width: 100%;
+				background: rgb(70, 70, 70);
+				padding: 5px;
+				border-style: solid;
+				border-radius: 10px;
+				display: flex;
+				flex-direction: column;
+				flex: 1;
+			}
             .customCardContainer {
                 width: 20%;
                 max-width: 360px;
-                height: 288px;
+                height: 300px;
                 padding: 5px;
                 float: left;
-                display: flex;
-                flex-direction: column;
             }
             @media screen and (max-width: 1440px) {
                 .customCardContainer {
@@ -64,7 +67,7 @@
             }
             @media screen and (max-width: 1080px) {
                 .customCardContainer {
-                    width: 33%;
+                    width: 33.3%;
                 }
             }
             @media screen and (max-width: 720px) {
@@ -158,7 +161,6 @@
             .plusButton {
                 -webkit-touch-callout: none; /* Disable Android and iOS callouts */
                 -webkit-user-select: none; /* Disable Chrome and Safari text selection */
-                -khtml-user-select: none; /* Disable Konqueror text selection */
                 -moz-user-select: none; /* Disable Firefox text selection */
                 -ms-user-select: none; /* Disable Internet Explorer text selection */
                 user-select: none; /* Disable text selection in modern browsers */
@@ -246,9 +248,13 @@
             }
         </style>
 
-        <script src="https://cdn.plot.ly/plotly-latest.min.js" defer></script>
-        <script src="https://cdn.jsdelivr.net/npm/dompurify@2.0.14/dist/purify.min.js" defer></script>
-        <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js" defer></script>
+		<!-- Plotly, for drawing graphs of probability functions -->
+        <script src="scripts/plotly-latest.min.js" defer></script>
+		<!-- DOMPurify, to clean up user-provided card text before displaying it -->
+        <script src="scripts/purify.min.js" defer></script>
+		<!-- Marked, for formatting card descriptions using Markdown -->
+        <script src="scripts/marked.min.js" defer></script>
+
         <script src="main.js" defer></script>
     </head>
     <body>
@@ -323,7 +329,7 @@
 
                 <h2 id="custCardSrcHeader">Card sources</h2>
                 <label id="custCardSrcLbl" for="custCardSrcSelector">Use cards from: </label>
-                <select id="custCardSrcSelector" name="custCardSrcSelector" onchange="custCardSrc = l('custCardSrcSelector').value;">
+                <select id="custCardSrcSelector" name="custCardSrcSelector" onchange="custCardSrc = this.value">
                     <option value="partial">the partial deck of 13 cards</option>
                     <option value="full">the full deck of 22 cards</option>
                     <option value="all" selected>the full deck plus homebrew cards</option>
@@ -438,7 +444,7 @@
                 <div style="clear: left; margin-block-end: 15px"></div>
 
                 <h3>Experience and level-based effects</h3>
-                <p>Effects which deal with experience points are unsuited for campaigns that use other leveling systems, and some groups prefer to have all player characters at the same level.</p>
+                <p>Effects which deal with experience points are unsuited for campaigns that use other leveling systems, and some groups prefer to keep all player characters at the same level.</p>
                 <div class="radioContainer">
                     <input type="radio" name="custXP" id="custXPDefault" value="default" onclick="custXP = 'default'" checked />
                     <label for="custXPDefault">Use effects that involve experience points (default)</label>
@@ -508,7 +514,7 @@
 
                 <label for="importTextarea">Paste your exported deck below.</label>
                 <br />
-                <textarea id="importTextarea" onfocus="l('importTextarea').select()"></textarea>
+                <textarea id="importTextarea" onfocus="this.select()"></textarea>
                 <p>Import and then&hellip;</p>
                 <div class="fullOrDraw">
                     <div class="bigButton" onclick="importAndThen(fullCustomize)">Edit individual cards</div>
