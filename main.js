@@ -415,7 +415,7 @@ let homebrewDeck = [
 		wildness: 0.2,
 		worth: 0.4
 	},
-	{	name: "Fog",
+	{	name: "Mist",
 		desc: "Your vision becomes clouded, as if by fog that only you can see. Anything farther than 120 feet from you is lightly obscured from you, and anything beyond 500 feet is heavily obscured from you. Any spell that cures blindness lifts the fog for a number of days equal to the spell level.",
 		wildness: 0.0,
 		worth: 0.2
