@@ -62,7 +62,7 @@ let fullDeck = [
 		worth: 0.8
 	},
 	{   name: "Gem",
-		desc: "Twenty-five pieces of jewelry worth 2,000 gp each or fifty gems worth 1,000 gp each appear at your feet.",
+		desc: "Twenty-five pieces of jewelry worth 2,000&nbsp;gp each or fifty gems worth 1,000&nbsp;gp each appear at your feet.",
 		wildness: 0.0,
 		worth: 0.7
 	},
@@ -275,7 +275,7 @@ let homebrewDeck = [
 		worth: 0.7
 	},
 	{   name: "Miner",
-		desc: "A single block of gold worth 30,000 gp appears in the nearest unoccupied space. The gold weighs 700 pounds.",
+		desc: "A single block of gold worth 30,000&nbsp;gp appears in the nearest unoccupied space. The gold weighs 700 pounds.",
 		wildness: 0.1,
 		worth: 0.7
 	},
@@ -376,7 +376,7 @@ let homebrewDeck = [
 		worth: 0.6
 	},
 	{   name: "Prophet",
-		desc: "Four ivory strips worth 50 gp each, and incense worth 1000 gp, appear at your feet. You can cast the [legend lore](https://www.dndbeyond.com/spells/legend-lore) spell once without using a spell slot, and you regain the ability to do so when you finish a long rest.",
+		desc: "Four ivory strips worth 50&nbsp;gp each, and incense worth 1000&nbsp;gp, appear at your feet. You can cast the [legend lore](https://www.dndbeyond.com/spells/legend-lore) spell once without using a spell slot, and you regain the ability to do so when you finish a long rest.",
 		wildness: 0.5,
 		worth: 0.8
 	},
@@ -414,7 +414,12 @@ let homebrewDeck = [
 		desc: "Every magic item you are wearing or carrying, except for artifacts, vanishes and is replaced by another magic item of the same rarity. The DM determines the new items.",
 		wildness: 0.2,
 		worth: 0.4
-	}
+	},
+	{	name: "Fog",
+		desc: "Your vision becomes clouded, as if by fog that only you can see. Anything farther than 120 feet from you is lightly obscured from you, and anything beyond 500 feet is heavily obscured from you. Any spell that cures blindness lifts the fog for a number of days equal to the spell level.",
+		wildness: 0.0,
+		worth: 0.2
+	},
 ];
 
 // Initial setup for some elements, once the DOM is loaded
