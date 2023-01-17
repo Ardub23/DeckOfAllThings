@@ -174,9 +174,14 @@
                 user-select: none; /* Disable text selection in modern browsers */
                 cursor: pointer;
                 text-align: center;
+				border: 1px outset;
             }
+			.minusButton:active, .plusButton:active {
+				border-style: inset;
+			}
             .minusButton {
                 background: rgb(127, 0, 0);
+				border-color: rgb(192, 0, 0);
                 border-top-left-radius: 12px;
                 border-bottom-left-radius: 12px;
             }
@@ -188,6 +193,7 @@
             }
             .plusButton {
                 background: rgb(0, 127, 0);
+				border-color: rgb(0, 192, 0);
                 border-top-right-radius: 12px;
                 border-bottom-right-radius: 12px;
             }
@@ -199,11 +205,6 @@
             }
             .declaredDrawsInput {
                 text-align: center;
-                background: rgba(255, 255, 255, 0.15);
-                color: white;
-                font-weight: bold;
-                border-top: 1px solid rgb(72, 72, 151);
-                border-bottom: 1px solid rgb(140, 140, 226);
             }
             .mouseGreedy {
                 cursor: default;
