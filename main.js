@@ -609,10 +609,11 @@ function createCustomCardNode(card, i) {
     drawsEffectNode.appendChild(drawsEffectSelector);
     // Card draws number
     let drawsInput = getOrCreate("input", "drawsInput" + i);
-    drawsInput.className = "numInput";
+    // drawsInput.className = "numInput";
     drawsInput.type = "number";
     drawsInput.value = (card.draws !== undefined)? card.draws : 1;
     drawsInput.min = 1;
+	drawsInput.onclick = () => {drawsInput.select()};
     drawsInput.onchange = () => {
         if (!(drawsInput.valueAsNumber >= 1))
             drawsInput.value = 1;
@@ -624,7 +625,7 @@ function createCustomCardNode(card, i) {
     cardNode.appendChild(drawsEffectNode);
 
     drawsEffectSelector.onchange = () => {
-        let f = drawsEffectSelector.value;
+        const f = drawsEffectSelector.value;
         card.drawsEffect = f;
         drawsInput.hidden = (f !== "optional" && f !== "forced");
     };
@@ -652,10 +653,12 @@ function createCustomCardNode(card, i) {
     weightInput.value = (card.weight !== undefined)? card.weight.toFixed(2) : 1;
     weightInput.min = 0;
     weightInput.step = 0.01;
+	weightInput.onclick = () => {weightInput.select()};
     weightInput.onchange = () => {
         if (!(weightInput.valueAsNumber >= 0))
             weightInput.value = 0;
-        card.weight = weightInput.valueAsNumber;
+		card.weight = weightInput.valueAsNumber;
+		weightInput.value = weightInput.valueAsNumber.toFixed(2);
     };
     weightInput.onchange();
 
