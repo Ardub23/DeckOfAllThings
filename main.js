@@ -488,7 +488,10 @@ function analyzeDeck(arr) {
 }
 
 function fadeTransition(from, to, callback) {
-    hide(from, () => {show(to, callback)});
+    hide(from, () => {
+		window.scrollTo(0, 0); // scroll to top of page
+		show(to, callback);
+	});
 }
 
 function show(id, callback) {
