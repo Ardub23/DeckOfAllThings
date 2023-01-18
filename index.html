@@ -298,14 +298,28 @@
             }
         </style>
 
-		<!-- Plotly, for drawing graphs of probability functions -->
-        <script src="scripts/plotly-latest.min.js" defer></script>
-		<!-- DOMPurify, to clean up user-provided card text before displaying it -->
-        <script src="scripts/purify.min.js" defer></script>
-		<!-- Marked, for formatting card descriptions using Markdown -->
-        <script src="scripts/marked.min.js" defer></script>
+		<script async>
+			document.addEventListener("DOMContentLoaded", () => {
+				const image = document.getElementById("allDeckImg");
+				const darkImage = 'images/icon_drawall_light.png'; // light image on dark background
+				const lightImage = 'images/icon_drawall_dark.png';
 
-        <script src="main.js" defer></script>
+				function updateImage() {
+					image.src = (window.matchMedia('(prefers-color-scheme: dark)').matches)? darkImage : lightImage;
+				}
+
+				updateImage();
+				window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', updateImage);
+			});
+		</script>
+		<!-- Plotly, for drawing graphs of probability functions -->
+        <script src="scripts/plotly-latest.min.js" async></script>
+		<!-- DOMPurify, to clean up user-provided card text before displaying it -->
+        <script src="scripts/purify.min.js" async></script>
+		<!-- Marked, for formatting card descriptions using Markdown -->
+        <script src="scripts/marked.min.js" async></script>
+
+        <script src="main.js" async></script>
     </head>
     <body>
         <div id="main">
