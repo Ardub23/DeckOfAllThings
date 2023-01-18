@@ -309,8 +309,7 @@ let homebrewDeck = [
 			 0.0, 0.2),
 ];
 
-// Initial setup for some elements, once the DOM is loaded
-document.addEventListener("DOMContentLoaded", () => {
+function onLoad() {
 	// Reflect how many cards are in the homebrew deck
 	l("allDeckCount").innerHTML = "(" + (fullDeck.length + homebrewDeck.length) + " cards)";
 
@@ -327,20 +326,27 @@ document.addEventListener("DOMContentLoaded", () => {
 	}
 
 	setUp();
-});
+}
+
+// Initial setup for some elements, once the DOM is loaded
+if (document.readyState === "loading") {
+	document.addEventListener("DOMContentLoaded", onLoad);
+} else {
+	onLoad();
+}
 
 /**
  * Resets several values and conditions to their initial state.
  */
 function setUp() {
-    l("initRandDeclInput").value = 1;
-    l("initRandDeclInput").onchange(undefined);
-    vetoes = 0;
-    deck = [];
-    lastCard = {};
-    drawing = false;
-    advancedOptions = false;
-    useCardWeight = false;
+	l("initRandDeclInput").value = 1;
+	l("initRandDeclInput").onchange(undefined);
+	vetoes = 0;
+	deck = [];
+	lastCard = {};
+	drawing = false;
+	advancedOptions = false;
+	useCardWeight = false;
 }
 
 /**
@@ -348,7 +354,7 @@ function setUp() {
  * @param {Card[]} arr - the deck to analyze
  */
 function analyzeDeck(arr) {
-    const wildSum = arr.reduce((acc, card) => {
+	const wildSum = arr.reduce((acc, card) => {
 		if (!card.wildness) return acc;
 		if (card.weight === undefined) return acc + card.wildness;
 		return acc + (card.wildness * card.weight);
@@ -364,14 +370,14 @@ function analyzeDeck(arr) {
 		if (card.weight === undefined) return acc + card.worth;
 		return acc + (card.worth * card.weight);
 	}, 0);
-    const worthWeight = arr.reduce((acc, card) => {
+	const worthWeight = arr.reduce((acc, card) => {
 		if (card.worth === undefined) return acc;
 		if (card.weight === undefined) return acc + 1;
 		return acc + card.weight;
 	}, 0);
 
-    console.log("Average wildness: " + (wildSum / wildWeight));
-    console.log("Average worth: " + (worthSum / worthWeight));
+	console.log("Average wildness: " + (wildSum / wildWeight));
+	console.log("Average worth: " + (worthSum / worthWeight));
 }
 
 /**
@@ -382,7 +388,7 @@ function analyzeDeck(arr) {
  * @param {function?} midwayCallback - function to run midway through the transition
  */
 function fadeTransition(from, to, callback, midwayCallback) {
-    hide(from, () => {
+	hide(from, () => {
 		window.scrollTo(0, 0); // scroll to top of page
 		if (midwayCallback) midwayCallback();
 		show(to, callback);
@@ -394,19 +400,19 @@ function fadeTransition(from, to, callback, midwayCallback) {
  * @param {function?} callback
  */
 function show(id, callback) {
-    const el = l(id);
-    el.hidden = false;
+	const el = l(id);
+	el.hidden = false;
 	makeFadeable(el);
 
-    el.addEventListener("transitionend", callback, {once: true});
+	el.addEventListener("transitionend", callback, {once: true});
 
-    // stupid event listener doesn't fire if you start the transition right away
-    // dumb stupid
-    setTimeout(() => {
-        el.classList.remove('fadedOut');
-    }, 10);
-    // hide function works just fine without this
-    // baloney
+	// stupid event listener doesn't fire if you start the transition right away
+	// dumb stupid
+	setTimeout(() => {
+		el.classList.remove('fadedOut');
+	}, 10);
+	// hide function works just fine without this
+	// baloney
 }
 
 /**
@@ -414,15 +420,15 @@ function show(id, callback) {
  * @param {function?} callback
  */
 function hide(id, callback) {
-    const el = l(id);
+	const el = l(id);
 	makeFadeable(el);
 
-    el.addEventListener("transitionend", () => {
-        el.hidden = true;
-        callback();
-    }, {once: true});
-    
-    el.classList.add('fadedOut');
+	el.addEventListener("transitionend", () => {
+		el.hidden = true;
+		callback();
+	}, {once: true});
+
+	el.classList.add('fadedOut');
 }
 
 /**
@@ -443,10 +449,10 @@ function makeFadeable(el) {
  * @return {HTMLElement | null} the element with the given ID
  */
 function l(id) {
-    // L for eLement
-    if (id instanceof HTMLElement) return id;
-    
-    return document.getElementById(id);
+	// L for eLement
+	if (id instanceof HTMLElement) return id;
+
+	return document.getElementById(id);
 }
 
 /**
@@ -460,14 +466,14 @@ function l(id) {
  * @param {string?} innerHTML - inner HTML to add to the element
  */
 function getOrCreate(tagName, id, innerHTML) {
-    if (l(id)) {
-        let el = l(id);
-        if (innerHTML === "") {
-            el.innerHTML = "";
-        }
-        return el;
-    }
-    return createElement(tagName, id, innerHTML);
+	if (l(id)) {
+		let el = l(id);
+		if (innerHTML === "") {
+			el.innerHTML = "";
+		}
+		return el;
+	}
+	return createElement(tagName, id, innerHTML);
 }
 
 /**
@@ -478,14 +484,14 @@ function getOrCreate(tagName, id, innerHTML) {
  * @param {any?} innerHTML
  */
 function createElement(tagName, id, innerHTML) {
-    let el = document.createElement(tagName);
-    if (id) {
-        el.id = id;
-    }
-    if (innerHTML) {
-        el.innerHTML = innerHTML;
-    }
-    return el;
+	let el = document.createElement(tagName);
+	if (id) {
+		el.id = id;
+	}
+	if (innerHTML) {
+		el.innerHTML = innerHTML;
+	}
+	return el;
 }
 
 /**
@@ -496,10 +502,10 @@ function createElement(tagName, id, innerHTML) {
  * @param {string} innerHTML
  */
 function createButton(id, onclick, innerHTML) {
-    let btn = getOrCreate("button", id, innerHTML);
-    btn.type = "button";
-    btn.onclick = onclick;
-    return btn;
+	let btn = getOrCreate("button", id, innerHTML);
+	btn.type = "button";
+	btn.onclick = onclick;
+	return btn;
 }
 
 /**
@@ -509,9 +515,9 @@ function createButton(id, onclick, innerHTML) {
  * @param {string} innerHTML
  */
 function createOption(value, innerHTML) {
-    let opt = createElement("option", undefined, innerHTML);
-    opt.value = value;
-    return opt;
+	let opt = createElement("option", undefined, innerHTML);
+	opt.value = value;
+	return opt;
 }
 
 /**
@@ -520,121 +526,121 @@ function createOption(value, innerHTML) {
  * @param {number} i - the index of the card in <code>deck</code>
  */
 function createCustomCardNode(card, i) {
-    let cardContainer = getOrCreate("div", "customCardContainer" + i);
-    cardContainer.innerHTML = "";
+	let cardContainer = getOrCreate("div", "customCardContainer" + i);
+	cardContainer.innerHTML = "";
 	cardContainer.classList.add("customCardContainer", "slowFading", "fadedOut");
 
-    let cardNode = getOrCreate("div", "customCard" + i);
-    cardNode.innerHTML = "";
-    cardNode.className = "customCard";
-    cardContainer.appendChild(cardNode);
+	let cardNode = getOrCreate("div", "customCard" + i);
+	cardNode.innerHTML = "";
+	cardNode.className = "customCard";
+	cardContainer.appendChild(cardNode);
 
-    // Card name
-    let nameInput = getOrCreate("input", "customCardName" + i);
-    nameInput.className = "cardNameInput";
-    nameInput.value = (card.name !== undefined)? card.name : "";
-    nameInput.onchange = () => {card.name = nameInput.value};
-    nameInput.onchange(undefined);
-    cardNode.appendChild(nameInput);
+	// Card name
+	let nameInput = getOrCreate("input", "customCardName" + i);
+	nameInput.className = "cardNameInput";
+	nameInput.value = (card.name !== undefined)? card.name : "";
+	nameInput.onchange = () => {card.name = nameInput.value};
+	nameInput.onchange(undefined);
+	cardNode.appendChild(nameInput);
 
-    // Card description
-    let descInput = getOrCreate("textarea", "customCardDesc" + i);
-    descInput.className = "cardDescInput";
-    descInput.value = (card.desc !== undefined)? card.desc : "";
-    descInput.onchange = () => {card.desc = descInput.value};
-    descInput.onchange(undefined);
-    cardNode.appendChild(descInput);
+	// Card description
+	let descInput = getOrCreate("textarea", "customCardDesc" + i);
+	descInput.className = "cardDescInput";
+	descInput.value = (card.desc !== undefined)? card.desc : "";
+	descInput.onchange = () => {card.desc = descInput.value};
+	descInput.onchange(undefined);
+	cardNode.appendChild(descInput);
 
-    // Card draws effect
-    let drawsEffectNode = createElement("div");
-    let drawsEffectSelector = getOrCreate("select", "drawsEffectSelector" + i);
-    drawsEffectSelector.innerHTML = "";
-    drawsEffectSelector.appendChild(createOption("noeffect", "Doesn't affect draws"));
-    drawsEffectSelector.appendChild(createOption("nomore", "Prevents further draws"));
-    drawsEffectSelector.appendChild(createOption("forced", "Forces additional draw(s): "));
-    drawsEffectSelector.appendChild(createOption("optional", "Allows additional draw(s): "));
-    drawsEffectSelector.value = (card.drawsEffect)? card.drawsEffect : "noeffect";
-    drawsEffectNode.appendChild(drawsEffectSelector);
-    // Card draws number
-    let drawsInput = getOrCreate("input", "drawsInput" + i);
-    // drawsInput.className = "numInput";
-    drawsInput.type = "number";
-    drawsInput.value = (card.draws !== undefined)? card.draws : 1;
-    drawsInput.min = 1;
+	// Card draws effect
+	let drawsEffectNode = createElement("div");
+	let drawsEffectSelector = getOrCreate("select", "drawsEffectSelector" + i);
+	drawsEffectSelector.innerHTML = "";
+	drawsEffectSelector.appendChild(createOption("noeffect", "Doesn't affect draws"));
+	drawsEffectSelector.appendChild(createOption("nomore", "Prevents further draws"));
+	drawsEffectSelector.appendChild(createOption("forced", "Forces additional draw(s): "));
+	drawsEffectSelector.appendChild(createOption("optional", "Allows additional draw(s): "));
+	drawsEffectSelector.value = (card.drawsEffect)? card.drawsEffect : "noeffect";
+	drawsEffectNode.appendChild(drawsEffectSelector);
+	// Card draws number
+	let drawsInput = getOrCreate("input", "drawsInput" + i);
+	// drawsInput.className = "numInput";
+	drawsInput.type = "number";
+	drawsInput.value = (card.draws !== undefined)? card.draws : 1;
+	drawsInput.min = 1;
 	drawsInput.onclick = () => {drawsInput.select()};
-    drawsInput.onchange = () => {
-        if (!(drawsInput.valueAsNumber >= 1))
-            drawsInput.value = 1;
-        drawsInput.value = Math.floor(drawsInput.valueAsNumber);
-        card.draws = drawsInput.valueAsNumber;
-    };
-    drawsInput.onchange(undefined);
-    drawsEffectNode.appendChild(drawsInput);
-    cardNode.appendChild(drawsEffectNode);
+	drawsInput.onchange = () => {
+		if (!(drawsInput.valueAsNumber >= 1))
+			drawsInput.value = 1;
+		drawsInput.value = Math.floor(drawsInput.valueAsNumber);
+		card.draws = drawsInput.valueAsNumber;
+	};
+	drawsInput.onchange(undefined);
+	drawsEffectNode.appendChild(drawsInput);
+	cardNode.appendChild(drawsEffectNode);
 
-    drawsEffectSelector.onchange = () => {
-        const f = drawsEffectSelector.value;
-        card.drawsEffect = f;
-        drawsInput.hidden = (f !== "optional" && f !== "forced");
-    };
-    drawsEffectSelector.onchange(undefined);
+	drawsEffectSelector.onchange = () => {
+		const f = drawsEffectSelector.value;
+		card.drawsEffect = f;
+		drawsInput.hidden = (f !== "optional" && f !== "forced");
+	};
+	drawsEffectSelector.onchange(undefined);
 
-    let reappearsNode = createElement("div");
-    let reappearsCheckbox = getOrCreate("input", "reappearsCheckbox" + i);
-    reappearsCheckbox.type = "checkbox";
-    reappearsCheckbox.checked = (card.reappears !== false);
-    reappearsCheckbox.onchange = () => {card.reappears = reappearsCheckbox.checked};
-    let reappearsLabel = createElement("label");
-    reappearsLabel.htmlFor = "reappearsCheckbox" + i;
-    reappearsLabel.innerHTML = "Reappears in deck";
-    reappearsNode.appendChild(reappearsCheckbox);
-    reappearsNode.appendChild(reappearsLabel);
-    cardNode.appendChild(reappearsNode);
+	let reappearsNode = createElement("div");
+	let reappearsCheckbox = getOrCreate("input", "reappearsCheckbox" + i);
+	reappearsCheckbox.type = "checkbox";
+	reappearsCheckbox.checked = (card.reappears !== false);
+	reappearsCheckbox.onchange = () => {card.reappears = reappearsCheckbox.checked};
+	let reappearsLabel = createElement("label");
+	reappearsLabel.htmlFor = "reappearsCheckbox" + i;
+	reappearsLabel.innerHTML = "Reappears in deck";
+	reappearsNode.appendChild(reappearsCheckbox);
+	reappearsNode.appendChild(reappearsLabel);
+	cardNode.appendChild(reappearsNode);
 
-    // Card weight
-    const weightNode = createElement("div");
-    const weightLabel = createElement("label", undefined, "Relative draw probability: ");
-    weightLabel.htmlFor = "weightInput" + i;
-    const weightInput = createElement("input", "weightInput" + i);
-    weightInput.className = "numInput";
-    weightInput.type = "number";
-    weightInput.value = (card.weight !== undefined)? card.weight.toFixed(2) : 1;
-    weightInput.min = 0;
-    weightInput.step = 0.01;
+	// Card weight
+	const weightNode = createElement("div");
+	const weightLabel = createElement("label", undefined, "Relative draw probability: ");
+	weightLabel.htmlFor = "weightInput" + i;
+	const weightInput = createElement("input", "weightInput" + i);
+	weightInput.className = "numInput";
+	weightInput.type = "number";
+	weightInput.value = (card.weight !== undefined)? card.weight.toFixed(2) : 1;
+	weightInput.min = 0;
+	weightInput.step = 0.01;
 	weightInput.onclick = () => {weightInput.select()};
-    weightInput.onchange = () => {
-        if (!(weightInput.valueAsNumber >= 0))
-            weightInput.value = 0;
+	weightInput.onchange = () => {
+		if (!(weightInput.valueAsNumber >= 0))
+			weightInput.value = 0;
 		card.weight = weightInput.valueAsNumber;
 		weightInput.value = weightInput.valueAsNumber.toFixed(2);
-    };
-    weightInput.onchange();
+	};
+	weightInput.onchange();
 
-    weightNode.appendChild(weightLabel);
-    weightNode.appendChild(weightInput);
-    cardNode.appendChild(weightNode);
+	weightNode.appendChild(weightLabel);
+	weightNode.appendChild(weightInput);
+	cardNode.appendChild(weightNode);
 
-    // Remove card button
-    let removeBtnHolder = createElement("div");
-    removeBtnHolder.appendChild(createButton("removeCardBtn" + i, () => {
-        // Dmpty cards will be removed before drawing.
-        // For now, keep correlation between element id and deck index.
-        deck[i] = {};
-        
-        // No fade unless we can get the other cards to slide slickly to their new positions.
-        // (Fade doesn't look cool if another card instantly teleports into the vacated space)
-        l("fullCustomCardsNode").removeChild(cardContainer);
-    }, "Remove card"));
-    cardNode.appendChild(removeBtnHolder);
+	// Remove card button
+	let removeBtnHolder = createElement("div");
+	removeBtnHolder.appendChild(createButton("removeCardBtn" + i, () => {
+		// Dmpty cards will be removed before drawing.
+		// For now, keep correlation between element id and deck index.
+		deck[i] = {};
 
-    return cardContainer;
+		// No fade unless we can get the other cards to slide slickly to their new positions.
+		// (Fade doesn't look cool if another card instantly teleports into the vacated space)
+		l("fullCustomCardsNode").removeChild(cardContainer);
+	}, "Remove card"));
+	cardNode.appendChild(removeBtnHolder);
+
+	return cardContainer;
 }
 
 /**
  * @return "card" if num is 1, or "cards" otherwise
  */
 function cardOrCards(num) {
-    return (num === 1)? "card" : "cards";
+	return (num === 1)? "card" : "cards";
 }
 
 /**
@@ -645,8 +651,8 @@ function cardOrCards(num) {
 function adjustDeclaredDraws(amount) {
 	if (!Number.isFinite(amount)) return;
 
-    declaredDraws += amount;
-    setDeclaredDraws();
+	declaredDraws += amount;
+	setDeclaredDraws();
 }
 
 /**
@@ -657,19 +663,19 @@ function adjustDeclaredDraws(amount) {
  * @param {HTMLElement?} inputElement
  */
 function setDeclaredDraws(inputElement) {
-    if (inputElement) {
-        declaredDraws = Math.floor(inputElement.valueAsNumber);
-    }
-    // Don't let the maniacs type in negative numbers or erase the input
-    if (!(declaredDraws >= 1)) {
-        declaredDraws = 1;
-    }
-    
-    // Update all the declaredDrawsInputs to have the value the user just put in
-    let inputs = document.getElementsByClassName("declaredDrawsInput");
-    for (let i = 0; i < inputs.length; i++) {
-        inputs[i].value = declaredDraws;
-    }
+	if (inputElement) {
+		declaredDraws = Math.floor(inputElement.valueAsNumber);
+	}
+	// Don't let the maniacs type in negative numbers or erase the input
+	if (!(declaredDraws >= 1)) {
+		declaredDraws = 1;
+	}
+
+	// Update all the declaredDrawsInputs to have the value the user just put in
+	let inputs = document.getElementsByClassName("declaredDrawsInput");
+	for (let i = 0; i < inputs.length; i++) {
+		inputs[i].value = declaredDraws;
+	}
 }
 
 /**
@@ -681,29 +687,29 @@ function setDeclaredDraws(inputElement) {
  * @param {string} type - the type of deck to draw from
  */
 function readyDeck(type) {
-    fadeTransition("initialConfig", "drawingNode");
+	fadeTransition("initialConfig", "drawingNode");
 
-    switch (type) {
-        case "random":
-            deck = ((Math.random() < 0.25)? fullDeck : partialDeck).map(card => ({...card}));
-            draw();
-            break;
-        case "partial":
-            deck = partialDeck.map(card => ({...card}));
-            draw();
-            break;
-        default:
-            console.error("Unknown deck type \"" + type + "\"; defaulting to full deck");
-            // fall through
-        case "full":
-            deck = fullDeck.map(card => ({...card}));
-            draw();
-            break;
-        case "all":
-            deck = fullDeck.concat(homebrewDeck).map(card => ({...card}));
-            draw();
-            break;
-    }
+	switch (type) {
+		case "random":
+			deck = ((Math.random() < 0.25)? fullDeck : partialDeck).map(card => ({...card}));
+			draw();
+			break;
+		case "partial":
+			deck = partialDeck.map(card => ({...card}));
+			draw();
+			break;
+		default:
+			console.error("Unknown deck type \"" + type + "\"; defaulting to full deck");
+			// fall through
+		case "full":
+			deck = fullDeck.map(card => ({...card}));
+			draw();
+			break;
+		case "all":
+			deck = fullDeck.concat(homebrewDeck).map(card => ({...card}));
+			draw();
+			break;
+	}
 }
 
 /**
@@ -721,42 +727,42 @@ function readyDeck(type) {
  * @param {string} id - the part of the element ID showing which sliders to read
  */
 function setCustBias(params, id) {
-    if (params === undefined) params = {};
+	if (params === undefined) params = {};
 
-    const strSliderVal = snap(l(id + "StrSlider"), [0], 0.15);
-    params.biasStr = Math.pow(strSliderVal, 1.25);
+	const strSliderVal = snap(l(id + "StrSlider"), [0], 0.15);
+	params.biasStr = Math.pow(strSliderVal, 1.25);
 
-    params.val = l(id + "ValSlider")["valueAsNumber"];
+	params.val = l(id + "ValSlider")["valueAsNumber"];
 
-    if (advancedOptions) {
-        params.baseline = snap(l(id + "BaselineSlider"), [0, 1], 0.1);
+	if (advancedOptions) {
+		params.baseline = snap(l(id + "BaselineSlider"), [0, 1], 0.1);
 
-        snap(l(id + "MaxSlider"), [0, 1], 0.1);
-        const x = l(id + "MaxSlider")["valueAsNumber"];
-        params.max = x*x*x - 1.5 * x*x + 1.5 * x;
-    } else {
-        params.baseline = 0;
-        params.max = 1;
-    }
+		snap(l(id + "MaxSlider"), [0, 1], 0.1);
+		const x = l(id + "MaxSlider")["valueAsNumber"];
+		params.max = x*x*x - 1.5 * x*x + 1.5 * x;
+	} else {
+		params.baseline = 0;
+		params.max = 1;
+	}
 
-    const chartTitle = (id === "wild")? "wildness" : id;
-    drawProbabilityPlot(id + "Graph", chartTitle, params)
+	const chartTitle = (id === "wild")? "wildness" : id;
+	drawProbabilityPlot(id + "Graph", chartTitle, params)
 }
 
 /**
  * Sets wildParams based on the current values of the wild sliders.
  */
 function setCustWild() {
-    wildParams = {};
-    setCustBias(wildParams, "wild");
+	wildParams = {};
+	setCustBias(wildParams, "wild");
 }
 
 /**
  * Sets worthParams based on the current value of the worth sliders.
  */
 function setCustWorth() {
-    worthParams = {};
-    setCustBias(worthParams, "worth");
+	worthParams = {};
+	setCustBias(worthParams, "worth");
 }
 
 /**
@@ -771,27 +777,27 @@ function setCustWorth() {
  * @return the slider's value, which may have been snapped to a new number
  */
 function snap(slider, values, snapRange) {
-    if (snapRange === undefined) snapRange = 0.1;
+	if (snapRange === undefined) snapRange = 0.1;
 
-    const sliderVal = slider.valueAsNumber;
+	const sliderVal = slider.valueAsNumber;
 
-    // Snap to nearest multiple
-    if (typeof values === "number") {
-        const nearestMultiple = Math.round(sliderVal / values) * values;
-        if (Math.abs(nearestMultiple - sliderVal) < snapRange) {
-            return (slider.value = nearestMultiple);
-        }
-    }
+	// Snap to nearest multiple
+	if (typeof values === "number") {
+		const nearestMultiple = Math.round(sliderVal / values) * values;
+		if (Math.abs(nearestMultiple - sliderVal) < snapRange) {
+			return (slider.value = nearestMultiple);
+		}
+	}
 
-    // Snap to specific numbers
-    for (let i = 0; i < values.length; i++) {
-        if (Math.abs(values[i] - sliderVal) < snapRange) {
-            return (slider.value = values[i]);
-        }
-    }
+	// Snap to specific numbers
+	for (let i = 0; i < values.length; i++) {
+		if (Math.abs(values[i] - sliderVal) < snapRange) {
+			return (slider.value = values[i]);
+		}
+	}
 
-    // Not close enough to snap
-    return sliderVal;
+	// Not close enough to snap
+	return sliderVal;
 }
 
 /**
@@ -807,70 +813,70 @@ function snap(slider, values, snapRange) {
  * @returns {number} the probability for val to be randomly deemed sufficiently close to params.val
  */
 function probability(x, params) {
-    const prob = ((Math.exp(-(Math.pow((params.val - x) * params.biasStr, 2)))) * (params.max - params.baseline) + params.baseline);
+	const prob = ((Math.exp(-(Math.pow((params.val - x) * params.biasStr, 2)))) * (params.max - params.baseline) + params.baseline);
 
-    // Clamp to [0..1] range
-    return Math.max(0, Math.min(1, prob));
+	// Clamp to [0..1] range
+	return Math.max(0, Math.min(1, prob));
 }
 
 function drawProbabilityPlot(div, chartTitle, params) {
-    let points = [];
-    const numPoints = 40; // starts at 0 so there's technically one more than this, doesn't matter
-    for (let i = 0; i <= numPoints; i += 1) {
-        // Can't just count by 0.05 or whatever because float imprecision adds up
-        points.push(i / numPoints);
-    }
+	let points = [];
+	const numPoints = 40; // starts at 0 so there's technically one more than this, doesn't matter
+	for (let i = 0; i <= numPoints; i += 1) {
+		// Can't just count by 0.05 or whatever because float imprecision adds up
+		points.push(i / numPoints);
+	}
 
-    let ticks = false;
-    switch (chartTitle) {
-        case "wildness":
-            ticks = ["very tame", "middling", "very wild"];
-            break;
-        case "worth":
-            ticks = ["very bad", "so-so", "very good"];
-            break;
-    }
+	let ticks = false;
+	switch (chartTitle) {
+		case "wildness":
+			ticks = ["very tame", "middling", "very wild"];
+			break;
+		case "worth":
+			ticks = ["very bad", "so-so", "very good"];
+			break;
+	}
 
-    const trace = {
-        x: points,
-        y: points.map(x => probability(x, params)),
-        type: "scatter",
-        mode: "lines",
-        line: {
-            color: "#cccccc",
-            width: 3,
-        },
-        fill: "tozeroy",
-        hoverinfo: "none",
-    }
-    const displayTitle = ((useCardWeight)? "Weight factor: " : "Inclusion probability: ") + chartTitle;
-    const layout = {
-        showlegend: false,
-        margin: {
-            autoexpand: false,
-            l: 30,
-            r: 30,
-            t: 40,
-            b: 30,
-        },
-        xaxis: {
-            range: [0, 1],
-            color: "#cccccc",
-            tickmode: (ticks === false)? "auto" : "array",
-            tickvals: [0.05, 0.5, 0.95],
-            ticktext: ticks,
-        },
-        yaxis: {
-            range: [0, 1.05],
-            color: "#cccccc",
-        },
-        title: displayTitle,
-        paper_bgcolor: "#555555",
-        plot_bgcolor: "#555555",
-        font: {color: "#cccccc",},
-    };
+	const trace = {
+		x: points,
+		y: points.map(x => probability(x, params)),
+		type: "scatter",
+		mode: "lines",
+		line: {
+			color: "#cccccc",
+			width: 3,
+		},
+		fill: "tozeroy",
+		hoverinfo: "none",
+	}
+	const displayTitle = ((useCardWeight)? "Weight factor: " : "Inclusion probability: ") + chartTitle;
+	const layout = {
+		showlegend: false,
+		margin: {
+			autoexpand: false,
+			l: 30,
+			r: 30,
+			t: 40,
+			b: 30,
+		},
+		xaxis: {
+			range: [0, 1],
+			color: "#cccccc",
+			tickmode: (ticks === false)? "auto" : "array",
+			tickvals: [0.05, 0.5, 0.95],
+			ticktext: ticks,
+		},
+		yaxis: {
+			range: [0, 1.05],
+			color: "#cccccc",
+		},
+		title: displayTitle,
+		paper_bgcolor: "#555555",
+		plot_bgcolor: "#555555",
+		font: {color: "#cccccc",},
+	};
 
-    Plotly.react(div, [trace], layout, {staticPlot: true});
+	Plotly.react(div, [trace], layout, {staticPlot: true});
 }
 
 /**
@@ -878,23 +884,23 @@ function drawProbabilityPlot(div, chartTitle, params) {
  * on it to their default values.
  */
 function customize() {
-    fadeTransition("initialConfig", "customMenu");
+	fadeTransition("initialConfig", "customMenu");
 
-    l("custCardSrcSelector").value = "all";
-    l("custCardSrcSelector").onchange();
-    
-    l("filterCardsOption").checked = true;
-    l("filterCardsOption").onclick();
+	l("custCardSrcSelector").value = "all";
+	l("custCardSrcSelector").onchange();
 
-    l("wildStrSlider").value = 0;
-    l("wildValSlider").value = 0.5;
-    setCustWild();
-    l("worthStrSlider").value = 0;
-    l("worthValSlider").value = 0.5;
-    setCustWorth();
-    
-    l("custXPDefault").checked = true;
-    l("custXPDefault").onclick(undefined);
+	l("filterCardsOption").checked = true;
+	l("filterCardsOption").onclick();
+
+	l("wildStrSlider").value = 0;
+	l("wildValSlider").value = 0.5;
+	setCustWild();
+	l("worthStrSlider").value = 0;
+	l("worthValSlider").value = 0.5;
+	setCustWorth();
+
+	l("custXPDefault").checked = true;
+	l("custXPDefault").onclick(undefined);
 }
 
 /**
@@ -902,15 +908,15 @@ function customize() {
  * depending on whether the checkbox "custAdvancedCheckbox" is checked.
  */
 function toggleCustAdvanced() {
-    advancedOptions = l("custAdvancedCheckbox")["checked"];
-    
-    const options = document.getElementsByClassName("advancedOption");
-    for (let i = 0; i < options.length; i++) {
-        options[i].hidden = !advancedOptions;
-    }
+	advancedOptions = l("custAdvancedCheckbox")["checked"];
 
-    setCustWild()
-    setCustWorth();
+	const options = document.getElementsByClassName("advancedOption");
+	for (let i = 0; i < options.length; i++) {
+		options[i].hidden = !advancedOptions;
+	}
+
+	setCustWild()
+	setCustWorth();
 }
 
 /**
@@ -919,67 +925,67 @@ function toggleCustAdvanced() {
  * @param {function} callback - function to run after the deck is ready
  */
 function finishCustomization(callback) {
-    // Start with (a copy of) the deck to use
-    switch (custCardSrc) {
-        case "partial":
-            deck = copyObjectArray(partialDeck);
-            break;
-        case "full":
-            deck = copyObjectArray(fullDeck);
-            break;
-        case "all":
-            deck = copyObjectArray(fullDeck.concat(homebrewDeck));
-            break;
-        case "homebrew":
-            deck = copyObjectArray(homebrewDeck);
-            break;
-        default:
-            console.error("Unknown card source: " + custCardSrc);
-            deck = [];
-            break;
-    }
+	// Start with (a copy of) the deck to use
+	switch (custCardSrc) {
+		case "partial":
+			deck = copyObjectArray(partialDeck);
+			break;
+		case "full":
+			deck = copyObjectArray(fullDeck);
+			break;
+		case "all":
+			deck = copyObjectArray(fullDeck.concat(homebrewDeck));
+			break;
+		case "homebrew":
+			deck = copyObjectArray(homebrewDeck);
+			break;
+		default:
+			console.error("Unknown card source: " + custCardSrc);
+			deck = [];
+			break;
+	}
 
-    // Set each card's weight to 1
-    deck.forEach(card => {card.weight = 1});
-    if (useCardWeight) {
-        // Multiply card weight by wildness and worth probs
-        deck.forEach(card => card.weight *= probability(card.wildness, wildParams) * probability(card.worth, worthParams));
-    } else {
-        // Filter out cards for wildness and worth
-        deck = deck.filter(card => Math.random() < probability(card.wildness, wildParams));
-        deck = deck.filter(card => Math.random() < probability(card.worth, worthParams));
-    }
+	// Set each card's weight to 1
+	deck.forEach(card => {card.weight = 1});
+	if (useCardWeight) {
+		// Multiply card weight by wildness and worth probs
+		deck.forEach(card => card.weight *= probability(card.wildness, wildParams) * probability(card.worth, worthParams));
+	} else {
+		// Filter out cards for wildness and worth
+		deck = deck.filter(card => Math.random() < probability(card.wildness, wildParams));
+		deck = deck.filter(card => Math.random() < probability(card.worth, worthParams));
+	}
 
-    // Correct undesired card effects
-    if (custXP === "noxp") {
-        deck.forEach(x => {
-            if (x.noXPDesc)
-                x.desc = x.noXPDesc;
-            else if (x.noLevelDesc)
-                x.desc = x.noLevelDesc;
-        });
-    } else if (custXP === "nolevel") {
-        deck.forEach(x => {
-            if (x.noLevelDesc)
-                x.desc = x.noLevelDesc;
-            else if (x.noXPDesc)
-                x.desc = x.noXPDesc;
-        });
-    }
+	// Correct undesired card effects
+	if (custXP === "noxp") {
+		deck.forEach(x => {
+			if (x.noXPDesc)
+				x.desc = x.noXPDesc;
+			else if (x.noLevelDesc)
+				x.desc = x.noLevelDesc;
+		});
+	} else if (custXP === "nolevel") {
+		deck.forEach(x => {
+			if (x.noLevelDesc)
+				x.desc = x.noLevelDesc;
+			else if (x.noXPDesc)
+				x.desc = x.noXPDesc;
+		});
+	}
 
-    // Transition to new screen
-    switch (callback) {
-        case fullCustomize:
+	// Transition to new screen
+	switch (callback) {
+		case fullCustomize:
 			// Start the cards appearing just as the full menu is becoming visible
-            fadeTransition("customMenu", "fullCustomMenu", undefined, callback);
-            break;
-        case draw:
-            fadeTransition("customMenu", "drawingNode");
+			fadeTransition("customMenu", "fullCustomMenu", undefined, callback);
+			break;
+		case draw:
+			fadeTransition("customMenu", "drawingNode");
 			callback();
-            break;
+			break;
 		default:
 			callback();
-    }
+	}
 }
 
 /**
@@ -987,7 +993,7 @@ function finishCustomization(callback) {
  * @return a new array of objects, each a copy of an object in the given array
  */
 function copyObjectArray(arr) {
-    return arr.map(obj => ({...obj}));
+	return arr.map(obj => ({...obj}));
 }
 
 /**
@@ -996,12 +1002,12 @@ function copyObjectArray(arr) {
  * "fullCustomCardsNode" element.
  */
 function addCustomCard() {
-    let newCard = new Card("New Card", "");
-    deck.push(newCard);
+	let newCard = new Card("New Card", "");
+	deck.push(newCard);
 
-    let cardNode = createCustomCardNode(newCard, deck.length - 1);
-    l("fullCustomCardsNode").appendChild(cardNode);
-    setTimeout(() => {show(cardNode)});
+	let cardNode = createCustomCardNode(newCard, deck.length - 1);
+	l("fullCustomCardsNode").appendChild(cardNode);
+	setTimeout(() => {show(cardNode)});
 }
 
 /**
@@ -1009,11 +1015,11 @@ function addCustomCard() {
  * the current deck.
  */
 function fullCustomize() {
-    let fullCustomCardsNode = l("fullCustomCardsNode");
-    fullCustomCardsNode.innerHTML = ""; // empty it out
-    for (let i in deck) {
-        fullCustomCardsNode.appendChild(createCustomCardNode(deck[i], i));
-    }
+	let fullCustomCardsNode = l("fullCustomCardsNode");
+	fullCustomCardsNode.innerHTML = ""; // empty it out
+	for (let i in deck) {
+		fullCustomCardsNode.appendChild(createCustomCardNode(deck[i], i));
+	}
 
 	let i = 0;
 	let timer = setInterval(() => {
@@ -1030,11 +1036,11 @@ function fullCustomize() {
  * Removes blank cards from the deck, then draws (transitioning to the drawing screen).
  */
 function finishFullCustomization() {
-    // Get rid of cards with no name or desc (this includes removed cards)
-    deck = deck.filter(card => (card.name || card.desc));
+	// Get rid of cards with no name or desc (this includes removed cards)
+	deck = deck.filter(card => (card.name || card.desc));
 
-    fadeTransition("fullCustomMenu", "drawingNode");
-    draw();
+	fadeTransition("fullCustomMenu", "drawingNode");
+	draw();
 }
 
 /**
@@ -1042,10 +1048,10 @@ function finishFullCustomization() {
  * declared draws.
  */
 function drawMore() {
-    declaredDraws += lastCard.draws;
-    if (lastCard.onDrawMore)
-        lastCard.onDrawMore();
-    draw();
+	declaredDraws += lastCard.draws;
+	if (lastCard.onDrawMore)
+		lastCard.onDrawMore();
+	draw();
 }
 
 /**
@@ -1053,8 +1059,8 @@ function drawMore() {
  */
 function startOver() {
 	// Clear out drawnCards, go to main menu
-    fadeTransition("drawingNode", "initialConfig", () => {l("drawnCards").innerHTML = ""});
-    setUp();
+	fadeTransition("drawingNode", "initialConfig", () => {l("drawnCards").innerHTML = ""});
+	setUp();
 }
 
 /**
@@ -1071,25 +1077,25 @@ function startOver() {
  */
 function weightedRandomIndex(arr) {
 	const totalWeight = arr.reduce((acc, card) => acc + ((card.weight > 0)? card.weight : 0), 0);
-    const randomValue = Math.random() * totalWeight;
+	const randomValue = Math.random() * totalWeight;
 
-    // If all elements have weight 0, just return a random index
-    if (totalWeight === 0) {
-        return Math.floor(Math.random() * arr.length);
-    }
+	// If all elements have weight 0, just return a random index
+	if (totalWeight === 0) {
+		return Math.floor(Math.random() * arr.length);
+	}
 
-    for (let i = 0, crawl = 0; i < arr.length; i++) {
-        // It crawls toward randomValue
-        crawl += arr[i].weight;
-        // Only check if we've passed the target, not met it
-        // Otherwise a randomValue of 0 will give us 0 even if arr[0].weight is zero
-        if (crawl > randomValue) {
-            return i;
-        }
-    }
+	for (let i = 0, crawl = 0; i < arr.length; i++) {
+		// It crawls toward randomValue
+		crawl += arr[i].weight;
+		// Only check if we've passed the target, not met it
+		// Otherwise a randomValue of 0 will give us 0 even if arr[0].weight is zero
+		if (crawl > randomValue) {
+			return i;
+		}
+	}
 
-    // Should've returned by now... Just pick a random one
-    return Math.floor(Math.random() * arr.length);
+	// Should've returned by now... Just pick a random one
+	return Math.floor(Math.random() * arr.length);
 }
 
 /**
@@ -1099,83 +1105,83 @@ function weightedRandomIndex(arr) {
  * to allow them to draw again (or not, if they have a choice).
  */
 function draw() {
-    // declaredDraws can be 0 if user declined an optional draw-more from their last card.
-    // In that case, skip to end-of-draw stuff.
-    if (declaredDraws > 0 && deck.length > 0) { // we're really gonna draw a card
-        // Pick a card, any card
-        const cardIndex = weightedRandomIndex(deck);
-        const card = deck[cardIndex];
-        lastCard = card;
-        if (card.reappears === false) {
-            // Only certain cards vanish when drawn; the rest reappear in the deck and can be drawn again
-            deck.splice(cardIndex, 1);
-        }
+	// declaredDraws can be 0 if user declined an optional draw-more from their last card.
+	// In that case, skip to end-of-draw stuff.
+	if (declaredDraws > 0 && deck.length > 0) { // we're really gonna draw a card
+		// Pick a card, any card
+		const cardIndex = weightedRandomIndex(deck);
+		const card = deck[cardIndex];
+		lastCard = card;
+		if (card.reappears === false) {
+			// Only certain cards vanish when drawn; the rest reappear in the deck and can be drawn again
+			deck.splice(cardIndex, 1);
+		}
 
-        // Make the card node and put it in the drawnCards node
-        let cardDiv = createElement("div");
-        cardDiv.classList = "drawnCard fading fadedOut";
-        let cardName = createElement("h3", undefined, DOMPurify.sanitize(card.name));
-        cardName.className = "drawnCardName";
-        cardDiv.appendChild(cardName);
+		// Make the card node and put it in the drawnCards node
+		let cardDiv = createElement("div");
+		cardDiv.classList = "drawnCard fading fadedOut";
+		let cardName = createElement("h3", undefined, DOMPurify.sanitize(card.name));
+		cardName.className = "drawnCardName";
+		cardDiv.appendChild(cardName);
 
-        const sanitizedDesc = DOMPurify.sanitize(marked.parse(card.desc));
-        cardDiv.appendChild(createElement("p", undefined, sanitizedDesc));
-        
-        l("drawnCards").appendChild(cardDiv);
-        setTimeout(() => {show(cardDiv)}, 200);
+		const sanitizedDesc = DOMPurify.sanitize(marked.parse(card.desc));
+		cardDiv.appendChild(createElement("p", undefined, sanitizedDesc));
 
-        // Conditional changes to declaredDraws (including "nomore", which can be vetoed) are handled by the buttons
-        declaredDraws -= 1;
-        if (card.drawsEffect === "forced") {
-            declaredDraws += card.draws;
-        }
-    }
-    
-    l("proceedNode").hidden = false;
+		l("drawnCards").appendChild(cardDiv);
+		setTimeout(() => {show(cardDiv)}, 200);
 
-    // If there are more cards, we might draw again, even if declaredDraws is now 0 (user may have the option to draw more)
-    if (deck.length > 0) {
-        l("proceedButtonHolder").hidden = false;
+		// Conditional changes to declaredDraws (including "nomore", which can be vetoed) are handled by the buttons
+		declaredDraws -= 1;
+		if (card.drawsEffect === "forced") {
+			declaredDraws += card.draws;
+		}
+	}
 
-        let cardsLeftStr = "You have " + declaredDraws + " " + cardOrCards(declaredDraws) + " left to draw";
-        if (lastCard.drawsEffect === "nomore") {
-            if (vetoes > 0) {
-                vetoes -= 1; // Even if they don't use it, they'll be done drawing so it won't matter that it's decremented
-                l("proceedLabel").innerHTML = "Negate this card and continue drawing anyway? (" + cardsLeftStr + " if you do.)";
-                l("proceedButton").innerHTML = "Yes"; // Continue drawing as if nothing happened
-                l("drawMoreButton").hidden = true;
-                l("noMoreButton").hidden = false; // Stop drawing
-            } else {
-                // You draw no more cards.
-                declaredDraws = 0;
-            }
-        } else {
-            l("noMoreButton").hidden = true; // can't just decide to stop drawing
-        }
+	l("proceedNode").hidden = false;
 
-        if (lastCard.drawsEffect === "optional") {
-            // "Proceed" button becomes "no" option (i.e. don't draw extra cards, just move on)
-            l("proceedLabel").innerHTML = cardsLeftStr + ". Will you draw " + lastCard.draws + " additional " + cardOrCards(lastCard.draws) + "?";
-            l("drawMoreButton").hidden = false;
-            l("proceedButton").innerHTML = "No";
-        } else if (declaredDraws > 0) {
-            // You have more cards to draw. Go on...
-            l("proceedLabel").innerHTML = cardsLeftStr + ".";
-            l("drawMoreButton").hidden = true;
-            l("proceedButton").innerHTML = "Proceed";
-        } else {
-            // You've drawn your last
-            l("proceedNode").hidden = true;
-        }
-    } else {
-        // Deck is empty
-        l("proceedButtonHolder").hidden = true; // go away buttons!!
+	// If there are more cards, we might draw again, even if declaredDraws is now 0 (user may have the option to draw more)
+	if (deck.length > 0) {
+		l("proceedButtonHolder").hidden = false;
 
-        if (declaredDraws > 0 || lastCard.drawsEffect === "optional") {
-            // Tell them why they can't draw more cards: there are none
-            l("proceedLabel").innerHTML = "There are no cards left in the deck.";
-        }
-    }
+		let cardsLeftStr = "You have " + declaredDraws + " " + cardOrCards(declaredDraws) + " left to draw";
+		if (lastCard.drawsEffect === "nomore") {
+			if (vetoes > 0) {
+				vetoes -= 1; // Even if they don't use it, they'll be done drawing so it won't matter that it's decremented
+				l("proceedLabel").innerHTML = "Negate this card and continue drawing anyway? (" + cardsLeftStr + " if you do.)";
+				l("proceedButton").innerHTML = "Yes"; // Continue drawing as if nothing happened
+				l("drawMoreButton").hidden = true;
+				l("noMoreButton").hidden = false; // Stop drawing
+			} else {
+				// You draw no more cards.
+				declaredDraws = 0;
+			}
+		} else {
+			l("noMoreButton").hidden = true; // can't just decide to stop drawing
+		}
+
+		if (lastCard.drawsEffect === "optional") {
+			// "Proceed" button becomes "no" option (i.e. don't draw extra cards, just move on)
+			l("proceedLabel").innerHTML = cardsLeftStr + ". Will you draw " + lastCard.draws + " additional " + cardOrCards(lastCard.draws) + "?";
+			l("drawMoreButton").hidden = false;
+			l("proceedButton").innerHTML = "No";
+		} else if (declaredDraws > 0) {
+			// You have more cards to draw. Go on...
+			l("proceedLabel").innerHTML = cardsLeftStr + ".";
+			l("drawMoreButton").hidden = true;
+			l("proceedButton").innerHTML = "Proceed";
+		} else {
+			// You've drawn your last
+			l("proceedNode").hidden = true;
+		}
+	} else {
+		// Deck is empty
+		l("proceedButtonHolder").hidden = true; // go away buttons!!
+
+		if (declaredDraws > 0 || lastCard.drawsEffect === "optional") {
+			// Tell them why they can't draw more cards: there are none
+			l("proceedLabel").innerHTML = "There are no cards left in the deck.";
+		}
+	}
 }
 
 /**
@@ -1184,7 +1190,7 @@ function draw() {
  * those aren't used by imported decks.
  */
 function exportDeck() {
-    let strippedDeck = [];
+	let strippedDeck = [];
 	// Strip away any data that's not used by imported decks
 	for (let i in deck) {
 		const c = deck[i];
@@ -1193,23 +1199,23 @@ function exportDeck() {
 
 	const text = JSON.stringify(strippedDeck);
 
-    navigator.clipboard.writeText(text)
-        .then(() => { alert('Successfully copied to clipboard! Import the deck by clicking \"Import deck\" on the main menu.'); })
-        .catch(err => { alert('Error in copying text: ' + err); });
+	navigator.clipboard.writeText(text)
+		.then(() => { alert('Successfully copied to clipboard! Import the deck by clicking \"Import deck\" on the main menu.'); })
+		.catch(err => { alert('Error in copying text: ' + err); });
 }
 
 /**
  * Readies and transitions to the import menu.
  */
 function importDeck() {
-    const textarea = l("importTextarea");
-    textarea.value = "[]";
-    fadeTransition("initialConfig", "importMenu", () => {
-        // Immediately ready to paste over
-        textarea.focus();
+	const textarea = l("importTextarea");
+	textarea.value = "[]";
+	fadeTransition("initialConfig", "importMenu", () => {
+		// Immediately ready to paste over
+		textarea.focus();
 		if (textarea.select === undefined) textarea.select = () => {};
-        textarea.select();
-    });
+		textarea.select();
+	});
 }
 
 /**
@@ -1221,7 +1227,7 @@ function importDeck() {
  * @param {function} callback - the function to run after importing
  */
 function importAndThen(callback) {
-    try {
+	try {
 		const str = l("importTextarea")["value"];
 		// Use empty deck if textarea is empty
 		deck = (str)? [].concat(JSON.parse(str)) : [];
@@ -1229,18 +1235,18 @@ function importAndThen(callback) {
 		// Make sure it's just valid cards, no extra stuff
 		deck = deck.filter(card => (card.name || card.desc));
 
-        switch (callback) {
-            case fullCustomize:
-                fadeTransition("importMenu", "fullCustomMenu");
-                break;
-            case draw:
-                fadeTransition("importMenu", "drawingNode");
-                break;
-            default:
+		switch (callback) {
+			case fullCustomize:
+				fadeTransition("importMenu", "fullCustomMenu");
+				break;
+			case draw:
+				fadeTransition("importMenu", "drawingNode");
+				break;
+			default:
 				alert("Unknown followup to import function: " + callback);
-        }
-        callback();
-    } catch (err) {
-        alert("Import failed! " + err);
-    }
+		}
+		callback();
+	} catch (err) {
+		alert("Import failed! " + err);
+	}
 }
