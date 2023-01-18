@@ -314,6 +314,17 @@ document.addEventListener("DOMContentLoaded", () => {
 	// Reflect how many cards are in the homebrew deck
 	l("allDeckCount").innerHTML = "(" + (fullDeck.length + homebrewDeck.length) + " cards)";
 
+	const allDeckImg = l("allDeckImg");
+	function updateImage() {
+		if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+			allDeckImg.src = "images/icon_drawall_light.png"; // light on dark background
+		} else {
+			allDeckImg.src = "images/icon_drawall_dark.png";
+		}
+	}
+	updateImage();
+	window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', updateImage);
+
 	l("custAdvancedCheckbox").addEventListener("change", toggleCustAdvanced);
 
 	const wildOptions = document.getElementsByClassName("wildOption");

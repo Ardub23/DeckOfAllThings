@@ -2,6 +2,7 @@
 <html>
     <head>
         <meta charset="utf-8">
+		<meta name="color-scheme" content="dark light">
         <title>Deck of All Things</title>
         <style>
             * {
@@ -13,26 +14,15 @@
                 padding: 10px;
                 font-family: Arial, Helvetica, sans-serif;
                 word-wrap: break-word;
-                background: rgb(31, 31, 31);
-                color: rgb(247, 247, 247);
                 display: flex;
                 flex-direction: column;
                 justify-content: space-between;
                 row-gap: 40px;
             }
-            a {
-                color: lightblue;
-            }
-			label {
-                color: rgb(247, 247, 247);
-			}
-			select, input, button, option {
-				color: inherit;
-				background: rgba(255, 255, 255, 0.15);
-				border-color: gray;
-			}
-			option {
-				background: rgb(50, 50, 50);
+			@media (prefers-color-scheme: dark) {
+				a {
+					color: lightblue;
+				}
 			}
             .cardNameInput {
                 font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
@@ -40,7 +30,6 @@
                 font-size: 14pt;
                 text-align: center;
                 background: transparent;
-                color: white;
             }
             .cardDescInput {
                 flex: 1;
@@ -48,18 +37,22 @@
                 font-family: Arial, Helvetica, sans-serif;
                 font-size: 12pt;
                 background: transparent;
-                color: white;
             }
 			.customCard {
 				height: 100%;
 				width: 100%;
-				background: rgb(70, 70, 70);
+				background-color: rgb(240, 240, 210);
 				padding: 5px;
 				border-style: solid;
 				border-radius: 10px;
 				display: flex;
 				flex-direction: column;
 				flex: 1;
+			}
+			@media (prefers-color-scheme: dark) {
+				.customCard {
+					background-color: rgb(60, 60, 40);
+				}
 			}
             .customCardContainer {
                 width: 20%;
@@ -110,25 +103,35 @@
             }
             #disclaimer {
                 font-size: smaller;
-                background-color: rgb(100, 100, 100);
+                background-color: rgb(180, 180, 180);
                 padding: 10px;
                 order: 99;
             }
+			@media (prefers-color-scheme: dark) {
+				#disclaimer {
+					background-color: rgb(90, 90, 90);
+				}
+			}
             .drawnCard {
-                background: rgb(70, 70, 70);
+                background-color: rgb(230, 230, 220);
                 margin: 15px;
                 padding: 0 25px 0 25px;
                 border-style: solid;
                 border-radius: 10px;
                 max-width: 300px;
             }
+			@media (prefers-color-scheme: dark) {
+				.drawnCard {
+					background-color: rgb(50, 50, 40);
+				}
+			}
             .drawnCardName {
                 font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
                 text-align: center;
             }
             .bigButton {
                 max-width: 100%;
-                background: rgb(50, 25, 75);
+                background-color: rgb(240, 220, 255);
                 text-decoration: none;
                 text-align: center;
                 font-weight: bold;
@@ -137,19 +140,36 @@
                 display: inline-flex;
                 flex-direction: column;
                 border-style: solid;
-                border-color: rgb(200, 180, 230);
+				border-color: rgb(50, 20, 75);
                 border-radius: 15px;
                 cursor: pointer;
             }
             .bigButton:not(:has(.mouseGreedy:hover)):hover {
-                background: rgb(80, 50, 110);
+				/* hovering over the button, but not a mouseGreedy child */
+                background: rgb(255, 235, 255);
             }
-            .bigButton:hover .declaredDrawsBox:hover {
-                background: rgb(50 25 75);
+            .bigButton:not(:has(.mouseGreedy:active)):active {
+                background: rgb(210, 180, 240);
             }
-            .bigButton:active {
-                background: rgb(30, 20, 40);
-            }
+			.bigButton img, .resetButton {
+				filter: invert(100%);
+			}
+			@media (prefers-color-scheme: dark) {
+				.bigButton {
+					background-color: rgb(50, 25, 75);
+                	border-color: rgb(200, 180, 230);
+				}
+				.bigButton:not(:has(.mouseGreedy:hover)):hover {
+					/* hovering over the button, but not a mouseGreedy child */
+					background: rgb(80, 50, 110);
+				}
+	            .bigButton:not(:has(.mouseGreedy:active)):active {
+	                background: rgb(30, 20, 40);
+	            }
+				.bigButton img, .resetButton {
+					filter: invert(0%);
+				}
+			}
             .bigButton > * {
                 max-width: 192px;
                 width: auto;
@@ -179,29 +199,51 @@
 				border-style: inset;
 			}
             .minusButton {
-                background: rgb(127, 0, 0);
-				border-color: rgb(192, 0, 0);
+                background-color: rgb(255, 127, 127);
+				border-color: rgb(255, 192, 192);
                 border-top-left-radius: 12px;
                 border-bottom-left-radius: 12px;
             }
             .minusButton:hover {
-                background: rgb(160, 0, 0);
+                background-color: rgb(255, 160, 160);
             }
             .minusButton:active {
-                background: rgb(64, 0, 0);
+                background-color: rgb(255, 64, 64);
             }
             .plusButton {
-                background: rgb(0, 127, 0);
-				border-color: rgb(0, 192, 0);
+                background-color: rgb(100, 200, 100);
+				border-color: rgb(127, 230, 127);
                 border-top-right-radius: 12px;
                 border-bottom-right-radius: 12px;
             }
             .plusButton:hover {
-                background: rgb(0, 160, 0);
+                background: rgb(127, 230, 127);
             }
             .plusButton:active {
-                background: rgb(0, 64, 0);
+                background: rgb(40, 180, 40);
             }
+			@media (prefers-color-scheme: dark) {
+				.minusButton {
+                	background-color: rgb(127, 0, 0);
+					border-color: rgb(192, 0, 0);
+				}
+	            .minusButton:hover {
+	                background: rgb(160, 0, 0);
+	            }
+	            .minusButton:active {
+	                background: rgb(64, 0, 0);
+	            }
+				.plusButton {
+                	background-color: rgb(0, 127, 0);
+					border-color: rgb(0, 192, 0);
+				}
+	            .plusButton:hover {
+	                background: rgb(0, 160, 0);
+	            }
+	            .plusButton:active {
+	                background: rgb(0, 64, 0);
+	            }
+			}
             .declaredDrawsInput {
                 text-align: center;
             }
@@ -308,7 +350,7 @@
                     </div>
                 </div>
                 <div class="bigButton" id="drawAllButton" onclick="readyDeck('all')">
-                    <img src="images/icon_drawall.png" />
+                    <img id="allDeckImg" src="images/icon_drawall_light.png" style="filter: invert(0%)" />
                     <div class="mouseGreedy" onclick="event.stopPropagation()">
                         <label for="initAllDeclInput">Draw </label>
                         <div class="declaredDrawsBox">
