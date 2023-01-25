@@ -315,6 +315,12 @@ function onLoad() {
 
 	l("custAdvancedCheckbox").addEventListener("change", toggleCustAdvanced);
 
+	// Declared draws inputs highlight their contents when becoming focused
+	const drawsInputs = document.getElementsByClassName("declaredDrawsInput");
+	for (let i = 0; i < drawsInputs.length; i++) {
+		drawsInputs[i].addEventListener("focus", drawsInputs[i].select);
+	}
+
 	const wildOptions = document.getElementsByClassName("wildOption");
 	for (let i = 0; i < wildOptions.length; i++) {
 		wildOptions[i].addEventListener("input", setCustWild);
