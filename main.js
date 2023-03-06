@@ -1,5 +1,6 @@
 let vetoes = 0;
 let deck = [];
+let drawingDeck = null;
 let lastCard = {};
 let drawing = false;
 let advancedOptions = false;
@@ -23,8 +24,9 @@ class Card {
 	 * @param {boolean?} reappears
 	 * @param {function?} onDrawMore
 	 * @param {number?} weight
+	 * @param {string?} noAlignDesc
 	 */
-	constructor(name, desc, wildness, worth, noXPDesc, noLevelDesc, drawsEffect, draws, reappears, onDrawMore, weight) {
+	constructor(name, desc, wildness, worth, noXPDesc, noLevelDesc, drawsEffect, draws, reappears, onDrawMore, weight, noAlignDesc) {
 		this.name = (name !== undefined)? name : "";
 		this.desc = (desc !== undefined)? desc : "";
 		this.wildness = (wildness !== undefined)? wildness : 0.5;
@@ -36,6 +38,7 @@ class Card {
 		this.reappears = (reappears !== undefined)? reappears : true;
 		this.onDrawMore = onDrawMore;
 		this.weight = (weight !== undefined)? weight : 1.0;
+		this.noAlignDesc = noAlignDesc;
 	}
 }
 
@@ -110,7 +113,9 @@ let fullDeck = [
 			 0.1, 0.4),
 	new Card("Balance",
 			 "Your mind suffers a wrenching alteration, causing your alignment to change. Lawful becomes chaotic, good becomes evil, and vice versa. If you are true neutral or unaligned, this card has no effect on you.",
-			 0.5, 0.4),
+			 0.5, 0.4,
+			 undefined, undefined, undefined, undefined, undefined, undefined, undefined,
+			 "Your mind suffers a wrenching alteration, compelling you to behave contrary to your usual ways. You are affected by a 9th-level [geas](https://www.dndbeyond.com/spells/geas) spell; you aren't charmed but suffer the other effects as if you were. The DM determines the geas's instructions."),
 	new Card("Fool",
 			 "You lose 10,000 XP, discard this card, and draw from the deck again, counting both draws as one of your declared draws. If losing that much XP would cause you to lose a level, you instead lose an amount that leaves you with just enough XP to keep your level.",
 			 0.2, 0.3,
@@ -349,6 +354,7 @@ function setUp() {
 	l("initRandDeclInput").onchange(undefined);
 	vetoes = 0;
 	deck = [];
+	drawingDeck = null;
 	lastCard = {};
 	drawing = false;
 	advancedOptions = false;
@@ -387,7 +393,8 @@ function analyzeDeck(arr) {
 }
 
 /**
- * Fades <code>from</code> out, then fades <code>to</code> in, then calls <code>callback()</code>.
+ * Fades <code>from</code> out, calls <code>midwayCallback</code> (if provided),
+ * then fades <code>to</code> in, then calls <code>callback</code> (if provided).
  * @param {HTMLElement | string} from
  * @param {HTMLElement | string} to
  * @param {function?} callback - function to run after the transition is complete
@@ -464,7 +471,7 @@ function l(id) {
 /**
  * Returns the DOM element with the given ID, if it exists. If it doesn't,
  * creates an element with the given ID, tag name, and inner HTML and returns it.
- * If the element already exists, its inner HTML is unchanged, unless the
+ * If the element already exists, its inner HTML is unchanged unless the
  * <code>innerHTML</code> argument is explicitly an empty string.
  *
  * @param {string} tagName - the HTML tag to use if the element doesn't exist
@@ -629,7 +636,7 @@ function createCustomCardNode(card, i) {
 	// Remove card button
 	let removeBtnHolder = createElement("div");
 	removeBtnHolder.appendChild(createButton("removeCardBtn" + i, () => {
-		// Dmpty cards will be removed before drawing.
+		// Don't actually remove it yet (empty cards will be removed before drawing)
 		// For now, keep correlation between element id and deck index.
 		deck[i] = {};
 
@@ -664,8 +671,8 @@ function adjustDeclaredDraws(amount) {
 /**
  * If <code>inputElement</code> is defined, the user's number of
  * declared draws is set to its value.
- * Then, all inputs with the "declaredDrawsInput" class to reflect
- * the current value.
+ * Regardless, all inputs with the "declaredDrawsInput" class are
+ * updated to reflect the current value.
  * @param {HTMLElement?} inputElement
  */
 function setDeclaredDraws(inputElement) {
@@ -697,22 +704,22 @@ function readyDeck(type) {
 
 	switch (type) {
 		case "random":
-			deck = ((Math.random() < 0.25)? fullDeck : partialDeck).map(card => ({...card}));
+			deck = copyObjectArray((Math.random() < 0.25)? fullDeck : partialDeck);
 			draw();
 			break;
 		case "partial":
-			deck = partialDeck.map(card => ({...card}));
+			deck = copyObjectArray(partialDeck);
 			draw();
 			break;
 		default:
 			console.error("Unknown deck type \"" + type + "\"; defaulting to full deck");
 			// fall through
 		case "full":
-			deck = fullDeck.map(card => ({...card}));
+			deck = copyObjectArray(fullDeck);
 			draw();
 			break;
 		case "all":
-			deck = fullDeck.concat(homebrewDeck).map(card => ({...card}));
+			deck = copyObjectArray(fullDeck.concat(homebrewDeck));
 			draw();
 			break;
 	}
@@ -893,10 +900,10 @@ function customize() {
 	fadeTransition("initialConfig", "customMenu");
 
 	l("custCardSrcSelector").value = "all";
-	l("custCardSrcSelector").onchange();
+	l("custCardSrcSelector").onchange(undefined);
 
 	l("filterCardsOption").checked = true;
-	l("filterCardsOption").onclick();
+	l("filterCardsOption").onclick(undefined);
 
 	l("wildStrSlider").value = 0;
 	l("wildValSlider").value = 0.5;
@@ -979,6 +986,17 @@ function finishCustomization(callback) {
 		});
 	}
 
+	if (l("noAlignCheckbox")["checked"]) {
+		deck.forEach(x => {
+			if (x.noAlignDesc)
+				x.desc = x.noAlignDesc;
+		});
+	}
+
+	if (l("allDisappearCheckbox")["checked"]) {
+		deck.forEach(x => (x.reappears = false));
+	}
+
 	// Transition to new screen
 	switch (callback) {
 		case fullCustomize:
@@ -986,6 +1004,8 @@ function finishCustomization(callback) {
 			fadeTransition("customMenu", "fullCustomMenu", undefined, callback);
 			break;
 		case draw:
+			// Draw the first card immediately, so it's already visible when the
+			// screen is coming up
 			fadeTransition("customMenu", "drawingNode");
 			callback();
 			break;
@@ -1027,6 +1047,10 @@ function fullCustomize() {
 		fullCustomCardsNode.appendChild(createCustomCardNode(deck[i], i));
 	}
 
+	// Cool wave effect where cards appear one after another
+	// Kinda looks like they're loading in, but smooth and fast
+	// (The delay shouldn't matter... unless the user has hundreds of cards
+	//  and wants to edit the last one immediately)
 	let i = 0;
 	let timer = setInterval(() => {
 		if (i < deck.length) {
@@ -1100,27 +1124,33 @@ function weightedRandomIndex(arr) {
 		}
 	}
 
-	// Should've returned by now... Just pick a random one
+	// Should've returned by now... probably float imprecision's fault
+	// Just pick a random one
 	return Math.floor(Math.random() * arr.length);
 }
 
 /**
  * Chooses a card from the deck and displays it in the
  * "drawnCards" node. If the user is able to draw more
- * cards yet, one or more buttons are shown below the card
+ * cards, one or more buttons are shown below the card
  * to allow them to draw again (or not, if they have a choice).
  */
 function draw() {
+	// A copy of the underlying deck is used, so cards that don't reappear
+	// when drawn will still be in the original (and can thus be exported)
+	if (drawingDeck === null)
+		drawingDeck = [...deck];
+
 	// declaredDraws can be 0 if user declined an optional draw-more from their last card.
 	// In that case, skip to end-of-draw stuff.
-	if (declaredDraws > 0 && deck.length > 0) { // we're really gonna draw a card
+	if (declaredDraws > 0 && drawingDeck.length > 0) { // we're really gonna draw a card
 		// Pick a card, any card
-		const cardIndex = weightedRandomIndex(deck);
-		const card = deck[cardIndex];
+		const cardIndex = weightedRandomIndex(drawingDeck);
+		const card = drawingDeck[cardIndex];
 		lastCard = card;
 		if (card.reappears === false) {
 			// Only certain cards vanish when drawn; the rest reappear in the deck and can be drawn again
-			deck.splice(cardIndex, 1);
+			drawingDeck.splice(cardIndex, 1);
 		}
 
 		// Make the card node and put it in the drawnCards node
@@ -1146,10 +1176,10 @@ function draw() {
 	l("proceedNode").hidden = false;
 
 	// If there are more cards, we might draw again, even if declaredDraws is now 0 (user may have the option to draw more)
-	if (deck.length > 0) {
+	if (drawingDeck.length > 0) {
 		l("proceedButtonHolder").hidden = false;
 
-		let cardsLeftStr = "You have " + declaredDraws + " " + cardOrCards(declaredDraws) + " left to draw";
+		const cardsLeftStr = "You have " + declaredDraws + " " + cardOrCards(declaredDraws) + " left to draw";
 		if (lastCard.drawsEffect === "nomore") {
 			if (vetoes > 0) {
 				vetoes -= 1; // Even if they don't use it, they'll be done drawing so it won't matter that it's decremented
@@ -1200,7 +1230,8 @@ function exportDeck() {
 	// Strip away any data that's not used by imported decks
 	for (let i in deck) {
 		const c = deck[i];
-		strippedDeck[i] = new Card(c.name, c.desc, undefined, undefined, undefined, undefined, c.drawsEffect, c.draws, c.reappears, c.onDrawMore, c.weight);
+		if (c.name || c.desc)
+			strippedDeck[i] = new Card(c.name, c.desc, undefined, undefined, undefined, undefined, c.drawsEffect, c.draws, c.reappears, c.onDrawMore, c.weight);
 	}
 
 	const text = JSON.stringify(strippedDeck);

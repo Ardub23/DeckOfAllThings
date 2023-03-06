@@ -507,7 +507,7 @@
 
 				<div style="clear: left; margin-block-end: 15px"></div>
 
-				<h3>Experience and level-based effects</h3>
+				<h3>Miscellaneous</h3>
 				<p>Effects which deal with experience points are unsuited for campaigns that use other leveling systems, and some groups prefer to keep all player characters at the same level.</p>
 				<div class="radioContainer">
 					<input type="radio" name="custXP" id="custXPDefault" value="default" onclick="custXP = 'default'" checked />
@@ -521,6 +521,16 @@
 					<input type="radio" name="custXP" id="custXPNoLevel" value="nolevel" onclick="custXP = 'nolevel'" />
 					<label for="custXPNoLevel">Replace XP-based effects with ones that can't affect character levels</label>
 				</div>
+				<p>Effects that deal with alignment can be difficult to adjudicate, and some groups place little stock in alignment anyway.</p>
+				<p>
+					<input id="noAlignCheckbox" name="noAlignCheckbox" type="checkbox" />
+					<label for="noAlignCheckbox">Replace alignment-based effects with other effects</label>
+				</p>
+				<p>With a few specific exceptions, cards normally reappear in the deck after being drawn, so you could draw the same card multiple times. This option makes it so all cards disappear forever once drawn.</p>
+				<p>
+					<input id="allDisappearCheckbox" name="allDisappearCheckbox" type="checkbox" />
+					<label for="allDisappearCheckbox">Prevent drawing the same card repeatedly</label>
+				</p>
 
 				<h3>Finish</h3>
 				<p>The buttons below will create a deck based on your parameters.</p>
@@ -616,7 +626,7 @@
 					<div style="margin-top: 30px; margin-bottom: 30px;"><hr /></div>
 
 					<p>
-						Click this button to export the current deck to your clipboard. (Note: If any cards have been drawn which don't reappear in the deck, they'll be gone from the exported deck too.)
+						Click this button to export the current deck to your clipboard.
 						<br />
 						<button id="exportButton" type="button" onclick="exportDeck()">Export deck</button>
 					</p>
