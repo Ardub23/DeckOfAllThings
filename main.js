@@ -253,8 +253,7 @@ let homebrewDeck = [
 			 undefined, undefined,
 			 "nomore"),
 	new Card("Martyr",
-			 "You can cast the [_wish_](https://www.dndbeyond.com/spells/wish) spell at will, without using a spell slot. When you cast _wish_ in this way, you drop to 0 hit points (this can't be prevented in any way) and immediately roll all of your death saving throws until
-			 you die or become stable. You can't benefit from advantage or any bonuses to these death saving throws. If you die as a result, you can't be brought back to life.",
+			 "You can cast the [_wish_](https://www.dndbeyond.com/spells/wish) spell at will, without using a spell slot. When you cast _wish_ in this way, you drop to 0 hit points (this can't be prevented in any way) and immediately roll all of your death saving throws until you die or become stable. You can't benefit from advantage or any bonuses to these death saving throws. If you die as a result, you can't be brought back to life.",
 			 0.9, 0.9),
 	new Card("Golem",
 			 "You lose your ability to feel pain. The DM tracks your hit points for you; you must use an action to make a DC 13 Wisdom (Medicine) check to learn your current number of hit points. Additionally, being at 0 hit points doesn't render you unconscious while you are in combat, and the DM rolls your death saving throws in secret.",
