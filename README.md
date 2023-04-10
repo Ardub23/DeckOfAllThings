@@ -18,7 +18,7 @@ By default, the more unfitting a card is, the less likely it is to be in the dec
 
 You can also choose how to deal with specific types of cards that may be undesirable. Not everyone wants to worry about XP or alignment, so I've created alternate effects for cards that use these. If you prefer to write your own replacements (or just remove these cards), you can do this when editing individual cards.
 
-Lastly, a quirk of the Deck of Many Things (which I didn't know about until this project) is that it's possible to draw the same card more than once. A drawn card disappears and (in most cases) reappears with the other cards in the deck. If you to be certain you won't draw the same card more than once, there's an option for that.
+Lastly, a quirk of the Deck of Many Things (which I didn't know about until this project) is that it's possible to draw the same card more than once. A drawn card disappears and (in most cases) reappears with the other cards in the deck. If you want to be certain you won't draw the same card more than once, there's an option for that.
 
 ## Card customization
 
