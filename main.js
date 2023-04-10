@@ -315,11 +315,15 @@ let homebrewDeck = [
 	new Card("Mist",
 			 "Your vision becomes clouded, as if by fog that only you can see. Anything farther than 120 feet from you is lightly obscured from you, and anything beyond 500 feet is heavily obscured from you. Any spell that cures blindness lifts the fog for a number of days equal to the spell level.",
 			 0.0, 0.2),
+	new Card("Liberator",
+			 "You become immune to the charmed condition, and you are released from any bonds, commitments, and obligations on you. You gain rightful ownership of all objects you are wearing or carrying.",
+			 0.1, 0.8),
 ];
 
 function onLoad() {
 	// Reflect how many cards are in the homebrew deck
-	l("allDeckCount").innerHTML = "(" + (fullDeck.length + homebrewDeck.length) + " cards)";
+	const allDeckCount = fullDeck.length + homebrewDeck.length;
+	l("allDeckCount").innerHTML = "(" + allDeckCount + " " + cardOrCards(allDeckCount) + ")";
 
 	l("custAdvancedCheckbox").addEventListener("change", toggleCustAdvanced);
 
