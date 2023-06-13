@@ -1,8 +1,7 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 	<head>
 		<meta charset="utf-8">
-		<meta name="color-scheme" content="dark light">
 		<title>Deck of All Things</title>
 		<style>
 			* {
@@ -19,10 +18,71 @@
 				justify-content: space-between;
 				row-gap: 40px;
 			}
-			@media (prefers-color-scheme: dark) {
-				a {
-					color: lightblue;
-				}
+			[data-theme=dark] body {
+				background: black;
+				color: white;
+			}
+			[data-theme=light] body {
+				background: white;
+				color: black;
+			}
+			#themeToggle {
+				--size: 2.5rem;
+			
+				padding: 0;
+				
+				inline-size: var(--size);
+				block-size: var(--size);
+				aspect-ratio: 1;
+			  	border-radius: 50%;
+			}
+			[data-theme=dark] #themeToggle {
+				border: 1px outset white;
+				background-color: rgba(255, 255, 255, 30%);
+			}
+			[data-theme=dark] #themeToggle:hover {
+				background-color: rgba(255, 255, 255, 50%);
+			}
+			[data-theme=dark] #themeToggle:active {
+				background-color: rgba(255, 255, 255, 10%);
+			}
+			[data-theme=light] #themeToggle {
+				border: 1px outset gray;
+				background-color: rgba(0, 0, 0, 30%);
+			}
+			[data-theme=light] #themeToggle:hover {
+				background-color: rgba(0, 0, 0, 50%);
+			}
+			[data-theme=light] #themeToggle:active {
+				background-color: rgba(0, 0, 0, 10%);
+			}
+			[data-theme=dark] a {
+				color: lightblue;
+			}
+			[data-theme=light] input,
+			[data-theme=light] textarea {
+				color: black;
+				background-color: white;
+			}
+			[data-theme=dark] input,
+			[data-theme=dark] textarea {
+				color: white;
+				background-color: rgba(127, 127, 127, 0.2);
+			}
+			[data-theme=dark] select,
+			[data-theme=dark] button {
+				background-color: rgb(60, 60, 60);
+				color: white;
+			}
+			.verticalLine {
+				min-width: 1px;
+				width: 1px;
+			}
+			[data-theme=dark] .verticalLine {
+				background-color: rgba(255, 255, 255, 0.4);
+			}
+			[data-theme=light] .verticalLine {
+				background-color: rgb(0, 0, 0, 0.4);
 			}
 			.cardNameInput {
 				font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
@@ -41,7 +101,6 @@
 			.customCard {
 				height: 100%;
 				width: 100%;
-				background-color: rgb(240, 240, 210);
 				padding: 5px;
 				border-style: solid;
 				border-radius: 10px;
@@ -49,10 +108,11 @@
 				flex-direction: column;
 				flex: 1;
 			}
-			@media (prefers-color-scheme: dark) {
-				.customCard {
-					background-color: rgb(60, 60, 40);
-				}
+			[data-theme=light] .customCard {
+				background-color: rgb(240, 240, 210);
+			}
+			[data-theme=dark] .customCard {
+				background-color: rgb(60, 60, 40);
 			}
 			.customCardContainer {
 				width: 20%;
@@ -107,23 +167,32 @@
 				padding: 10px;
 				order: 99;
 			}
-			@media (prefers-color-scheme: dark) {
-				#disclaimer {
-					background-color: rgb(90, 90, 90);
-				}
+			#disclaimer {
+				display: flex;
+				flex-direction: row;
+				align-items: stretch;
+				gap: 15px;
+				min-height: 2.5rem;
+				border-radius: 5px;
+			}
+			[data-theme=light] #disclaimer {
+				background-color: rgb(180, 180, 180);
+			}
+			[data-theme=dark] #disclaimer {
+				background-color: rgb(70, 70, 70);
 			}
 			.drawnCard {
-				background-color: rgb(230, 230, 220);
 				margin: 15px;
 				padding: 0 25px 0 25px;
 				border-style: solid;
 				border-radius: 10px;
 				max-width: 300px;
 			}
-			@media (prefers-color-scheme: dark) {
-				.drawnCard {
-					background-color: rgb(50, 50, 40);
-				}
+			[data-theme=light] .drawnCard {
+				background-color: rgb(230, 230, 220);
+			}
+			[data-theme=dark] .drawnCard {
+				background-color: rgb(50, 50, 40);
 			}
 			.drawnCardName {
 				font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
@@ -131,7 +200,6 @@
 			}
 			.bigButton {
 				max-width: 100%;
-				background-color: rgb(240, 220, 255);
 				text-decoration: none;
 				text-align: center;
 				font-weight: bold;
@@ -140,35 +208,46 @@
 				display: inline-flex;
 				flex-direction: column;
 				border-style: solid;
-				border-color: rgb(50, 20, 75);
 				border-radius: 15px;
 				cursor: pointer;
 			}
 			.bigButton:not(:has(.mouseGreedy:hover)):hover {
 				/* hovering over the button, but not a mouseGreedy child */
-				background: rgb(255, 235, 255);
+				background-color: rgb(255, 235, 255);
 			}
 			.bigButton:not(:has(.mouseGreedy:active)):active {
-				background: rgb(210, 180, 240);
+				background-color: rgb(210, 180, 240);
 			}
 			.bigButton img, .resetButton {
 				filter: invert(100%);
 			}
-			@media (prefers-color-scheme: dark) {
-				.bigButton {
-					background-color: rgb(50, 25, 75);
-					border-color: rgb(200, 180, 230);
-				}
-				.bigButton:not(:has(.mouseGreedy:hover)):hover {
-					/* hovering over the button, but not a mouseGreedy child */
-					background: rgb(80, 50, 110);
-				}
-				.bigButton:not(:has(.mouseGreedy:active)):active {
-					background: rgb(30, 20, 40);
-				}
-				.bigButton img, .resetButton {
-					filter: invert(0%);
-				}
+			[data-theme=light] .bigButton {
+				background-color: rgb(240, 220, 255);
+				border-color: rgb(50, 20, 75);
+			}
+			[data-theme=light] .bigButton:not(:has(.mouseGreedy:hover)):hover {
+				/* hovering over the button, but not a mouseGreedy child */
+				background-color: rgb(255, 235, 255);
+			}
+			[data-theme=light] .bigButton:not(:has(.mouseGreedy:active)):active {
+				background-color: rgb(210, 180, 240);
+			}
+			[data-theme=light] .bigButton img, .resetButton {
+				filter: invert(100%);
+			}
+			[data-theme=dark] .bigButton {
+				background-color: rgb(50, 25, 75);
+				border-color: rgb(200, 180, 230);
+			}
+			[data-theme=dark] .bigButton:not(:has(.mouseGreedy:hover)):hover {
+				/* hovering over the button, but not a mouseGreedy child */
+				background-color: rgb(80, 50, 110);
+			}
+			[data-theme=dark] .bigButton:not(:has(.mouseGreedy:active)):active {
+				background-color: rgb(30, 20, 40);
+			}
+			[data-theme=dark] .bigButton img, .resetButton {
+				filter: invert(0%);
 			}
 			.bigButton > * {
 				max-width: 192px;
@@ -199,51 +278,54 @@
 				border-style: inset;
 			}
 			.minusButton {
-				background-color: rgb(255, 127, 127);
-				border-color: rgb(255, 192, 192);
 				border-top-left-radius: 12px;
 				border-bottom-left-radius: 12px;
 			}
-			.minusButton:hover {
+			[data-theme=light] .minusButton {
+				background-color: rgb(255, 127, 127);
+				border-color: rgb(255, 192, 192);
+			}
+			[data-theme=light] .minusButton:hover {
 				background-color: rgb(255, 160, 160);
 			}
-			.minusButton:active {
+			[data-theme=light] .minusButton:active {
 				background-color: rgb(255, 64, 64);
 			}
+			[data-theme=dark] .minusButton {
+				background-color: rgb(127, 0, 0);
+				border-color: rgb(192, 0, 0);
+			}
+			[data-theme=dark] .minusButton:hover {
+				background-color: rgb(160, 0, 0);
+			}
+			[data-theme=dark] .minusButton:active {
+				background-color: rgb(64, 0, 0);
+			}
 			.plusButton {
-				background-color: rgb(100, 200, 100);
-				border-color: rgb(127, 230, 127);
 				border-top-right-radius: 12px;
 				border-bottom-right-radius: 12px;
 			}
-			.plusButton:hover {
-				background: rgb(127, 230, 127);
+			[data-theme=light] .plusButton {
+				background-color: rgb(100, 200, 100);
+				border-color: rgb(127, 230, 127);
 			}
-			.plusButton:active {
-				background: rgb(40, 180, 40);
+			[data-theme=light] .plusButton:hover {
+				background-color: rgb(127, 230, 127);
 			}
-			@media (prefers-color-scheme: dark) {
-				.minusButton {
-					background-color: rgb(127, 0, 0);
-					border-color: rgb(192, 0, 0);
-				}
-				.minusButton:hover {
-					background: rgb(160, 0, 0);
-				}
-				.minusButton:active {
-					background: rgb(64, 0, 0);
-				}
-				.plusButton {
-					background-color: rgb(0, 127, 0);
-					border-color: rgb(0, 192, 0);
-				}
-				.plusButton:hover {
-					background: rgb(0, 160, 0);
-				}
-				.plusButton:active {
-					background: rgb(0, 64, 0);
-				}
+			[data-theme=light] .plusButton:active {
+				background-color: rgb(40, 180, 40);
 			}
+			[data-theme=dark] .plusButton {
+				background-color: rgb(0, 127, 0);
+				border-color: rgb(0, 192, 0);
+			}
+			[data-theme=dark] .plusButton:hover {
+				background-color: rgb(0, 160, 0);
+			}
+			[data-theme=dark] .plusButton:active {
+				background-color: rgb(0, 64, 0);
+			}
+			
 			.declaredDrawsInput {
 				text-align: center;
 			}
@@ -288,29 +370,78 @@
 				padding: 3px;
 				cursor: pointer;
 				align-self: center;
-				background: rgba(255, 255, 255, 0.25);
+				background-color: rgba(255, 255, 255, 0.25);
 			}
 			.resetButton:hover {
-				background: rgba(255, 255, 255, 0.4);
+				background-color: rgba(255, 255, 255, 0.4);
 			}
 			.resetButton:active {
-				background: transparent;
+				background-color: transparent;
 			}
 		</style>
 
-		<script async>
-			document.addEventListener("DOMContentLoaded", () => {
-				const image = document.getElementById("allDeckImg");
-				const darkImage = 'images/icon_drawall_light.png'; // light image on dark background
-				const lightImage = 'images/icon_drawall_dark.png';
+		<script>
+			const storageKey = "theme-preference";
 
-				function updateImage() {
-					image.src = (window.matchMedia('(prefers-color-scheme: dark)').matches)? darkImage : lightImage;
-				}
+			const getColorPreference = () => {
+				if (localStorage.getItem(storageKey))
+					return localStorage.getItem(storageKey);
+				else
+					return window.matchMedia("(prefers-color-scheme: dark)").matches
+						? "dark"
+						: "light";
+			}
 
+			const theme = {
+				value: getColorPreference(),
+			}
+
+			const setPreference = () => {
+				localStorage.setItem(storageKey, theme.value);
+				reflectPreference();
+			}
+
+			const updateImage = () => {
+				// light image is for dark background
+				const lightImage = 'images/icon_drawall_light.png';
+				// and vice versa
+				const darkImage = 'images/icon_drawall_dark.png';
+				
+				document.querySelector("#allDeckImg")?.setAttribute("src",
+					(theme.value === "dark") ? lightImage : darkImage);
+			}
+
+			const reflectPreference = () => {
+				document.firstElementChild.setAttribute('data-theme', theme.value);
+
+				document.querySelector("#themeToggle")?.setAttribute("aria-label", theme.value);
+				
 				updateImage();
-				window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', updateImage);
-			});
+			}
+
+			reflectPreference();
+
+			window.onload = () => {
+				reflectPreference();
+
+				document.querySelector("#themeToggle").addEventListener("click", onClick);
+			}
+
+			const onClick = () => {
+				theme.value = theme.value === "light"
+					? "dark"
+					: "light";
+
+				setPreference();
+			}
+
+			window.matchMedia("(prefers-color-scheme: dark)")
+				.addEventListener("change", ({matches:isDark}) => {
+					theme.value = isDark ? "dark" : "light";
+					setPreference();
+				});
+		
+			document.addEventListener("DOMContentLoaded", updateImage, false);
 		</script>
 		<!-- Plotly, for drawing graphs of probability functions -->
 		<script src="scripts/plotly-latest.min.js" async></script>
@@ -639,6 +770,14 @@
 			</div>
 		</div>
 
-		<div id="disclaimer">The Deck of All Things includes unofficial Fan Content permitted under the Fan Content Policy. Not approved/endorsed by Wizards. Portions of the materials used are from the <i>Dungeons & Dragons</i> 5th Edition Systems Reference Document, property of Wizards of the Coast. &copy;Wizards of the Coast LLC.</div>
+		<div id="disclaimer">
+			<div style="display:flex; flex-direction:row; align-items:center; gap:5px;">
+				<button class="themeToggle" id="themeToggle" title="Toggles light & dark" aria-label="auto" aria-live="polite">
+				</button>
+				<label for="themeToggle" style="width:5em;">Click to toggle dark theme</label>
+			</div>
+			<div class="verticalLine"></div>
+			<div>The Deck of All Things includes unofficial Fan Content permitted under the Fan Content Policy. Not approved/endorsed by Wizards. Portions of the materials used are from the <i>Dungeons & Dragons</i> 5th Edition Systems Reference Document, property of Wizards of the Coast. &copy;Wizards of the Coast LLC.</div>
+		</div>
 	</body>
 </html>
