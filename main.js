@@ -22,11 +22,12 @@ class Card {
 	 * @param {string?} drawsEffect
 	 * @param {number?} draws
 	 * @param {boolean?} reappears
-	 * @param {function?} onDrawMore
+	 * @param {string?} onDrawMore
 	 * @param {number?} weight
 	 * @param {string?} noAlignDesc
+	 * @param {string?} onDraw
 	 */
-	constructor(name, desc, wildness, worth, noXPDesc, noLevelDesc, drawsEffect, draws, reappears, onDrawMore, weight, noAlignDesc) {
+	constructor(name, desc, wildness, worth, noXPDesc, noLevelDesc, drawsEffect, draws, reappears, onDrawMore, weight, noAlignDesc, onDraw) {
 		this.name = (name !== undefined)? name : "";
 		this.desc = (desc !== undefined)? desc : "";
 		this.wildness = (wildness !== undefined)? wildness : 0.5;
@@ -39,6 +40,7 @@ class Card {
 		this.onDrawMore = onDrawMore;
 		this.weight = (weight !== undefined)? weight : 1.0;
 		this.noAlignDesc = noAlignDesc;
+		this.onDraw = onDraw;
 	}
 }
 
@@ -65,7 +67,12 @@ let fullDeck = [
 			 "If you single-handedly defeat the next hostile monster or group of monsters you encounter, you have advantage on all ability checks made using one skill of your choice. Otherwise, this card has no effect."),
 	new Card("The Fates",
 			 "Reality's fabric unravels and spins anew, allowing you to avoid or erase one event as if it never happened. You can use the card's magic as soon as you draw the card or at any other time before you die.",
-			 1.0, 1.0),
+			 1.0, 1.0,
+			 undefined, undefined,
+			 undefined, undefined,
+			 undefined, undefined, undefined,
+			 undefined,
+			 "addVeto"),
 	new Card("Throne",
 			 "You gain proficiency in the Persuasion skill, and you double your proficiency bonus on checks made with that skill. In addition, you gain rightful ownership of a small keep somewhere in the world. However, the keep is currently in the hands of monsters, which you must clear out before you can claim the keep as yours.",
 			 0.2, 0.8),
@@ -183,7 +190,7 @@ let homebrewDeck = [
 			 undefined, undefined,
 			 "optional", 5,
 			 false,
-			 () => {vetoes++}),
+			 "addVeto"),
 	new Card("Lycanthrope",
 			 "At the next dusk after you draw this card, you transform as if affected by the [_polymorph_](https://www.dndbeyond.com/spells/polymorph) spell. The DM chooses the beast you turn into and controls you while you're transformed, as you're driven to kill every creature you encounter. At the end of each hour until the following dawn, you regain 1 hit point, then transform again.",
 			 0.5, 0.3),
@@ -1086,8 +1093,8 @@ function finishFullCustomization() {
  */
 function drawMore() {
 	declaredDraws += lastCard.draws;
-	if (lastCard.onDrawMore)
-		lastCard.onDrawMore();
+	if (lastCard.onDrawMore === "addVeto")
+		addVeto();
 	draw();
 }
 
@@ -1159,6 +1166,9 @@ function draw() {
 			// Only certain cards vanish when drawn; the rest reappear in the deck and can be drawn again
 			drawingDeck.splice(cardIndex, 1);
 		}
+		
+		if (card.onDraw === "addVeto")
+			addVeto();
 
 		// Make the card node and put it in the drawnCards node
 		let cardDiv = createElement("div");
@@ -1183,40 +1193,7 @@ function draw() {
 	l("proceedNode").hidden = false;
 
 	// If there are more cards, we might draw again, even if declaredDraws is now 0 (user may have the option to draw more)
-	if (drawingDeck.length > 0) {
-		l("proceedButtonHolder").hidden = false;
-
-		const cardsLeftStr = "You have " + declaredDraws + " " + cardOrCards(declaredDraws) + " left to draw";
-		if (lastCard.drawsEffect === "nomore") {
-			if (vetoes > 0) {
-				vetoes -= 1; // Even if they don't use it, they'll be done drawing so it won't matter that it's decremented
-				l("proceedLabel").innerHTML = "Negate this card and continue drawing anyway? (" + cardsLeftStr + " if you do.)";
-				l("proceedButton").innerHTML = "Yes"; // Continue drawing as if nothing happened
-				l("drawMoreButton").hidden = true;
-				l("noMoreButton").hidden = false; // Stop drawing
-			} else {
-				// You draw no more cards.
-				declaredDraws = 0;
-			}
-		} else {
-			l("noMoreButton").hidden = true; // can't just decide to stop drawing
-		}
-
-		if (lastCard.drawsEffect === "optional") {
-			// "Proceed" button becomes "no" option (i.e. don't draw extra cards, just move on)
-			l("proceedLabel").innerHTML = cardsLeftStr + ". Will you draw " + lastCard.draws + " additional " + cardOrCards(lastCard.draws) + "?";
-			l("drawMoreButton").hidden = false;
-			l("proceedButton").innerHTML = "No";
-		} else if (declaredDraws > 0) {
-			// You have more cards to draw. Go on...
-			l("proceedLabel").innerHTML = cardsLeftStr + ".";
-			l("drawMoreButton").hidden = true;
-			l("proceedButton").innerHTML = "Proceed";
-		} else {
-			// You've drawn your last
-			l("proceedNode").hidden = true;
-		}
-	} else {
+	if (drawingDeck.length === 0) {
 		// Deck is empty
 		l("proceedButtonHolder").hidden = true; // go away buttons!!
 
@@ -1224,7 +1201,53 @@ function draw() {
 			// Tell them why they can't draw more cards: there are none
 			l("proceedLabel").innerHTML = "There are no cards left in the deck.";
 		}
+		
+		return;
 	}
+	
+	const cardsLeftStr = "You have " + declaredDraws + " " + cardOrCards(declaredDraws) + " left to draw";
+	if (lastCard.drawsEffect === "nomore") {
+		if (vetoes > 0) {
+			vetoes -= 1; // Even if they don't use it, they'll be done drawing so it won't matter that it's decremented
+			l("proceedLabel").innerHTML = "Negate this card and continue drawing anyway? (" + cardsLeftStr + " if you do.)";
+			l("proceedButton").innerHTML = "Yes"; // Continue drawing as if nothing happened
+			l("drawMoreButton").hidden = true;
+			l("noMoreButton").hidden = false; // Stop drawing
+		} else {
+			// You draw no more cards.
+			drawNoMore();
+		}
+		
+		return;
+	} else {
+		l("noMoreButton").hidden = true; // can't just decide to stop drawing
+	}
+	
+	l("proceedButtonHolder").hidden = false;
+
+	if (lastCard.drawsEffect === "optional") {
+		// "Proceed" button becomes "no" option (i.e. don't draw extra cards, just move on)
+		l("proceedLabel").innerHTML = cardsLeftStr + ". Will you draw " + lastCard.draws + " additional " + cardOrCards(lastCard.draws) + "?";
+		l("drawMoreButton").hidden = false;
+		l("proceedButton").innerHTML = "No";
+	} else if (declaredDraws > 0) {
+		// You have more cards to draw. Go on...
+		l("proceedLabel").innerHTML = cardsLeftStr + ".";
+		l("drawMoreButton").hidden = true;
+		l("proceedButton").innerHTML = "Proceed";
+	} else {
+		// You've drawn your last
+		l("proceedNode").hidden = true;
+	}
+}
+
+function drawNoMore() {
+	declaredDraws = 0;
+	l('proceedNode').hidden = true;
+}
+
+function addVeto() {
+	vetoes++;
 }
 
 /**
@@ -1238,7 +1261,16 @@ function exportDeck() {
 	for (let i in deck) {
 		const c = deck[i];
 		if (c.name || c.desc)
-			strippedDeck[i] = new Card(c.name, c.desc, undefined, undefined, undefined, undefined, c.drawsEffect, c.draws, c.reappears, c.onDrawMore, c.weight);
+			strippedDeck.push(new Card(c.name,
+									   c.desc,
+									   undefined, undefined, // wildness, worth
+									   undefined, undefined, // noXPDesc, noLevelDesc
+									   c.drawsEffect, c.draws,
+									   c.reappears,
+									   c.onDrawMore,
+									   c.weight,
+									   undefined, //noAlignDesc
+									   c.onDraw));
 	}
 
 	const text = JSON.stringify(strippedDeck);
