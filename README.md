@@ -1,4 +1,4 @@
-# The Deck of All Things
+# [The Deck of All Things](https://ardub23.github.io/DeckOfAllThings)
 The Deck of All Things is a browser-based tool to create, customize, and draw from your own Deck of Many Things for _Dungeons &amp; Dragons_ Fifth Edition.
 
 You can quickly draw from a deck of 13 or 22 cards, or from an expanded deck with 50 additional homebrew cards. You can also adjust the number of cards you'd like to draw.
