@@ -325,7 +325,7 @@ let homebrewDeck = [
 	new Card("Liberator",
 			 "You become immune to the charmed condition, and you are released from all bonds, commitments, and obligations. Others' commitments to you are unaffected. You gain rightful ownership of all objects you are wearing or carrying.",
 			 0.2, 0.8),
-	new Card("Erosion",
+	new Card("Entropy",
 			 "Permanently reduce your highest ability score by 5 (to a minimum of 1), and increase each of your other ability scores by 1.",
 			 0.2, 0.2),
 ];
