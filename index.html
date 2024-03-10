@@ -3,6 +3,7 @@
 	<head>
 		<meta charset="utf-8">
 		<title>Deck of All Things</title>
+        <meta name="viewport" content="width=device-width">
 		<style>
 			* {
 				box-sizing: border-box;
@@ -163,20 +164,18 @@
 			}
 			#disclaimer {
 				font-size: smaller;
-				background-color: rgb(180, 180, 180);
+				background-color: rgb(200, 200, 200);
 				padding: 10px;
 				order: 99;
-			}
-			#disclaimer {
 				display: flex;
 				flex-direction: row;
-				align-items: stretch;
+				align-items: center;
 				gap: 15px;
 				min-height: 2.5rem;
 				border-radius: 5px;
 			}
 			[data-theme=light] #disclaimer {
-				background-color: rgb(180, 180, 180);
+				background-color: rgb(200, 200, 200);
 			}
 			[data-theme=dark] #disclaimer {
 				background-color: rgb(70, 70, 70);
@@ -339,6 +338,7 @@
 			}
 			input[type="number"] {
 				-moz-appearance: textfield;
+				appearance: textfield;
 				width: 2.6em;
 			}
 
@@ -464,10 +464,22 @@
 						<label for="initRandDeclInput">Draw </label>
 						<div class="declaredDrawsBox">
 							<span class="minusButton" onclick="adjustDeclaredDraws(-1)">&minus;</span>
-							<input class="declaredDrawsInput" id="initRandDeclInput" type="number" value=1 min=1 onchange="setDeclaredDraws(l('initRandDeclInput'))">
+							<input class="declaredDrawsInput" id="initRandDeclInput" title="Number of cards to draw (min 1)" type="number" value=1 min=1 onchange="setDeclaredDraws(l('initRandDeclInput'))">
 							<span class="plusButton" onclick="adjustDeclaredDraws(1)">+</span>
 						</div>
 						<label for="initRandDeclInput"> from a mysterious deck (13 or 22 cards)</label>
+					</div>
+				</div>
+				<div class="bigButton" id="drawAllButton" onclick="readyDeck('all')">
+					<img id="allDeckImg" src="images/icon_drawall_light.png" style="filter: invert(0%)" />
+					<div class="mouseGreedy" onclick="event.stopPropagation()">
+						<label for="initAllDeclInput">Draw </label>
+						<div class="declaredDrawsBox">
+							<span class="minusButton" onclick="adjustDeclaredDraws(-1)">&minus;</span>
+							<input class="declaredDrawsInput" id="initAllDeclInput" title="Number of cards to draw (min 1)" type="number" value=1 min=1 onchange="setDeclaredDraws(l('initAllDeclInput'))">
+							<span class="plusButton" onclick="adjustDeclaredDraws(1)">+</span>
+						</div>
+						<label for="initAllDeclInput"> from an expanded homebrew deck <span id="allDeckCount"></span></label>
 					</div>
 				</div>
 				<div class="bigButton" id="drawPartialButton" onclick="readyDeck('partial')">
@@ -476,7 +488,7 @@
 						<label for="initPartDeclInput">Draw </label>
 						<div class="declaredDrawsBox">
 							<span class="minusButton" onclick="adjustDeclaredDraws(-1)">&minus;</span>
-							<input class="declaredDrawsInput" id="initPartDeclInput" type="number" value=1 min=1 onchange="setDeclaredDraws(l('initPartDeclInput'))">
+							<input class="declaredDrawsInput" id="initPartDeclInput" title="Number of cards to draw (min 1)" type="number" value=1 min=1 onchange="setDeclaredDraws(l('initPartDeclInput'))">
 							<span class="plusButton" onclick="adjustDeclaredDraws(1)">+</span>
 						</div>
 						<label for="initPartDeclInput"> from a partial deck (13 cards)</label>
@@ -488,22 +500,10 @@
 						<label for="initFullDeclInput">Draw </label>
 						<div class="declaredDrawsBox">
 							<span class="minusButton" onclick="adjustDeclaredDraws(-1)">&minus;</span>
-							<input class="declaredDrawsInput" id="initFullDeclInput" type="number" value=1 min=1 onchange="setDeclaredDraws(l('initFullDeclInput'))">
+							<input class="declaredDrawsInput" id="initFullDeclInput" title="Number of cards to draw (min 1)" type="number" value=1 min=1 onchange="setDeclaredDraws(l('initFullDeclInput'))">
 							<span class="plusButton" onclick="adjustDeclaredDraws(1)">+</span>
 						</div>
 						<label for="initFullDeclInput"> from a full deck (22 cards)</label>
-					</div>
-				</div>
-				<div class="bigButton" id="drawAllButton" onclick="readyDeck('all')">
-					<img id="allDeckImg" src="images/icon_drawall_light.png" style="filter: invert(0%)" />
-					<div class="mouseGreedy" onclick="event.stopPropagation()">
-						<label for="initAllDeclInput">Draw </label>
-						<div class="declaredDrawsBox">
-							<span class="minusButton" onclick="adjustDeclaredDraws(-1)">&minus;</span>
-							<input class="declaredDrawsInput" id="initAllDeclInput" type="number" value=1 min=1 onchange="setDeclaredDraws(l('initAllDeclInput'))">
-							<span class="plusButton" onclick="adjustDeclaredDraws(1)">+</span>
-						</div>
-						<label for="initAllDeclInput"> from an expanded homebrew deck <span id="allDeckCount"></span></label>
 					</div>
 				</div>
 
@@ -673,7 +673,7 @@
 							Draw
 							<span class="declaredDrawsBox mouseGreedy" onclick="event.stopPropagation()">
 								<span class="minusButton" onclick="adjustDeclaredDraws(-1)">&minus;</span>
-								<input class="declaredDrawsInput" id="custDeclInput" type="number" value=1 min=1 onchange="setDeclaredDraws(l('custDeclInput'))">
+								<input class="declaredDrawsInput" id="custDeclInput" title="Number of cards to draw (min 1)" type="number" value=1 min=1 onchange="setDeclaredDraws(l('custDeclInput'))">
 								<span class="plusButton" onclick="adjustDeclaredDraws(1)">+</span>
 							</span>
 							from the custom deck
@@ -698,7 +698,7 @@
 							Draw
 							<span class="declaredDrawsBox mouseGreedy" onclick="event.stopPropagation()">
 								<span class="minusButton" onclick="adjustDeclaredDraws(-1)">&minus;</span>
-								<input class="declaredDrawsInput" id="fullDeclInput" type="number" value=1 min=1 onchange="setDeclaredDraws(l('fullDeclInput'))">
+								<input class="declaredDrawsInput" id="fullDeclInput" title="Number of cards to draw (min 1)" type="number" value=1 min=1 onchange="setDeclaredDraws(l('fullDeclInput'))">
 								<span class="plusButton" onclick="adjustDeclaredDraws(1)">+</span>
 							</span>
 							from this deck
@@ -729,7 +729,7 @@
 							Draw
 							<span class="declaredDrawsBox mouseGreedy" onclick="event.stopPropagation()">
 								<span class="minusButton" onclick="adjustDeclaredDraws(-1)">&minus;</span>
-								<input class="declaredDrawsInput" id="importDeclDraws" type="number" value=1 min=1 onchange="setDeclaredDraws(l('importDeclDraws'))">
+								<input class="declaredDrawsInput" id="importDeclDraws" title="Number of cards to draw (min 1)" type="number" value=1 min=1 onchange="setDeclaredDraws(l('importDeclDraws'))">
 								<span class="plusButton" onclick="adjustDeclaredDraws(1)">+</span>
 							</span>
 							from this deck
@@ -772,12 +772,12 @@
 
 		<div id="disclaimer">
 			<div style="display:flex; flex-direction:row; align-items:center; gap:5px;">
-				<button class="themeToggle" id="themeToggle" title="Toggles light & dark" aria-label="auto" aria-live="polite">
+				<button class="themeToggle" id="themeToggle" type="button" title="Toggles light & dark" aria-label="auto" aria-live="polite">
 				</button>
-				<label for="themeToggle" style="width:5em;">Click to toggle dark theme</label>
+				<label for="themeToggle">Toggle dark theme</label>
 			</div>
 			<div class="verticalLine"></div>
-			<div>The Deck of All Things includes unofficial Fan Content permitted under the Fan Content Policy. Not approved/endorsed by Wizards. Portions of the materials used are from the <i>Dungeons & Dragons</i> 5th Edition Systems Reference Document, property of Wizards of the Coast. &copy;Wizards of the Coast LLC.</div>
+			<p style="margin-block-start:0; margin-block-end:0;">The Deck of All Things includes unofficial Fan Content permitted under the Fan Content Policy. Not approved/endorsed by Wizards. Portions of the materials used are from the <i>Dungeons & Dragons</i> 5th Edition Systems Reference Document, property of Wizards of the Coast. &copy;Wizards of the Coast LLC.</p>
 		</div>
 	</body>
 </html>
