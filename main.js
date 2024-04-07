@@ -1187,7 +1187,7 @@ function choose(card, chooseButtons) {
 }
 
 function chooseACard() {
-	const chooseFromX = chooseValues.pop();
+	const chooseFromX = Math.min(chooseValues.pop(), declaredDraws);
 
 	let chooseCards = [];
 	do {
