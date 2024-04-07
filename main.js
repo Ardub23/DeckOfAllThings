@@ -5,7 +5,7 @@ let lastCard = {};
 let drawing = false;
 let advancedOptions = false;
 let useCardWeight = false;
-
+let chooseValues = [];
 let declaredDraws = 1;
 let wildParams = {};
 let worthParams = {};
@@ -376,6 +376,7 @@ function setUp() {
 	drawing = false;
 	advancedOptions = false;
 	useCardWeight = false;
+	chooseValues = [];
 }
 
 /**
@@ -512,6 +513,7 @@ function getOrCreate(tagName, id, innerHTML) {
  * @param {any} tagName
  * @param {string?} id
  * @param {any?} innerHTML
+ * @return {HTMLElement}
  */
 function createElement(tagName, id, innerHTML) {
 	let el = document.createElement(tagName);
@@ -599,9 +601,13 @@ function createCustomCardNode(card, i) {
 	drawsInput.min = 1;
 	drawsInput.onclick = () => {drawsInput.select()};
 	drawsInput.onchange = () => {
-		if (!(drawsInput.valueAsNumber >= 1))
+		// Convert 0 and non-numeric strings to 1
+		if (!(drawsInput.value != 0))
 			drawsInput.value = 1;
-		drawsInput.value = Math.floor(drawsInput.valueAsNumber);
+		drawsInput.value = Math.round(drawsInput.valueAsNumber);
+		// 0.2 rounds to 0 ...
+		if (drawsInput.valueAsNumber == 0)
+			drawsInput.value = 1;
 		card.draws = drawsInput.valueAsNumber;
 	};
 	drawsInput.onchange(undefined);
@@ -679,7 +685,7 @@ function cardOrCards(num) {
  * @param {number} amount
  */
 function adjustDeclaredDraws(amount) {
-	if (!Number.isFinite(amount)) return;
+	if (!isFinite(amount)) return;
 
 	declaredDraws += amount;
 	setDeclaredDraws();
@@ -1050,7 +1056,8 @@ function addCustomCard() {
 
 	let cardNode = createCustomCardNode(newCard, deck.length - 1);
 	l("fullCustomCardsNode").appendChild(cardNode);
-	setTimeout(() => {show(cardNode)});
+	// Select card title
+	show(cardNode, () => cardNode.childNodes.item(0).childNodes.item(0).select());
 }
 
 /**
@@ -1147,42 +1154,140 @@ function weightedRandomIndex(arr) {
 }
 
 /**
+ * Creates and returns a &lt;div&gt; displaying a drawn card. The card
+ * is initially faded out; the caller is expected to call show() afterward
+ * to fade it in after adding it to the DOM.
+ * @param {Card} card
+ * @return {HTMLElement} the div showing the drawn card
+ */
+function createDrawnCard(card) {
+	let cardDiv = createElement("div");
+	cardDiv.classList = "drawnCard fading fadedOut";
+	let cardName = createElement("h3", undefined, DOMPurify.sanitize(card.name));
+	cardName.className = "drawnCardName";
+	cardDiv.appendChild(cardName);
+
+	const sanitizedDesc = DOMPurify.sanitize(marked.parse(card.desc));
+	cardDiv.appendChild(createElement("p", undefined, sanitizedDesc));
+
+	return cardDiv;
+}
+
+/**
+ * Hides the cards that were peeked at and officially draws the chosen card.
+ * @param {Card} card
+ * @param {HTMLElement[]} chooseButtons
+ */
+function choose(card, chooseButtons) {
+	for (let el of chooseButtons) {
+		el.hidden = true;
+	}
+
+	hide(l("chooseContainer"), () => draw(card));
+}
+
+function chooseACard() {
+	const chooseFromX = chooseValues.pop();
+
+	let chooseCards = [];
+	do {
+		const cardIndex = weightedRandomIndex(drawingDeck);
+		chooseCards.push(drawingDeck[cardIndex]);
+
+		// Temporarily remove from deck (don't offer the same choice more than once)
+		drawingDeck.splice(cardIndex, 1);
+	} while (chooseCards.length < chooseFromX && drawingDeck.length > 0);
+
+	// Put the cards back in the deck (we'll only really draw the one we choose)
+	for (let card of chooseCards)
+		drawingDeck.push(card);
+
+	if (chooseCards.length <= 1) {
+		draw();
+		return;
+	}
+
+	// Count the unchosen cards as drawn too
+	// (the chosen will decrement declaredDraws in the draw() call)
+	declaredDraws -= (chooseCards.length - 1);
+
+	// "Draw" some cards to choose from
+	let delay = 150;
+	let chooseContainer = getOrCreate("div", "chooseContainer", "");
+	show(chooseContainer);
+	chooseContainer.appendChild(createElement("hr"));
+	l("drawnCards").appendChild(chooseContainer);
+	let choicesContainer = createElement("div");
+	choicesContainer.style.display = "flex";
+	choicesContainer.style.flexWrap = "wrap";
+	chooseContainer.appendChild(choicesContainer);
+	let chooseButtons = [];
+
+	for (let card of chooseCards) {
+		let cardDiv = createDrawnCard(card);
+		choicesContainer.appendChild(cardDiv);
+		setTimeout(() => show(cardDiv), delay);
+		delay += 150;
+
+		const lastWord = card.name.substring(card.name.lastIndexOf(" ") + 1);
+		chooseButtons.push(createButton(lastWord.toLowerCase() + "Button", () => choose(card, chooseButtons), card.name));
+	}
+
+	// Let the user pick their poison
+	l("proceedNode").hidden = false;
+	l("proceedLabel").innerHTML = "Choose one of these cards to take effect.";
+	l("proceedButtonHolder").hidden = false;
+	for (let button of l("proceedButtonHolder").children) {
+		button.hidden = true;
+	}
+	for (let button of chooseButtons) {
+		button.style.marginRight = "5px";
+		l("proceedButtonHolder").appendChild(button);
+		button.hidden = false;
+	}
+}
+
+/**
  * Chooses a card from the deck and displays it in the
  * "drawnCards" node. If the user is able to draw more
  * cards, one or more buttons are shown below the card
  * to allow them to draw again (or not, if they have a choice).
+ * @param {Card} forceCard a card to forcibly draw
  */
-function draw() {
-	// A copy of the underlying deck is used, so cards that don't reappear
-	// when drawn will still be in the original (and can thus be exported)
-	if (drawingDeck === null)
+function draw(forceCard) {
+	/* A copy of the underlying deck is used, so cards that don't reappear
+	 * when drawn will still be in the original (and can thus be exported) */
+	if (drawingDeck === null) {
 		drawingDeck = [...deck];
+	}
+
+	let chooseSum = 0;
+	for (let i of chooseValues) chooseSum += i;
+	if (declaredDraws <= chooseSum && chooseSum >= 2 && drawingDeck.length > 0) {
+		chooseACard();
+		return;
+	}
 
 	// declaredDraws can be 0 if user declined an optional draw-more from their last card.
 	// In that case, skip to end-of-draw stuff.
 	if (declaredDraws > 0 && drawingDeck.length > 0) { // we're really gonna draw a card
 		// Pick a card, any card
-		const cardIndex = weightedRandomIndex(drawingDeck);
-		const card = drawingDeck[cardIndex];
+		const cardIndex = forceCard ? drawingDeck.indexOf(forceCard) : weightedRandomIndex(drawingDeck);
+		const card = forceCard || drawingDeck[cardIndex];
+		
 		lastCard = card;
-		if (card.reappears === false) {
+		if (card.reappears === false && cardIndex >= 0) {
 			// Only certain cards vanish when drawn; the rest reappear in the deck and can be drawn again
 			drawingDeck.splice(cardIndex, 1);
 		}
 		
 		if (card.onDraw === "addVeto")
 			addVeto();
+		else if (card.onDraw instanceof String && card.onDraw.substring(0, 7) === "choose:")
+			drawXChooseOneLater(Number(card.onDraw.substring(7)));
 
 		// Make the card node and put it in the drawnCards node
-		let cardDiv = createElement("div");
-		cardDiv.classList = "drawnCard fading fadedOut";
-		let cardName = createElement("h3", undefined, DOMPurify.sanitize(card.name));
-		cardName.className = "drawnCardName";
-		cardDiv.appendChild(cardName);
-
-		const sanitizedDesc = DOMPurify.sanitize(marked.parse(card.desc));
-		cardDiv.appendChild(createElement("p", undefined, sanitizedDesc));
-
+		let cardDiv = createDrawnCard(card);
 		l("drawnCards").appendChild(cardDiv);
 		setTimeout(() => {show(cardDiv)}, 200);
 
@@ -1211,7 +1316,7 @@ function draw() {
 	const cardsLeftStr = "You have " + declaredDraws + " " + cardOrCards(declaredDraws) + " left to draw";
 	if (lastCard.drawsEffect === "nomore") {
 		if (vetoes > 0) {
-			vetoes -= 1; // Even if they don't use it, they'll be done drawing so it won't matter that it's decremented
+			vetoes -= 1; // If they don't use it, they'll be done drawing so it won't matter that it's decremented
 			l("proceedLabel").innerHTML = "Negate this card and continue drawing anyway? (" + cardsLeftStr + " if you do.)";
 			l("proceedButton").innerHTML = "Yes"; // Continue drawing as if nothing happened
 			l("drawMoreButton").hidden = true;
@@ -1227,6 +1332,7 @@ function draw() {
 	}
 	
 	l("proceedButtonHolder").hidden = false;
+	l("proceedButton").hidden = false;
 
 	if (lastCard.drawsEffect === "optional") {
 		// "Proceed" button becomes "no" option (i.e. don't draw extra cards, just move on)
@@ -1251,6 +1357,15 @@ function drawNoMore() {
 
 function addVeto() {
 	vetoes++;
+}
+
+/**
+ * Draws x cards all at once, allowing the user to choose one to activate.
+ * @param {number} x
+ */
+function drawXChooseOneLater(x) {
+	declaredDraws += x;
+	chooseValues.push(x);
 }
 
 /**
