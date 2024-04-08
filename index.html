@@ -464,7 +464,7 @@
 						<label for="initRandDeclInput">Draw </label>
 						<div class="declaredDrawsBox">
 							<span class="minusButton" onclick="adjustDeclaredDraws(-1)">&minus;</span>
-							<input class="declaredDrawsInput" id="initRandDeclInput" title="Number of cards to draw (min 1)" type="number" value=1 min=1 onchange="setDeclaredDraws(l('initRandDeclInput'))">
+							<input class="declaredDrawsInput" id="initRandDeclInput" title="Number of cards to draw (min 1)" type="number" value=1 min=1 onchange="setDeclaredDraws(l('initRandDeclInput'))" onkeypress="handleKeyPress(event, ()=>readyDeck('random'))">
 							<span class="plusButton" onclick="adjustDeclaredDraws(1)">+</span>
 						</div>
 						<label for="initRandDeclInput"> from a mysterious deck (13 or 22 cards)</label>
@@ -476,7 +476,7 @@
 						<label for="initAllDeclInput">Draw </label>
 						<div class="declaredDrawsBox">
 							<span class="minusButton" onclick="adjustDeclaredDraws(-1)">&minus;</span>
-							<input class="declaredDrawsInput" id="initAllDeclInput" title="Number of cards to draw (min 1)" type="number" value=1 min=1 onchange="setDeclaredDraws(l('initAllDeclInput'))">
+							<input class="declaredDrawsInput" id="initAllDeclInput" title="Number of cards to draw (min 1)" type="number" value=1 min=1 onchange="setDeclaredDraws(l('initAllDeclInput'))" onkeypress="handleKeyPress(event, ()=>readyDeck('all'))">
 							<span class="plusButton" onclick="adjustDeclaredDraws(1)">+</span>
 						</div>
 						<label for="initAllDeclInput"> from an expanded homebrew deck <span id="allDeckCount"></span></label>
@@ -488,7 +488,7 @@
 						<label for="initPartDeclInput">Draw </label>
 						<div class="declaredDrawsBox">
 							<span class="minusButton" onclick="adjustDeclaredDraws(-1)">&minus;</span>
-							<input class="declaredDrawsInput" id="initPartDeclInput" title="Number of cards to draw (min 1)" type="number" value=1 min=1 onchange="setDeclaredDraws(l('initPartDeclInput'))">
+							<input class="declaredDrawsInput" id="initPartDeclInput" title="Number of cards to draw (min 1)" type="number" value=1 min=1 onchange="setDeclaredDraws(l('initPartDeclInput'))" onkeypress="handleKeyPress(event, ()=>readyDeck('partial'))">
 							<span class="plusButton" onclick="adjustDeclaredDraws(1)">+</span>
 						</div>
 						<label for="initPartDeclInput"> from a partial deck (13 cards)</label>
@@ -500,7 +500,7 @@
 						<label for="initFullDeclInput">Draw </label>
 						<div class="declaredDrawsBox">
 							<span class="minusButton" onclick="adjustDeclaredDraws(-1)">&minus;</span>
-							<input class="declaredDrawsInput" id="initFullDeclInput" title="Number of cards to draw (min 1)" type="number" value=1 min=1 onchange="setDeclaredDraws(l('initFullDeclInput'))">
+							<input class="declaredDrawsInput" id="initFullDeclInput" title="Number of cards to draw (min 1)" type="number" value=1 min=1 onchange="setDeclaredDraws(l('initFullDeclInput'))" onkeypress="handleKeyPress(event, ()=>readyDeck('full'))">
 							<span class="plusButton" onclick="adjustDeclaredDraws(1)">+</span>
 						</div>
 						<label for="initFullDeclInput"> from a full deck (22 cards)</label>
@@ -673,7 +673,7 @@
 							Draw
 							<span class="declaredDrawsBox mouseGreedy" onclick="event.stopPropagation()">
 								<span class="minusButton" onclick="adjustDeclaredDraws(-1)">&minus;</span>
-								<input class="declaredDrawsInput" id="custDeclInput" title="Number of cards to draw (min 1)" type="number" value=1 min=1 onchange="setDeclaredDraws(l('custDeclInput'))">
+								<input class="declaredDrawsInput" id="custDeclInput" title="Number of cards to draw (min 1)" type="number" value=1 min=1 onchange="setDeclaredDraws(l('custDeclInput'))" onkeypress="handleKeyPress(event, ()=>finishCustomization(draw))">
 								<span class="plusButton" onclick="adjustDeclaredDraws(1)">+</span>
 							</span>
 							from the custom deck
@@ -698,7 +698,7 @@
 							Draw
 							<span class="declaredDrawsBox mouseGreedy" onclick="event.stopPropagation()">
 								<span class="minusButton" onclick="adjustDeclaredDraws(-1)">&minus;</span>
-								<input class="declaredDrawsInput" id="fullDeclInput" title="Number of cards to draw (min 1)" type="number" value=1 min=1 onchange="setDeclaredDraws(l('fullDeclInput'))">
+								<input class="declaredDrawsInput" id="fullDeclInput" title="Number of cards to draw (min 1)" type="number" value=1 min=1 onchange="setDeclaredDraws(l('fullDeclInput'))" onkeypress="handleKeyPress(event, finishFullCustomization)">
 								<span class="plusButton" onclick="adjustDeclaredDraws(1)">+</span>
 							</span>
 							from this deck
@@ -729,7 +729,7 @@
 							Draw
 							<span class="declaredDrawsBox mouseGreedy" onclick="event.stopPropagation()">
 								<span class="minusButton" onclick="adjustDeclaredDraws(-1)">&minus;</span>
-								<input class="declaredDrawsInput" id="importDeclDraws" title="Number of cards to draw (min 1)" type="number" value=1 min=1 onchange="setDeclaredDraws(l('importDeclDraws'))">
+								<input class="declaredDrawsInput" id="importDeclDraws" title="Number of cards to draw (min 1)" type="number" value=1 min=1 onchange="setDeclaredDraws(l('importDeclDraws'))" onkeypress="handleKeyPress(event, ()=>importAndThen(draw))">
 								<span class="plusButton" onclick="adjustDeclaredDraws(1)">+</span>
 							</span>
 							from this deck

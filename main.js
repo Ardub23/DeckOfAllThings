@@ -1444,3 +1444,10 @@ function importAndThen(callback) {
 		alert("Import failed! " + err);
 	}
 }
+
+function handleKeyPress(event, callback) {
+	if (event.key === "Enter") {
+		// Slight delay so declaredDraws can be updated by onchange
+		setTimeout(callback, 10);
+	}
+}
